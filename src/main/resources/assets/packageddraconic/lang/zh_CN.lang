@@ -1,0 +1,7 @@
+itemGroup.packageddraconic=封包龙之进化
+
+tile.packageddraconic.fusion_crafter.name=聚合封包合成器
+tile.packageddraconic.marked_injector.name=标记聚合注入器
+
+recipe.packageddraconic.fusion=聚合合成
+recipe.packageddraconic.fusion.short=聚合
