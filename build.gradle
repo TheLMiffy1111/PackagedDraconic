@@ -1,0 +1,101 @@
+buildscript {
+    repositories {
+        maven {
+            url = "https://maven.minecraftforge.net/"
+        }
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url = "https://jitpack.io/"
+        }
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "eclipse"
+apply plugin: "maven-publish"
+
+repositories {
+    jcenter()
+    flatDir {
+        dirs "libs"
+    }
+    maven {
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        url = "https://maven.covers1624.net/"
+    }
+    maven {
+        url = "https://jitpack.io/"
+    }
+    maven {
+        url = "https://cursemaven.com/"
+    }
+    maven {
+        url = "https://modmaven.dev/"
+    }
+}
+
+version = "1.12.2-1.0.0.0"
+group = "thelm.packageddraconic"
+archivesBaseName = "PackagedDraconic"
+
+sourceCompatibility = targetCompatibility = "1.8"
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
+compileJava.options.encoding = "UTF-8"
+
+minecraft {
+    version = "1.12.2-14.23.5.2847"
+    runDir = "run"
+    mappings = "stable_39"
+    clientRunArgs.add("--username=Dev")
+    makeObfSourceJar = false
+}
+
+dependencies {
+    deobfCompile "mezz.jei:jei_1.12.2:4.16.1.302"
+    deobfCompile "codechicken:CodeChickenLib:1.12.2-3.2.3.358:universal"
+    deobfCompile "com.brandon3055.brandonscore:BrandonsCore:1.12.2-2.4.20.162:universal"
+    deobfCompile "CraftTweaker2:CraftTweaker2-API:4.1.20.683"
+    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.683"
+    deobfCompile("morph.avaritia:Avaritia:1.12.2-3.3.0.33:universal") {
+        transitive = false
+    }
+
+    deobfCompile "curse.maven:packagedauto-308380:4376035"
+    deobfCompile "curse.maven:applied-energistics-2-223794:2747063"
+    deobfCompile "curse.maven:baubles-227083:2518667"
+    deobfCompile "curse.maven:redstone-flux-270789:2920436"
+    deobfCompile "curse.maven:draconic-evolution-223565:3431261"
+    deobfCompile "curse.maven:cofh-core-69162:2920433"
+    deobfCompile "curse.maven:cofh-world-271384:2920434"
+    deobfCompile "curse.maven:thermal-foundation-222880:2926428"
+    deobfCompile "curse.maven:thermal-expansion-69163:2926431"
+    deobfCompile "curse.maven:thermal-dynamics-227443:2920505"
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title": "PackagedDraconic",
+                "Specification-Vendor": "thelm",
+                "Specification-Version": "1",
+                "Implementation-Title": "${archivesBaseName}",
+                "Implementation-Version": "${version}",
+                "Implementation-Vendor": "thelm"
+                //"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ],)
+    }
+}

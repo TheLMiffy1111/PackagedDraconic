@@ -1,2 +1,2 @@
 # PackagedDraconic
- A PackagedAuto addon that adds Draconic Evolution fusion autocrafting.
+PackagedDraconic is a PackagedAuto addon that adds Draconic Evolution fusion autocrafting.
