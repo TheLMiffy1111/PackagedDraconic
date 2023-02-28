@@ -35,7 +35,7 @@ public class BlockMarkedInjector extends BlockBase {
 	public static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.0625, 0.0625, 0, 0.9375, 0.9375, 0.625);
 	public static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(0.375, 0.0625, 0.0625, 1, 0.9375, 0.9375);
 	public static final AxisAlignedBB AABB_EAST = new AxisAlignedBB(0, 0.0625, 0.0625, 0.625, 0.9375, 0.9375);
-	
+
 	public BlockMarkedInjector() {
 		super(Material.IRON);
 		setDefaultState(blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.UP));

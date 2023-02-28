@@ -18,6 +18,7 @@ import thelm.packagedauto.item.ItemMisc;
 import thelm.packageddraconic.block.BlockFusionCrafter;
 import thelm.packageddraconic.block.BlockMarkedInjector;
 import thelm.packageddraconic.config.PackagedDraconicConfig;
+import thelm.packageddraconic.network.PacketHandler;
 import thelm.packageddraconic.recipe.RecipeTypeFusion;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 import thelm.packageddraconic.tile.TileMarkedInjector;
@@ -39,6 +40,7 @@ public class CommonProxy {
 		registerModels();
 		registerTileEntities();
 		registerRecipeTypes();
+		registerNetwork();
 	}
 
 	public void register(FMLInitializationEvent event) {
@@ -70,6 +72,10 @@ public class CommonProxy {
 		RecipeTypeRegistry.registerRecipeType(RecipeTypeFusion.INSTANCE);
 	}
 
+	protected void registerNetwork() {
+		PacketHandler.registerPackets();
+	}
+
 	protected void registerRecipes() {
 		Item component = Loader.isModLoaded("appliedenergistics2") ? ItemMisc.ME_PACKAGE_COMPONENT : ItemMisc.PACKAGE_COMPONENT;
 		RecipeManager.addFusion(RecipeManager.RecipeDifficulty.NORMAL,
@@ -80,7 +86,7 @@ public class CommonProxy {
 						component, Items.ENDER_EYE,
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
 						Items.ENDER_EYE, Items.ENDER_EYE,
-				});
+		});
 		RecipeManager.addFusion(RecipeManager.RecipeDifficulty.HARD,
 				new ItemStack(BlockFusionCrafter.INSTANCE), new ItemStack(DEFeatures.fusionCraftingCore),
 				36000000, 3, new Object[] {
@@ -90,6 +96,6 @@ public class CommonProxy {
 						component, Items.ENDER_EYE,
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
 						Items.ENDER_EYE, Items.ENDER_EYE,
-				});
+		});
 	}
 }

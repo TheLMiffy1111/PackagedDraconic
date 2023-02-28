@@ -57,6 +57,7 @@ import thelm.packageddraconic.client.sound.FusionCrafterRotationSound;
 import thelm.packageddraconic.container.ContainerFusionCrafter;
 import thelm.packageddraconic.integration.appeng.networking.HostHelperTileFusionCrafter;
 import thelm.packageddraconic.inventory.InventoryFusionCrafter;
+import thelm.packageddraconic.packet.PacketSyncCraftState;
 import thelm.packageddraconic.recipe.IRecipeInfoFusion;
 
 @Optional.InterfaceList({
@@ -290,7 +291,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 			endProcess();
 		}
 		else {
-			syncTile(false);
+			PacketSyncCraftState.sync(this);
 			long totalCharge = 0;
 			for(ICraftingInjector injector : getInjectors()) {
 				totalCharge += injector.getInjectorCharge();
@@ -513,6 +514,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
+		progress = nbt.getShort("Progress");
 		currentRecipe = null;
 		if(nbt.hasKey("Recipe")) {
 			NBTTagCompound tag = nbt.getCompoundTag("Recipe");
@@ -536,6 +538,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
+		nbt.setShort("Progress", progress);
 		if(currentRecipe != null) {
 			NBTTagCompound tag = MiscUtil.writeRecipeToNBT(new NBTTagCompound(), currentRecipe);
 			nbt.setTag("Recipe", tag);
@@ -554,7 +557,6 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public void readSyncNBT(NBTTagCompound nbt) {
 		super.readSyncNBT(nbt);
 		isWorking = nbt.getBoolean("Working");
-		progress = nbt.getShort("Progress");
 		inventory.readFromNBT(nbt);
 	}
 
@@ -562,7 +564,6 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public NBTTagCompound writeSyncNBT(NBTTagCompound nbt) {
 		super.writeSyncNBT(nbt);
 		nbt.setBoolean("Working", isWorking);
-		nbt.setShort("Progress", progress);
 		inventory.writeToNBT(nbt);
 		return nbt;
 	}
