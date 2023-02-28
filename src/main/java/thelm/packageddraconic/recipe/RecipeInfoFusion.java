@@ -137,7 +137,7 @@ public class RecipeInfoFusion implements IRecipeInfoFusion {
 			if(!toSet.isEmpty()) {
 				toSet.setCount(1);
 				if(i == 0) {
-					inputCore = toSet.copy();
+					inputCore = toSet;
 				}
 				else {
 					inputInjector.add(toSet.copy());
@@ -154,6 +154,7 @@ public class RecipeInfoFusion implements IRecipeInfoFusion {
 					this.recipe = recipe;
 					if(!recipe.getRecipeCatalyst().isEmpty()) {
 						inputCore.setCount(recipe.getRecipeCatalyst().getCount());
+						inputCore = inputCore.copy();
 					}
 					List<ItemStack> toCondense = new ArrayList<>(inputInjector);
 					toCondense.add(inputCore);
