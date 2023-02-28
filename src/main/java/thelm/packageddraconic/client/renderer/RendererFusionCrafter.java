@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 
+// Code modified from RenderTileFusionCraftingCore
 public class RendererFusionCrafter extends TileEntitySpecialRenderer<TileFusionCrafter> {
 
 	public static final ResourceLocation PARTICLE = new ResourceLocation("draconicevolution:textures/blocks/fusion_crafting/fusion_particle.png");

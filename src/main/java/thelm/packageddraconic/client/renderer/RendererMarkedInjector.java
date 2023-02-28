@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import thelm.packageddraconic.tile.TileMarkedInjector;
 
+// Code modified from RenderTileCraftingInjector
 public class RendererMarkedInjector extends TileEntitySpecialRenderer<TileMarkedInjector> {
 
 	@Override

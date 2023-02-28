@@ -29,7 +29,13 @@ public class BlockMarkedInjector extends BlockBase {
 	public static final BlockMarkedInjector INSTANCE = new BlockMarkedInjector();
 	public static final Item ITEM_INSTANCE = new ItemBlock(INSTANCE).setRegistryName("packageddraconic:marked_injector");
 	public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation("packageddraconic:marked_injector#facing=up");
-
+	public static final AxisAlignedBB AABB_DOWN = new AxisAlignedBB(0.0625, 0.375, 0.0625, 0.9375, 1, 0.9375);
+	public static final AxisAlignedBB AABB_UP = new AxisAlignedBB(0.0625, 0, 0.0625, 0.9375, 0.625, 0.9375);
+	public static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.0625, 0.0625, 0.375, 0.9375, 0.9375, 1);
+	public static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.0625, 0.0625, 0, 0.9375, 0.9375, 0.625);
+	public static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(0.375, 0.0625, 0.0625, 1, 0.9375, 0.9375);
+	public static final AxisAlignedBB AABB_EAST = new AxisAlignedBB(0, 0.0625, 0.0625, 0.625, 0.9375, 0.9375);
+	
 	public BlockMarkedInjector() {
 		super(Material.IRON);
 		setDefaultState(blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.UP));
@@ -70,12 +76,12 @@ public class BlockMarkedInjector extends BlockBase {
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		EnumFacing facing = state.getValue(BlockDirectional.FACING);
 		switch(facing) {
-		case DOWN: return new AxisAlignedBB(0.0625, 0.375, 0.0625, 0.9375, 1, 0.9375);
-		case UP: return new AxisAlignedBB(0.0625, 0, 0.0625, 0.9375, 0.625, 0.9375);
-		case NORTH: return new AxisAlignedBB(0.0625, 0.0625, 0.375, 0.9375, 0.9375, 1);
-		case SOUTH: return new AxisAlignedBB(0.0625, 0.0625, 0, 0.9375, 0.9375, 0.625);
-		case WEST: return new AxisAlignedBB(0.375, 0.0625, 0.0625, 1, 0.9375, 0.9375);
-		case EAST: return new AxisAlignedBB(0, 0.0625, 0.0625, 0.625, 0.9375, 0.9375);
+		case DOWN: return AABB_DOWN;
+		case UP: return AABB_UP;
+		case NORTH: return AABB_NORTH;
+		case SOUTH: return AABB_SOUTH;
+		case WEST: return AABB_WEST;
+		case EAST: return AABB_EAST;
 		}
 		return super.getBoundingBox(state, source, pos);
 	}

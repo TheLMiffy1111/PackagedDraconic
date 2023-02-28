@@ -7,6 +7,7 @@ import net.minecraft.client.audio.PositionedSound;
 import net.minecraft.util.SoundCategory;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 
+// Code modified from FusionRotationSound
 public class FusionCrafterRotationSound extends PositionedSound implements ITickableSound {
 	
 	private TileFusionCrafter tile;
