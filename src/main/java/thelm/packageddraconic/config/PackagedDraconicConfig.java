@@ -1,41 +1,43 @@
 package thelm.packageddraconic.config;
 
-import java.io.File;
-
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import thelm.packageddraconic.tile.TileFusionCrafter;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+import thelm.packageddraconic.tile.FusionCrafterTile;
 
 public class PackagedDraconicConfig {
 
 	private PackagedDraconicConfig() {}
 
-	public static Configuration config;
+	private static ForgeConfigSpec serverSpec;
 
-	public static void init(File file) {
-		MinecraftForge.EVENT_BUS.register(PackagedDraconicConfig.class);
-		config = new Configuration(file);
-		config.load();
-		init();
+	public static ForgeConfigSpec.IntValue fusionCrafterEnergyCapacity;
+	public static ForgeConfigSpec.IntValue fusionCrafterEnergyUsage;
+	public static ForgeConfigSpec.BooleanValue fusionCrafterDrawMEEnergy;
+
+	public static void registerConfig() {
+		buildConfig();
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);
 	}
 
-	public static void init() {
-		String category;
-		category = "blocks.fusion_crafter";
-		TileFusionCrafter.energyCapacity = config.get(category, "energy_capacity", TileFusionCrafter.energyCapacity, "How much FE the Fusion Package Crafter should hold.", 0, Integer.MAX_VALUE).getInt();
-		TileFusionCrafter.energyUsage = config.get(category, "energy_usage", TileFusionCrafter.energyUsage, "How much FE/t the Fusion Package Crafter should use.", 0, Integer.MAX_VALUE).getInt();
-		TileFusionCrafter.drawMEEnergy = config.get(category, "draw_me_energy", TileFusionCrafter.drawMEEnergy, "Should the Fusion Packager Crafter draw energy from ME systems.").getBoolean();
-		if(config.hasChanged()) {
-			config.save();
-		}
+	private static void buildConfig() {
+		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+
+		builder.push("fusion_crafter");
+		builder.comment("How much FE the Fusion Package Crafter should hold.");
+		fusionCrafterEnergyCapacity = builder.defineInRange("energy_capacity", 5000, 0, Integer.MAX_VALUE);
+		builder.comment("How much FE/t the Fusion Package Crafter should use.");
+		fusionCrafterEnergyUsage = builder.defineInRange("energy_usage", 5, 0, Integer.MAX_VALUE);
+		builder.comment("Should the Fusion Package Crafter draw energy from ME systems.");
+		fusionCrafterDrawMEEnergy = builder.define("draw_me_energy", true);
+		builder.pop();
+
+		serverSpec = builder.build();
 	}
 
-	@SubscribeEvent
-	public void onConfigChanged(OnConfigChangedEvent event) {
-		if(event.getModID().equals("packageddraconic")) {
-			init();
-		}
+	public static void reloadServerConfig() {
+		FusionCrafterTile.energyCapacity = fusionCrafterEnergyCapacity.get();
+		FusionCrafterTile.energyUsage = fusionCrafterEnergyUsage.get();
+		FusionCrafterTile.drawMEEnergy = fusionCrafterDrawMEEnergy.get();
 	}
 }

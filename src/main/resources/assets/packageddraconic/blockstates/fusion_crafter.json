@@ -1,9 +1,7 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "model": "packageddraconic:fusion_crafter"
-    },
     "variants": {
-        "normal": [{}]
+        "": {
+            "model": "packageddraconic:block/fusion_crafter"
+        }
     }
 }

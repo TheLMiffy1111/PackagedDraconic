@@ -1,0 +1,53 @@
+{
+    "conditions": [
+        {
+            "type": "forge:not",
+            "value": {
+                "type": "forge:mod_loaded",
+                "modid": "appliedenergistics2"
+            }
+        }
+    ],
+    "type": "draconicevolution:fusion_crafting",
+    "result": {
+        "item": "packageddraconic:fusion_crafter",
+        "count": 1
+    },
+    "catalyst": {
+        "item": "draconicevolution:crafting_core"
+    },
+    "total_energy": 16000000,
+    "tier": "CHAOTIC",
+    "ingredients": [
+        {
+            "tag": "forge:nether_stars"
+        },
+        {
+            "tag": "forge:nether_stars"
+        },
+        {
+            "item": "draconicevolution:chaotic_core"
+        },
+        {
+            "item": "minecraft:dragon_egg"
+        },
+        {
+            "item": "packagedauto:package_component"
+        },
+        {
+            "item": "minecraft:ender_eye"
+        },
+        {
+            "tag": "forge:ender_pearls"
+        },
+        {
+            "tag": "forge:ender_pearls"
+        },
+        {
+            "item": "minecraft:ender_eye"
+        },
+        {
+            "item": "minecraft:ender_eye"
+        }
+    ]
+}

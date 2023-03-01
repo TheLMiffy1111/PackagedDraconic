@@ -1,0 +1,9 @@
+{
+    "itemGroup.packageddraconic": "封包龙之进化",
+
+    "block.packageddraconic.fusion_crafter": "聚合封包合成器",
+    "block.packageddraconic.marked_injector": "标记聚合注入器",
+
+    "recipe.packageddraconic.fusion": "聚合合成",
+    "recipe.packageddraconic.fusion.short": "聚合"
+}

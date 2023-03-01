@@ -1,32 +1,32 @@
 package thelm.packageddraconic.client.sound;
 
-import com.brandon3055.draconicevolution.lib.DESoundHandler;
+import com.brandon3055.draconicevolution.handlers.DESounds;
 
 import net.minecraft.client.audio.ITickableSound;
-import net.minecraft.client.audio.PositionedSound;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.util.SoundCategory;
-import thelm.packageddraconic.tile.TileFusionCrafter;
+import thelm.packageddraconic.tile.FusionCrafterTile;
 
-// Code modified from FusionRotationSound
-public class FusionCrafterRotationSound extends PositionedSound implements ITickableSound {
-	
-	private TileFusionCrafter tile;
+//Code modified from FusionRotationSound
+public class FusionCrafterRotationSound extends SimpleSound implements ITickableSound {
 
-	public FusionCrafterRotationSound(TileFusionCrafter tile) {
-		super(DESoundHandler.fusionRotation, SoundCategory.BLOCKS);
+	private FusionCrafterTile tile;
+
+	public FusionCrafterRotationSound(FusionCrafterTile tile) {
+		super(DESounds.fusionRotation, SoundCategory.BLOCKS, 1.5F, 1, tile.getBlockPos());
 		this.tile = tile;
-		xPosF = tile.getPos().getX()+0.5F;
-		yPosF = tile.getPos().getY()+0.5F;
-		zPosF = tile.getPos().getZ()+0.5F;
-		repeat = true;
-		volume = 1.5F;
+		looping = true;
 	}
 
-	public boolean isDonePlaying() {
-		return tile.isInvalid() || !tile.isWorking;
+	@Override
+	public boolean isStopped() {
+		return tile.isRemoved() || !tile.isWorking;
 	}
 
-	public void update() {
-		pitch = 0.1F+(tile.progress-1000)/1000F*1.9F;
+	@Override
+	public void tick() {}
+
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
 	}
 }

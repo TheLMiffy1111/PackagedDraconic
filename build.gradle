@@ -4,20 +4,28 @@ buildscript {
             url = "https://maven.minecraftforge.net/"
         }
         maven {
+            url = "https://libraries.minecraft.net/"
+        }
+        maven {
             url = "https://plugins.gradle.org/m2/"
         }
         maven {
-            url = "https://jitpack.io/"
+            url = "https://repo.spongepowered.org/maven/"
         }
-        mavenCentral()
+        maven {
+            url = "https://maven.parchmentmc.org/"
+        }
         jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.+", changing: true
+        classpath "org.parchmentmc:librarian:1.+"
     }
 }
 
-apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "org.parchmentmc.librarian.forgegradle"
 apply plugin: "eclipse"
 apply plugin: "maven-publish"
 
@@ -25,6 +33,9 @@ repositories {
     jcenter()
     flatDir {
         dirs "libs"
+    }
+    maven {
+        url = "https://repo.spongepowered.org/maven/"
     }
     maven {
         url = "https://dvs1.progwml6.com/files/maven/"
@@ -40,50 +51,67 @@ repositories {
     }
     maven {
         url = "https://cursemaven.com/"
+		content {
+            includeGroup "curse.maven"
+        }
     }
     maven {
         url = "https://modmaven.dev/"
     }
 }
 
-version = "1.12.2-1.0.0.0"
-group = "thelm.packageddraconic"
-archivesBaseName = "PackagedDraconic"
-
-sourceCompatibility = targetCompatibility = "1.8"
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+sourceSets {
+    main
 }
-compileJava.options.encoding = "UTF-8"
+
+version = "2.0.0.0"
+group = "thelm.packageddraconic"
+archivesBaseName = "PackagedDraconic-1.16.5"
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
 
 minecraft {
-    version = "1.12.2-14.23.5.2847"
-    runDir = "run"
-    mappings = "stable_39"
-    clientRunArgs.add("--username=Dev")
-    makeObfSourceJar = false
+    mappings channel: "parchment", version: "2022.03.06-1.16.5"
+    runs {
+        client = {
+            properties "forge.logging.markers": "SCAN,REGISTRIES,REGISTRYDUMP"
+            properties "forge.logging.console.level": "debug"
+            properties "mixin.env.remapRefMap": "true"
+            properties "mixin.env.refMapRemappingFile": "${projectDir}/build/createSrgToMcp/output.srg".toString()
+            workingDirectory project.file("run").canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            properties "forge.logging.markers": "SCAN,REGISTRIES,REGISTRYDUMP"
+            properties "forge.logging.console.level": "debug"
+            properties "mixin.env.remapRefMap": "true"
+            properties "mixin.env.refMapRemappingFile": "${projectDir}/build/createSrgToMcp/output.srg".toString()
+            workingDirectory project.file("run").canonicalPath
+            source sourceSets.main
+        }
+    }
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_1.12.2:4.16.1.302"
-    deobfCompile "codechicken:CodeChickenLib:1.12.2-3.2.3.358:universal"
-    deobfCompile "com.brandon3055.brandonscore:BrandonsCore:1.12.2-2.4.20.162:universal"
-    deobfCompile "CraftTweaker2:CraftTweaker2-API:4.1.20.683"
-    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.683"
-    deobfCompile("morph.avaritia:Avaritia:1.12.2-3.3.0.33:universal") {
-        transitive = false
-    }
+    minecraft "net.minecraftforge:forge:1.16.5-36.2.39"
 
-    deobfCompile "curse.maven:packagedauto-308380:4376035"
-    deobfCompile "curse.maven:applied-energistics-2-223794:2747063"
-    deobfCompile "curse.maven:baubles-227083:2518667"
-    deobfCompile "curse.maven:redstone-flux-270789:2920436"
-    deobfCompile "curse.maven:draconic-evolution-223565:3431261"
-    deobfCompile "curse.maven:cofh-core-69162:2920433"
-    deobfCompile "curse.maven:cofh-world-271384:2920434"
-    deobfCompile "curse.maven:thermal-foundation-222880:2926428"
-    deobfCompile "curse.maven:thermal-expansion-69163:2926431"
-    deobfCompile "curse.maven:thermal-dynamics-227443:2920505"
+    implementation fg.deobf("appeng:appliedenergistics2:8.4.7")
+	implementation fg.deobf("codechicken:CodeChickenLib:1.16.5-4.0.7.445:universal")
+	implementation fg.deobf("com.brandon3055.brandonscore:BrandonsCore:1.16.5-3.0.15.248:universal")
+	implementation fg.deobf("com.brandon3055.draconicevolution:Draconic-Evolution:1.16.5-3.0.29.518:universal")
+    implementation fg.deobf("mezz.jei:jei-1.16.5:7.7.1.1004")
+    implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:7.1.2.516")
+    implementation fg.deobf("vazkii.patchouli:Patchouli:1.16.4-53.3")
+    implementation fg.deobf("com.jozufozu.flywheel:Flywheel:1.16-0.2.5.53")
+    implementation fg.deobf("com.simibubi.create:Create:mc1.16.5_v0.3.2g+480")
+    implementation fg.deobf("mekanism:Mekanism:1.16.5-10.1.2.457")
+    implementation fg.deobf("mekanism:Mekanism:1.16.5-10.1.2.457:generators")
+
+    //JitPack
+
+    //CurseMaven
+    implementation fg.deobf("curse.maven:packagedauto-308380:4400460")
+    implementation fg.deobf("curse.maven:ato-405593:3405905")
 }
 
 jar {
@@ -91,7 +119,7 @@ jar {
         attributes([
                 "Specification-Title": "PackagedDraconic",
                 "Specification-Vendor": "thelm",
-                "Specification-Version": "1",
+                "Specification-Version": "2",
                 "Implementation-Title": "${archivesBaseName}",
                 "Implementation-Version": "${version}",
                 "Implementation-Vendor": "thelm"

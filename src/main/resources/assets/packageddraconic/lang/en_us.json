@@ -1,0 +1,9 @@
+{
+    "itemGroup.packageddraconic": "PackagedDraconic",
+
+    "block.packageddraconic.fusion_crafter": "Fusion Package Crafter",
+    "block.packageddraconic.marked_injector": "Marked Fusion Crafting Injector",
+
+    "recipe.packageddraconic.fusion": "Fusion Crafting",
+    "recipe.packageddraconic.fusion.short": "Fusion"
+}

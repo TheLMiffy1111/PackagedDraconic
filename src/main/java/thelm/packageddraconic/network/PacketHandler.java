@@ -1,30 +1,32 @@
 package thelm.packageddraconic.network;
 
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
-import thelm.packagedauto.network.ISelfHandleMessage;
-import thelm.packageddraconic.PackagedDraconic;
-import thelm.packageddraconic.packet.PacketSyncCrafter;
+import java.util.Optional;
 
-public class PacketHandler<REQ extends ISelfHandleMessage<? extends IMessage>> implements IMessageHandler<REQ, IMessage> {
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+import thelm.packageddraconic.network.packet.FinishCraftEffectsPacket;
+import thelm.packageddraconic.network.packet.SyncCrafterPacket;
+import thelm.packageddraconic.network.packet.SyncInjectorPacket;
 
-	public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(PackagedDraconic.MOD_ID);
+public class PacketHandler {
+
+	public static final String PROTOCOL_VERSION = "1";
+	public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+			new ResourceLocation("packageddraconic", PROTOCOL_VERSION),
+			()->PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
 	public static void registerPackets() {
 		int id = 0;
-		INSTANCE.registerMessage(get(), PacketSyncCrafter.class, id++, Side.CLIENT);
-	}
-
-	public static <REQ extends ISelfHandleMessage<? extends IMessage>> PacketHandler<REQ> get() {
-		return new PacketHandler<>();
-	}
-
-	@Override
-	public IMessage onMessage(REQ message, MessageContext ctx) {
-		return message.onMessage(ctx);
+		INSTANCE.registerMessage(id++, SyncInjectorPacket.class,
+				SyncInjectorPacket::encode, SyncInjectorPacket::decode,
+				SyncInjectorPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		INSTANCE.registerMessage(id++, SyncCrafterPacket.class,
+				SyncCrafterPacket::encode, SyncCrafterPacket::decode,
+				SyncCrafterPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		INSTANCE.registerMessage(id++, FinishCraftEffectsPacket.class,
+				FinishCraftEffectsPacket::encode, FinishCraftEffectsPacket::decode,
+				FinishCraftEffectsPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 }

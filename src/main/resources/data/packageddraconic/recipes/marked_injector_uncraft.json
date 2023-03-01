@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "result": {
+        "item": "draconicevolution:chaotic_crafting_injector",
+        "count": 1
+    },
+    "ingredients": [
+        {
+            "item": "packageddraconic:marked_injector"
+        }
+    ]
+}

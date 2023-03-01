@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+license="MIT"
+issueTrackerURL="https://github.com/TheLMiffy1111/PackagedDraconic/issues"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/packageddraconic"
+authors="TheLMiffy1111"
+[[mods]]
+modId="packageddraconic"
+version="${file.jarVersion}"
+displayName="PackagedDraconic"
+description="A PackagedAuto addon that adds Draconic Evolution fusion autocrafting."
+
+[[dependencies.packageddraconic]]
+    modId="forge"
+    mandatory=true
+    versionRange="[34.0.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.packageddraconic]]
+    modId="draconicevolution"
+    mandatory=true
+    versionRange="[3.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.packageddraconic]]
+    modId="packagedauto"
+    mandatory=true
+    versionRange="[2.0.0.0,)"
+    ordering="NONE"
+    side="BOTH"
