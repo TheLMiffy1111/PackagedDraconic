@@ -57,7 +57,7 @@ import thelm.packageddraconic.client.sound.FusionCrafterRotationSound;
 import thelm.packageddraconic.container.ContainerFusionCrafter;
 import thelm.packageddraconic.integration.appeng.networking.HostHelperTileFusionCrafter;
 import thelm.packageddraconic.inventory.InventoryFusionCrafter;
-import thelm.packageddraconic.packet.PacketSyncCraftState;
+import thelm.packageddraconic.packet.PacketSyncCrafter;
 import thelm.packageddraconic.recipe.IRecipeInfoFusion;
 
 @Optional.InterfaceList({
@@ -291,7 +291,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 			endProcess();
 		}
 		else {
-			PacketSyncCraftState.sync(this);
+			PacketSyncCrafter.sync(this);
 			long totalCharge = 0;
 			for(ICraftingInjector injector : getInjectors()) {
 				totalCharge += injector.getInjectorCharge();

@@ -27,6 +27,6 @@ public class FusionCrafterRotationSound extends PositionedSound implements ITick
 	}
 
 	public void update() {
-		this.pitch = 0.1F+(tile.progress-1000)/1000F*1.9F;
+		pitch = 0.1F+(tile.progress-1000)/1000F*1.9F;
 	}
 }

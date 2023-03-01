@@ -14,14 +14,14 @@ import thelm.packagedauto.network.ISelfHandleMessage;
 import thelm.packageddraconic.network.PacketHandler;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 
-public class PacketSyncCraftState implements ISelfHandleMessage<IMessage> {
+public class PacketSyncCrafter implements ISelfHandleMessage<IMessage> {
 
 	private long pos;
 	private short progress;
 
-	public PacketSyncCraftState() {}
+	public PacketSyncCrafter() {}
 
-	public PacketSyncCraftState(TileFusionCrafter tile) {
+	public PacketSyncCrafter(TileFusionCrafter tile) {
 		pos = tile.getPos().toLong();
 		progress = tile.progress;
 	}
@@ -58,6 +58,6 @@ public class PacketSyncCraftState implements ISelfHandleMessage<IMessage> {
 		double x = tile.getPos().getX()+0.5;
 		double y = tile.getPos().getY()+0.5;
 		double z = tile.getPos().getZ()+0.5;
-		PacketHandler.INSTANCE.sendToAllAround(new PacketSyncCraftState(tile), new TargetPoint(tile.getWorld().provider.getDimension(), x, y, z, 32));
+		PacketHandler.INSTANCE.sendToAllAround(new PacketSyncCrafter(tile), new TargetPoint(tile.getWorld().provider.getDimension(), x, y, z, 32));
 	}
 }

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import thelm.packagedauto.network.ISelfHandleMessage;
 import thelm.packageddraconic.PackagedDraconic;
-import thelm.packageddraconic.packet.PacketSyncCraftState;
+import thelm.packageddraconic.packet.PacketSyncCrafter;
 
 public class PacketHandler<REQ extends ISelfHandleMessage<? extends IMessage>> implements IMessageHandler<REQ, IMessage> {
 
@@ -16,7 +16,7 @@ public class PacketHandler<REQ extends ISelfHandleMessage<? extends IMessage>> i
 
 	public static void registerPackets() {
 		int id = 0;
-		INSTANCE.registerMessage(get(), PacketSyncCraftState.class, id++, Side.CLIENT);
+		INSTANCE.registerMessage(get(), PacketSyncCrafter.class, id++, Side.CLIENT);
 	}
 
 	public static <REQ extends ISelfHandleMessage<? extends IMessage>> PacketHandler<REQ> get() {
