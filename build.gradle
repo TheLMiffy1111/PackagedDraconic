@@ -70,9 +70,6 @@ dependencies {
     deobfCompile "com.brandon3055.brandonscore:BrandonsCore:1.12.2-2.4.20.162:universal"
     deobfCompile "CraftTweaker2:CraftTweaker2-API:4.1.20.683"
     deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.683"
-    deobfCompile("morph.avaritia:Avaritia:1.12.2-3.3.0.33:universal") {
-        transitive = false
-    }
 
     deobfCompile "curse.maven:packagedauto-308380:4376035"
     deobfCompile "curse.maven:applied-energistics-2-223794:2747063"
