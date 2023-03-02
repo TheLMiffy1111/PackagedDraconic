@@ -208,7 +208,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 				Direction facing = tile.getDirection();
 				boolean obstructed = false;
 				for(BlockPos bp : BlockPos.betweenClosed(pos.relative(facing), pos.relative(facing, distanceInDirection(pos, worldPosition, facing) - 1))) {
-					if((!level.isEmptyBlock(bp) && level.getBlockState(bp).canOcclude() || level.getBlockEntity(bp) instanceof MarkedInjectorTile || level.getBlockEntity(bp) instanceof FusionCrafterTile)) {
+					if(!level.isEmptyBlock(bp) && level.getBlockState(bp).canOcclude() || level.getBlockEntity(bp) instanceof MarkedInjectorTile || level.getBlockEntity(bp) instanceof FusionCrafterTile) {
 						obstructed = true;
 						break;
 					}

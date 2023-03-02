@@ -8,14 +8,10 @@ import com.brandon3055.draconicevolution.handlers.DESounds;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
@@ -47,7 +43,6 @@ public class FinishCraftEffectsPacket {
 			if(world.isLoaded(pkt.pos)) {
 				if(pkt.doParticles) {
 					world.addParticle(ParticleTypes.EXPLOSION, pkt.pos.getX()+0.5, pkt.pos.getY()+0.5, pkt.pos.getZ()+0.5, 1, 0, 0);
-					world.playLocalSound(pkt.pos.getX()+0.5, pkt.pos.getY()+0.5, pkt.pos.getZ()+0.5, DESounds.fusionComplete, SoundCategory.BLOCKS, 4F, (1F+(world.random.nextFloat()-world.random.nextFloat())*0.2F)*0.7F, false);
 					for(int i = 0; i < 100; i++) {
 						double velX = (world.random.nextDouble()-0.5)*0.1;
 						double velY = (world.random.nextDouble()-0.5)*0.1;
@@ -55,6 +50,7 @@ public class FinishCraftEffectsPacket {
 						world.addParticle(new IntParticleType.IntParticleData(DEParticles.energy_basic, 0, 255, 255, 64), pkt.pos.getX()+0.5, pkt.pos.getY()+0.5, pkt.pos.getZ()+0.5, velX, velY, velZ);
 					}
 				}
+				world.playLocalSound(pkt.pos.getX()+0.5, pkt.pos.getY()+0.5, pkt.pos.getZ()+0.5, DESounds.fusionComplete, SoundCategory.BLOCKS, 4F, (1F+(world.random.nextFloat()-world.random.nextFloat())*0.2F)*0.7F, false);
 			}
 		});
 		ctx.get().setPacketHandled(true);

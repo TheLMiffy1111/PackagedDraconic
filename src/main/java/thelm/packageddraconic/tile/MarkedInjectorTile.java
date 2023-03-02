@@ -4,7 +4,6 @@ import com.brandon3055.brandonscore.api.TechLevel;
 import com.brandon3055.brandonscore.capability.CapabilityOP;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.block.DirectionalBlock;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -49,9 +48,10 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 		ItemStack stack = itemHandler.getStackInSlot(0);
 		itemHandler.setStackInSlot(0, ItemStack.EMPTY);
 		if(!level.isClientSide && !stack.isEmpty()) {
-			double dx = level.random.nextFloat()/2+0.25;
-			double dy = level.random.nextFloat()/2+0.25;
-			double dz = level.random.nextFloat()/2+0.25;
+			Direction direction = getDirection();
+			double dx = level.random.nextFloat()/2+0.25+direction.getStepX()*0.5;
+			double dy = level.random.nextFloat()/2+0.25+direction.getStepY()*0.5;
+			double dz = level.random.nextFloat()/2+0.25+direction.getStepZ()*0.5;
 			ItemEntity itemEntity = new ItemEntity(level, worldPosition.getX()+dx, worldPosition.getY()+dy, worldPosition.getZ()+dz, stack);
 			itemEntity.setDefaultPickUpDelay();
 			level.addFreshEntity(itemEntity);
@@ -127,19 +127,6 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 
 	public Direction getDirection() {
 		return getBlockState().getValue(DirectionalBlock.FACING);
-	}
-
-	@Override
-	public void load(BlockState blockState, CompoundNBT nbt) {
-		super.load(blockState, nbt);
-		energyStorage.read(nbt);
-	}
-
-	@Override
-	public CompoundNBT save(CompoundNBT nbt) {
-		super.save(nbt);
-		energyStorage.write(nbt);
-		return nbt;
 	}
 
 	@Override

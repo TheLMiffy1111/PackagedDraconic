@@ -24,7 +24,7 @@ import thelm.packageddraconic.tile.MarkedInjectorTile;
 public class FusionCrafterFXHandler implements Runnable {
 
 	private static Random rand = new Random();
-	private final FusionCrafterTile tile;
+	private final FusionCrafterTile crafter;
 	private float rotationTick = 0;
 	private float rotationSpeed = 0;
 	private int coreDischarge = -1;
@@ -40,14 +40,14 @@ public class FusionCrafterFXHandler implements Runnable {
 	private int runTick = 0;
 	private FusionCrafterRotationSound sound = null;
 
-	public FusionCrafterFXHandler(FusionCrafterTile tile) {
-		this.tile = tile;
+	public FusionCrafterFXHandler(FusionCrafterTile crafter) {
+		this.crafter = crafter;
 	}
 
 	@Override
 	public void run() {
 		IFusionRecipe recipe;
-		if(!tile.isWorking || (recipe = tile.effectRecipe) == null) {
+		if(!crafter.isWorking || (recipe = crafter.effectRecipe) == null) {
 			rotationTick = -3;
 			sound = null;
 			injectTime = 0;
@@ -55,7 +55,7 @@ public class FusionCrafterFXHandler implements Runnable {
 			runTick = -1;
 			return;
 		}
-		IFusionStateMachine.FusionState state = tile.getFusionState();
+		IFusionStateMachine.FusionState state = crafter.getFusionState();
 		if(state.ordinal() < IFusionStateMachine.FusionState.CRAFTING.ordinal()) {
 			rotationTick = -3;
 			rotationSpeed = 0;
@@ -64,20 +64,20 @@ public class FusionCrafterFXHandler implements Runnable {
 		}
 		else {
 			float prevTick = rotationTick;
-			Vector3 corePos = Vector3.fromTileCenter(tile);
+			Vector3 corePos = Vector3.fromTileCenter(crafter);
 			if(runTick <= 0) {
-				tile.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundCategory.BLOCKS, 0.5F, 0.5F, false);
+				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundCategory.BLOCKS, 0.5F, 0.5F, false);
 			}
 			if(runTick == -1) {
-				getIngredients(0).forEach(e->tile.getLevel().addParticle(ParticleTypes.EXPLOSION, corePos.x+e.pos.x, corePos.y+e.pos.y, corePos.z + e.pos.z, 1, 0, 0));
+				getIngredients(0).forEach(e->crafter.getLevel().addParticle(ParticleTypes.EXPLOSION, corePos.x+e.pos.x, corePos.y+e.pos.y, corePos.z + e.pos.z, 1, 0, 0));
 			}
 			rotationTick += rotationSpeed;
 			runTick++;
-			rotationSpeed = (float)baseCraftTime / Math.max(tile.animLength, 1);
+			rotationSpeed = (float)baseCraftTime / Math.max(crafter.animLength, 1);
 			if(rotationTick+3 >= rotStartTime && prevTick+3 < rotStartTime+3) {
-				tile.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundCategory.BLOCKS, 2F, 0.5F, false);
+				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundCategory.BLOCKS, 2F, 0.5F, false);
 				if(sound == null) {
-					sound = new FusionCrafterRotationSound(tile);
+					sound = new FusionCrafterRotationSound(crafter);
 					sound.setPitch(0.5F+(1.5F*(rotationSpeed-1)));
 					Minecraft.getInstance().getSoundManager().play(sound);
 				}
@@ -85,13 +85,13 @@ public class FusionCrafterFXHandler implements Runnable {
 			injectTime = Math.max(0, (rotationTick-beamStartTime)/(float)(baseCraftTime-beamStartTime));
 			if(injectTime > 0) {
 				if(TimeKeeper.getClientTick() % 5 == 0) {
-					tile.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 1F, 1F, false);
+					crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 1F, 1F, false);
 				}
 			}
 		}
-		long totalCharge = tile.getInjectors().stream().mapToLong(IFusionInjector::getInjectorEnergy).sum();
+		long totalCharge = crafter.getInjectors().stream().mapToLong(IFusionInjector::getInjectorEnergy).sum();
 		chargeState = totalCharge / (float)recipe.getEnergyCost();
-		float arcChance = chargeState*0.1F + tile.animProgress*0.2F + (rotationSpeed > 1 ? ((rotationSpeed-1)*0.25F) : 0F);
+		float arcChance = chargeState*0.1F + crafter.animProgress*0.2F + (rotationSpeed > 1 ? ((rotationSpeed-1)*0.25F) : 0F);
 		if(coreDischarge != -1) {
 			coreDischarge = -1;
 		}
@@ -101,21 +101,21 @@ public class FusionCrafterFXHandler implements Runnable {
 				return;
 			}
 			coreDischarge = rand.nextInt(ingreds.size());
-			Vector3 pos = Vector3.fromTileCenter(tile).add(ingreds.get(coreDischarge).pos);
-			tile.getLevel().playLocalSound(pos.x, pos.y, pos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 2F, 1F, false);
+			Vector3 pos = Vector3.fromTileCenter(crafter).add(ingreds.get(coreDischarge).pos);
+			crafter.getLevel().playLocalSound(pos.x, pos.y, pos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 2F, 1F, false);
 		}
 	}
 
 	public List<IngredFX> getIngredients(float partialTicks) {
 		List<IngredFX> ingredFXES = new ArrayList<>();
-		Vector3 corePos = Vector3.fromTileCenter(tile);
-		int injCount = (int)tile.getInjectors().stream().filter(e->!e.getInjectorStack().isEmpty()).count();
+		Vector3 corePos = Vector3.fromTileCenter(crafter);
+		int injCount = (int)crafter.getInjectors().stream().filter(e->!e.getInjectorStack().isEmpty()).count();
 		double baseRotateSpeed = 8;
 		baseRotateSpeed /= 1200;
 		baseRotateSpeed *= Math.PI*2;
 		float rotateAnim = getRotationAnim(partialTicks);
 		int i = 0;
-		for(IFusionInjector iInjector : tile.getInjectors()) {
+		for(IFusionInjector iInjector : crafter.getInjectors()) {
 			if(iInjector.getInjectorStack().isEmpty()) {
 				continue;
 			}
@@ -146,7 +146,7 @@ public class FusionCrafterFXHandler implements Runnable {
 	}
 
 	public boolean renderActive() {
-		return tile.isWorking;
+		return crafter.isWorking;
 	}
 
 	public float getRotationAnim(float partialTicks) {
