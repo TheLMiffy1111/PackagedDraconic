@@ -3,7 +3,7 @@ package thelm.packageddraconic.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import thelm.packageddraconic.tile.FusionCrafterTile;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
 public class PackagedDraconicConfig {
 
@@ -36,8 +36,8 @@ public class PackagedDraconicConfig {
 	}
 
 	public static void reloadServerConfig() {
-		FusionCrafterTile.energyCapacity = fusionCrafterEnergyCapacity.get();
-		FusionCrafterTile.energyUsage = fusionCrafterEnergyUsage.get();
-		FusionCrafterTile.drawMEEnergy = fusionCrafterDrawMEEnergy.get();
+		FusionCrafterBlockEntity.energyCapacity = fusionCrafterEnergyCapacity.get();
+		FusionCrafterBlockEntity.energyUsage = fusionCrafterEnergyUsage.get();
+		FusionCrafterBlockEntity.drawMEEnergy = fusionCrafterDrawMEEnergy.get();
 	}
 }

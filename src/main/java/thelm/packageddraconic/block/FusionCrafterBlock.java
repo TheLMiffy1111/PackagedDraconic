@@ -1,18 +1,23 @@
 package thelm.packageddraconic.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import thelm.packagedauto.block.BaseBlock;
+import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packageddraconic.PackagedDraconic;
-import thelm.packageddraconic.tile.FusionCrafterTile;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
 public class FusionCrafterBlock extends BaseBlock {
 
@@ -21,17 +26,22 @@ public class FusionCrafterBlock extends BaseBlock {
 	public static final VoxelShape SHAPE = box(1, 1, 1, 15, 15, 15);
 
 	public FusionCrafterBlock() {
-		super(AbstractBlock.Properties.of(Material.METAL).strength(15F, 25F).noOcclusion().sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of(Material.METAL).strength(15F, 25F).noOcclusion().sound(SoundType.METAL));
 		setRegistryName("packageddraconic:fusion_crafter");
 	}
 
 	@Override
-	public FusionCrafterTile createTileEntity(BlockState state, IBlockReader worldIn) {
-		return FusionCrafterTile.TYPE_INSTANCE.create();
+	public FusionCrafterBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return FusionCrafterBlockEntity.TYPE_INSTANCE.create(pos, state);
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+		return BaseBlockEntity::tick;
+	}
+
+	@Override
+	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return SHAPE;
 	}
 }

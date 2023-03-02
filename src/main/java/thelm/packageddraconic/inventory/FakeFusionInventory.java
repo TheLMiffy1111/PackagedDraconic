@@ -8,8 +8,8 @@ import com.brandon3055.brandonscore.api.TechLevel;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInventory;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 
 public class FakeFusionInventory implements IFusionInventory {
 
@@ -53,13 +53,7 @@ public class FakeFusionInventory implements IFusionInventory {
 		return TechLevel.CHAOTIC;
 	}
 
-	public static class FakeFusionInjector implements IFusionInjector {
-
-		private final ItemStack stack;
-
-		private FakeFusionInjector(ItemStack stack) {
-			this.stack = stack;
-		}
+	public static record FakeFusionInjector(ItemStack stack) implements IFusionInjector {
 
 		@Override
 		public TechLevel getInjectorTier() {

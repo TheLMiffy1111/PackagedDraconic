@@ -13,18 +13,18 @@ import com.brandon3055.draconicevolution.handlers.DESounds;
 
 import codechicken.lib.vec.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
+import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 import thelm.packageddraconic.client.sound.FusionCrafterRotationSound;
-import thelm.packageddraconic.tile.FusionCrafterTile;
-import thelm.packageddraconic.tile.MarkedInjectorTile;
 
 // Code modified from FusionTileFXHandler
 public class FusionCrafterFXHandler implements Runnable {
 
 	private static Random rand = new Random();
-	private final FusionCrafterTile crafter;
+	private final FusionCrafterBlockEntity crafter;
 	private float rotationTick = 0;
 	private float rotationSpeed = 0;
 	private int coreDischarge = -1;
@@ -40,7 +40,7 @@ public class FusionCrafterFXHandler implements Runnable {
 	private int runTick = 0;
 	private FusionCrafterRotationSound sound = null;
 
-	public FusionCrafterFXHandler(FusionCrafterTile crafter) {
+	public FusionCrafterFXHandler(FusionCrafterBlockEntity crafter) {
 		this.crafter = crafter;
 	}
 
@@ -66,7 +66,7 @@ public class FusionCrafterFXHandler implements Runnable {
 			float prevTick = rotationTick;
 			Vector3 corePos = Vector3.fromTileCenter(crafter);
 			if(runTick <= 0) {
-				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundCategory.BLOCKS, 0.5F, 0.5F, false);
+				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundSource.BLOCKS, 0.5F, 0.5F, false);
 			}
 			if(runTick == -1) {
 				getIngredients(0).forEach(e->crafter.getLevel().addParticle(ParticleTypes.EXPLOSION, corePos.x+e.pos.x, corePos.y+e.pos.y, corePos.z + e.pos.z, 1, 0, 0));
@@ -75,7 +75,7 @@ public class FusionCrafterFXHandler implements Runnable {
 			runTick++;
 			rotationSpeed = (float)baseCraftTime / Math.max(crafter.animLength, 1);
 			if(rotationTick+3 >= rotStartTime && prevTick+3 < rotStartTime+3) {
-				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundCategory.BLOCKS, 2F, 0.5F, false);
+				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.fusionComplete, SoundSource.BLOCKS, 2F, 0.5F, false);
 				if(sound == null) {
 					sound = new FusionCrafterRotationSound(crafter);
 					sound.setPitch(0.5F+(1.5F*(rotationSpeed-1)));
@@ -85,7 +85,7 @@ public class FusionCrafterFXHandler implements Runnable {
 			injectTime = Math.max(0, (rotationTick-beamStartTime)/(float)(baseCraftTime-beamStartTime));
 			if(injectTime > 0) {
 				if(TimeKeeper.getClientTick() % 5 == 0) {
-					crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 1F, 1F, false);
+					crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundSource.BLOCKS, 1F, 1F, false);
 				}
 			}
 		}
@@ -102,7 +102,7 @@ public class FusionCrafterFXHandler implements Runnable {
 			}
 			coreDischarge = rand.nextInt(ingreds.size());
 			Vector3 pos = Vector3.fromTileCenter(crafter).add(ingreds.get(coreDischarge).pos);
-			crafter.getLevel().playLocalSound(pos.x, pos.y, pos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 2F, 1F, false);
+			crafter.getLevel().playLocalSound(pos.x, pos.y, pos.z, DESounds.energyBolt, SoundSource.BLOCKS, 2F, 1F, false);
 		}
 	}
 
@@ -119,13 +119,13 @@ public class FusionCrafterFXHandler implements Runnable {
 			if(iInjector.getInjectorStack().isEmpty()) {
 				continue;
 			}
-			MarkedInjectorTile injector = (MarkedInjectorTile)iInjector;
+			MarkedInjectorBlockEntity injector = (MarkedInjectorBlockEntity)iInjector;
 			Vector3 injPos = Vector3.fromTileCenter(injector).subtract(corePos);
 			injPos.add(Vector3.fromVec3i(injector.getDirection().getNormal()).multiply(0.45));
 			float startAngle = (i/(float)injCount)*(float)Math.PI*2;
 			startAngle += (rotateAnim >= rotStartTime ? rotateAnim-rotStartTime : 0)*baseRotateSpeed;
-			double x = MathHelper.cos(startAngle)*animRadius;
-			double z = MathHelper.sin(startAngle)*animRadius;
+			double x = Mth.cos(startAngle)*animRadius;
+			double z = Mth.sin(startAngle)*animRadius;
 			Vector3 animPos = new Vector3(x, 0, z);
 			if(rotateAnim < rotStartTime) {
 				animPos = MathUtils.interpolateVec3(injPos, animPos, rotationTick-translateStartTime > 0 ? (rotateAnim-translateStartTime)/(rotStartTime-translateStartTime) : 0);
@@ -138,7 +138,7 @@ public class FusionCrafterFXHandler implements Runnable {
 				ingredFX.coreAnim = Math.min(1, (rotateAnim/translateStartTime)*2);
 			}
 			ingredFX.beamAnim = rotateAnim - beamStartTime;
-			ingredFX.dieOut = MathHelper.clamp(1-(rotateAnim-dieOutStart)/(baseCraftTime-dieOutStart), 0, 1);
+			ingredFX.dieOut = Mth.clamp(1-(rotateAnim-dieOutStart)/(baseCraftTime-dieOutStart), 0, 1);
 			ingredFXES.add(ingredFX);
 			i++;
 		}

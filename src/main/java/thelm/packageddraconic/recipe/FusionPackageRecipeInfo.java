@@ -13,12 +13,12 @@ import com.brandon3055.draconicevolution.api.crafting.IngredientStack;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.Level;
 import thelm.packagedauto.api.IPackagePattern;
 import thelm.packagedauto.api.IPackageRecipeType;
 import thelm.packagedauto.util.MiscHelper;
@@ -35,21 +35,21 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 	List<IPackagePattern> patterns = new ArrayList<>();
 
 	@Override
-	public void read(CompoundNBT nbt) {
+	public void load(CompoundTag nbt) {
 		inputInjector.clear();
 		input.clear();
 		output = ItemStack.EMPTY;
 		inputCore = ItemStack.of(nbt.getCompound("InputCore"));
 		MiscHelper.INSTANCE.loadAllItems(nbt.getList("InputInjector", 10), inputInjector);
 		patterns.clear();
-		IRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("Recipe"))).orElse(null);
+		Recipe recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("Recipe"))).orElse(null);
 		if(inputInjector.isEmpty()) {
 			return;
 		}
 		if(recipe instanceof IFusionRecipe) {
 			this.recipe = (IFusionRecipe)recipe;
-			if(this.recipe.getCatalyst() instanceof IngredientStack) {
-				inputCore.setCount(((IngredientStack)this.recipe.getCatalyst()).getCount());
+			if(this.recipe.getCatalyst() instanceof IngredientStack ingStack) {
+				inputCore.setCount(ingStack.getCount());
 			}
 			List<ItemStack> toCondense = new ArrayList<>(inputInjector);
 			toCondense.add(inputCore);
@@ -65,15 +65,14 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 	}
 
 	@Override
-	public CompoundNBT write(CompoundNBT nbt) {
+	public void save(CompoundTag nbt) {
 		if(recipe != null) {
 			nbt.putString("Recipe", recipe.getId().toString());
 		}
-		CompoundNBT inputCoreTag = inputCore.save(new CompoundNBT());
-		ListNBT inputInjectorTag = MiscHelper.INSTANCE.saveAllItems(new ListNBT(), inputInjector);
+		CompoundTag inputCoreTag = inputCore.save(new CompoundTag());
+		ListTag inputInjectorTag = MiscHelper.INSTANCE.saveAllItems(new ListTag(), inputInjector);
 		nbt.put("InputCore", inputCoreTag);
 		nbt.put("InputInjector", inputInjectorTag);
-		return nbt;
 	}
 
 	@Override
@@ -122,7 +121,7 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 	}
 
 	@Override
-	public void generateFromStacks(List<ItemStack> input, List<ItemStack> output, World world) {
+	public void generateFromStacks(List<ItemStack> input, List<ItemStack> output, Level level) {
 		recipe = null;
 		inputCore = ItemStack.EMPTY;
 		inputInjector.clear();
@@ -149,11 +148,11 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 		FakeFusionInventory matrix = new FakeFusionInventory();
 		matrix.setCatalystStack(inputCore);
 		matrix.setInjectorStacks(inputInjector);
-		IFusionRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().getRecipeFor(DraconicAPI.FUSION_RECIPE_TYPE, matrix, world).orElse(null);
+		IFusionRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().getRecipeFor(DraconicAPI.FUSION_RECIPE_TYPE, matrix, level).orElse(null);
 		if(recipe != null) {
 			this.recipe = recipe;
-			if(recipe.getCatalyst() instanceof IngredientStack) {
-				inputCore.setCount(((IngredientStack)recipe.getCatalyst()).getCount());
+			if(recipe.getCatalyst() instanceof IngredientStack ingStack) {
+				inputCore.setCount(ingStack.getCount());
 				inputCore = inputCore.copy();
 			}
 			List<ItemStack> toCondense = new ArrayList<>(inputInjector);

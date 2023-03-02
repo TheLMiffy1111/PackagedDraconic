@@ -1,16 +1,16 @@
 package thelm.packageddraconic.inventory;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import thelm.packagedauto.inventory.BaseItemHandler;
-import thelm.packageddraconic.tile.FusionCrafterTile;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
-public class FusionCrafterItemHandler extends BaseItemHandler<FusionCrafterTile> {
+public class FusionCrafterItemHandler extends BaseItemHandler<FusionCrafterBlockEntity> {
 
-	public FusionCrafterItemHandler(FusionCrafterTile tile) {
-		super(tile, 3);
+	public FusionCrafterItemHandler(FusionCrafterBlockEntity blockEntity) {
+		super(blockEntity, 3);
 	}
 
 	@Override
@@ -28,22 +28,18 @@ public class FusionCrafterItemHandler extends BaseItemHandler<FusionCrafterTile>
 
 	@Override
 	public int get(int id) {
-		switch(id) {
-		case 0: return tile.progress;
-		case 1: return tile.isWorking ? 1 : 0;
-		default: return 0;
-		}
+		return switch(id) {
+		case 0 -> blockEntity.progress;
+		case 1 -> blockEntity.isWorking ? 1 : 0;
+		default -> 0;
+		};
 	}
 
 	@Override
 	public void set(int id, int value) {
 		switch(id) {
-		case 0:
-			tile.progress = (short)value;
-			break;
-		case 1:
-			tile.isWorking = value != 0;
-			break;
+		case 0 -> blockEntity.progress = (short)value;
+		case 1 -> blockEntity.isWorking = value != 0;
 		}
 	}
 

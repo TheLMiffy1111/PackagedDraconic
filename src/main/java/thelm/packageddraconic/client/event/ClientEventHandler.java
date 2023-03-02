@@ -1,16 +1,16 @@
 package thelm.packageddraconic.client.event;
 
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
+import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 import thelm.packageddraconic.client.renderer.FusionCrafterRenderer;
 import thelm.packageddraconic.client.renderer.MarkedInjectorRenderer;
 import thelm.packageddraconic.client.screen.FusionCrafterScreen;
-import thelm.packageddraconic.container.FusionCrafterContainer;
-import thelm.packageddraconic.tile.FusionCrafterTile;
-import thelm.packageddraconic.tile.MarkedInjectorTile;
+import thelm.packageddraconic.menu.FusionCrafterMenu;
 
 public class ClientEventHandler {
 
@@ -26,9 +26,9 @@ public class ClientEventHandler {
 
 	@SubscribeEvent
 	public void onClientSetup(FMLClientSetupEvent event) {
-		ScreenManager.register(FusionCrafterContainer.TYPE_INSTANCE, FusionCrafterScreen::new);
+		MenuScreens.register(FusionCrafterMenu.TYPE_INSTANCE, FusionCrafterScreen::new);
 
-		ClientRegistry.bindTileEntityRenderer(FusionCrafterTile.TYPE_INSTANCE, FusionCrafterRenderer::new);
-		ClientRegistry.bindTileEntityRenderer(MarkedInjectorTile.TYPE_INSTANCE, MarkedInjectorRenderer::new);
+		BlockEntityRenderers.register(FusionCrafterBlockEntity.TYPE_INSTANCE, FusionCrafterRenderer::new);
+		BlockEntityRenderers.register(MarkedInjectorBlockEntity.TYPE_INSTANCE, MarkedInjectorRenderer::new);
 	}
 }

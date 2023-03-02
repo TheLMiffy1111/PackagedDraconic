@@ -1,7 +1,7 @@
 package thelm.packageddraconic.inventory;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import thelm.packagedauto.inventory.SidedItemHandlerWrapper;
 
 public class FusionCrafterItemHandlerWrapper extends SidedItemHandlerWrapper<FusionCrafterItemHandler> {
@@ -24,6 +24,6 @@ public class FusionCrafterItemHandlerWrapper extends SidedItemHandlerWrapper<Fus
 
 	@Override
 	public boolean canExtractItem(int index, Direction direction) {
-		return itemHandler.tile.isWorking ? index == 1 : true;
+		return itemHandler.blockEntity.isWorking ? index == 1 : true;
 	}
 }

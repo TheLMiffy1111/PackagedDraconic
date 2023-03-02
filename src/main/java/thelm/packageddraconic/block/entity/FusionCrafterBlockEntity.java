@@ -1,4 +1,4 @@
-package thelm.packageddraconic.tile;
+package thelm.packageddraconic.block.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,27 +14,23 @@ import com.google.common.collect.Streams;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.Runnables;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.IntArrayNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
@@ -42,24 +38,26 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import thelm.packagedauto.api.IPackageCraftingMachine;
 import thelm.packagedauto.api.IPackageRecipeInfo;
+import thelm.packagedauto.block.entity.BaseBlockEntity;
+import thelm.packagedauto.block.entity.UnpackagerBlockEntity;
 import thelm.packagedauto.energy.EnergyStorage;
-import thelm.packagedauto.tile.BaseTile;
-import thelm.packagedauto.tile.UnpackagerTile;
 import thelm.packagedauto.util.MiscHelper;
 import thelm.packageddraconic.block.FusionCrafterBlock;
 import thelm.packageddraconic.client.fx.FusionCrafterFXHandler;
-import thelm.packageddraconic.container.FusionCrafterContainer;
-import thelm.packageddraconic.integration.appeng.tile.AEFusionCrafterTile;
+import thelm.packageddraconic.integration.appeng.blockentity.AEFusionCrafterBlockEntity;
 import thelm.packageddraconic.inventory.FusionCrafterItemHandler;
+import thelm.packageddraconic.menu.FusionCrafterMenu;
 import thelm.packageddraconic.network.packet.FinishCraftEffectsPacket;
 import thelm.packageddraconic.network.packet.SyncCrafterPacket;
 import thelm.packageddraconic.recipe.IFusionPackageRecipeInfo;
 
-public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, IPackageCraftingMachine, IFusionInventory, IFusionStateMachine {
+public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackageCraftingMachine, IFusionInventory, IFusionStateMachine {
 
-	public static final TileEntityType<FusionCrafterTile> TYPE_INSTANCE = (TileEntityType<FusionCrafterTile>)TileEntityType.Builder.
-			of(MiscHelper.INSTANCE.conditionalSupplier(()->ModList.get().isLoaded("appliedenergistics2"),
-					()->AEFusionCrafterTile::new, ()->FusionCrafterTile::new), FusionCrafterBlock.INSTANCE).
+	public static final BlockEntityType<FusionCrafterBlockEntity> TYPE_INSTANCE = (BlockEntityType<FusionCrafterBlockEntity>)BlockEntityType.Builder.
+			of(MiscHelper.INSTANCE.<BlockEntityType.BlockEntitySupplier<FusionCrafterBlockEntity>>conditionalSupplier(
+					()->ModList.get().isLoaded("ae2"),
+					()->()->AEFusionCrafterBlockEntity::new, ()->()->FusionCrafterBlockEntity::new).get(),
+					FusionCrafterBlock.INSTANCE).
 			build(null).setRegistryName("packageddraconic:fusion_crafter");
 
 	public static int energyCapacity = 5000;
@@ -77,15 +75,15 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public IFusionPackageRecipeInfo currentRecipe;
 	public List<BlockPos> injectors = new ArrayList<>();
 
-	public FusionCrafterTile() {
-		super(TYPE_INSTANCE);
+	public FusionCrafterBlockEntity(BlockPos pos, BlockState state) {
+		super(TYPE_INSTANCE, pos, state);
 		setItemHandler(new FusionCrafterItemHandler(this));
 		setEnergyStorage(new EnergyStorage(this, energyCapacity));
 	}
 
 	@Override
-	protected ITextComponent getDefaultName() {
-		return new TranslationTextComponent("block.packageddraconic.fusion_crafter");
+	protected Component getDefaultName() {
+		return new TranslatableComponent("block.packageddraconic.fusion_crafter");
 	}
 
 	@Override
@@ -107,8 +105,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 
 	@Override
 	public boolean acceptPackage(IPackageRecipeInfo recipeInfo, List<ItemStack> stacks, Direction direction) {
-		if(!isBusy() && recipeInfo instanceof IFusionPackageRecipeInfo) {
-			IFusionPackageRecipeInfo recipe = (IFusionPackageRecipeInfo)recipeInfo;
+		if(!isBusy() && recipeInfo instanceof IFusionPackageRecipeInfo recipe) {
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
 			List<BlockPos> emptyInjectors = getEmptyInjectors();
 			if(emptyInjectors.size() >= injectorInputs.size()) {
@@ -121,7 +118,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 				itemHandler.setStackInSlot(0, recipe.getCoreInput().copy());
 				List<IFusionInjector> craftInjectors = getInjectors();
 				for(int i = 0; i < craftInjectors.size(); ++i) {
-					MarkedInjectorTile injector = (MarkedInjectorTile)craftInjectors.get(i);
+					MarkedInjectorBlockEntity injector = (MarkedInjectorBlockEntity)craftInjectors.get(i);
 					injector.setInjectorStack(injectorInputs.get(i).copy());
 					injector.setCrafter(this);
 				}
@@ -132,13 +129,13 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 					isWorking = false;
 					itemHandler.setStackInSlot(0, ItemStack.EMPTY);
 					for(int i = 0; i < craftInjectors.size(); ++i) {
-						MarkedInjectorTile injector = (MarkedInjectorTile)craftInjectors.get(i);
+						MarkedInjectorBlockEntity injector = (MarkedInjectorBlockEntity)craftInjectors.get(i);
 						injector.setInjectorStack(ItemStack.EMPTY);
 						injector.setCrafter(this);
 					}
 					return false;
 				}
-				syncTile(false);
+				sync(false);
 				setChanged();
 				return true;
 			}
@@ -152,8 +149,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	protected void tickProcess() {
-		if(injectors.stream().map(level::getBlockEntity).
-				anyMatch(tile->!(tile instanceof MarkedInjectorTile) || tile.isRemoved())) {
+		if(injectors.stream().map(level::getBlockEntity).anyMatch(be->!(be instanceof MarkedInjectorBlockEntity) || be.isRemoved())) {
 			cancelCraft();
 		}
 		else {
@@ -174,13 +170,13 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		animProgress = 0;
 		animLength = 0;
 		injectors.stream().map(level::getBlockEntity).
-		filter(tile->tile instanceof MarkedInjectorTile && !tile.isRemoved()).
-		forEach(tile->((MarkedInjectorTile)tile).spawnItem());
+		filter(be->be instanceof MarkedInjectorBlockEntity && !be.isRemoved()).
+		forEach(be->((MarkedInjectorBlockEntity)be).spawnItem());
 		injectors.clear();
 		isWorking = false;
 		effectRecipe = null;
 		currentRecipe = null;
-		syncTile(false);
+		sync(false);
 		setChanged();
 	}
 
@@ -188,33 +184,33 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		List<BlockPos> positions = new ArrayList<>();
 		int range = DEConfig.fusionInjectorRange;
 		int radius = 1;
-		List<MarkedInjectorTile> searchTiles = Streams.concat(
+		List<MarkedInjectorBlockEntity> searchBlockEntities = Streams.concat(
 				BlockPos.betweenClosedStream(worldPosition.offset(-range, -radius, -radius), worldPosition.offset(range, radius, radius)),
 				BlockPos.betweenClosedStream(worldPosition.offset(-radius, -range, -radius), worldPosition.offset(radius, range, radius)),
 				BlockPos.betweenClosedStream(worldPosition.offset(-radius, -radius, -range), worldPosition.offset(radius, radius, range))).
 				map(level::getBlockEntity).
-				filter(t->t instanceof MarkedInjectorTile).
-				map(t->(MarkedInjectorTile)t).
+				filter(be->be instanceof MarkedInjectorBlockEntity).
+				map(be->(MarkedInjectorBlockEntity)be).
 				collect(Collectors.toList());
-		for(MarkedInjectorTile tile : searchTiles) {
-			Vector3i dirVec = tile.getBlockPos().subtract(worldPosition);
+		for(MarkedInjectorBlockEntity be : searchBlockEntities) {
+			Vec3i dirVec = be.getBlockPos().subtract(worldPosition);
 			int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
 			if(dist <= DEConfig.fusionInjectorMinDist) {
 				positions.clear();
 				return positions;
 			}
-			if(Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == tile.getDirection().getOpposite() && tile.getInjectorStack().isEmpty()) {
-				BlockPos pos = tile.getBlockPos();
-				Direction facing = tile.getDirection();
+			if(Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == be.getDirection().getOpposite() && be.getInjectorStack().isEmpty()) {
+				BlockPos pos = be.getBlockPos();
+				Direction facing = be.getDirection();
 				boolean obstructed = false;
 				for(BlockPos bp : BlockPos.betweenClosed(pos.relative(facing), pos.relative(facing, distanceInDirection(pos, worldPosition, facing) - 1))) {
-					if(!level.isEmptyBlock(bp) && level.getBlockState(bp).canOcclude() || level.getBlockEntity(bp) instanceof MarkedInjectorTile || level.getBlockEntity(bp) instanceof FusionCrafterTile) {
+					if(!level.isEmptyBlock(bp) && level.getBlockState(bp).canOcclude() || level.getBlockEntity(bp) instanceof MarkedInjectorBlockEntity || level.getBlockEntity(bp) instanceof FusionCrafterBlockEntity) {
 						obstructed = true;
 						break;
 					}
 				}
 				if(!obstructed) {
-					positions.add(tile.getBlockPos());
+					positions.add(be.getBlockPos());
 				}
 			}
 		}
@@ -224,8 +220,8 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	@Override
 	public List<IFusionInjector> getInjectors() {
 		return injectors.stream().map(level::getBlockEntity).
-				filter(tile->tile instanceof MarkedInjectorTile && !tile.isRemoved()).
-				map(tile->(IFusionInjector)tile).collect(Collectors.toList());
+				filter(be->be instanceof MarkedInjectorBlockEntity && !be.isRemoved()).
+				map(be->(IFusionInjector)be).collect(Collectors.toList());
 	}
 
 	public static int distanceInDirection(BlockPos fromPos, BlockPos toPos, Direction direction) {
@@ -243,9 +239,9 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	protected void ejectItems() {
 		int endIndex = isWorking ? 1 : 0;
 		for(Direction direction : Direction.values()) {
-			TileEntity tile = level.getBlockEntity(worldPosition.relative(direction));
-			if(tile != null && !(tile instanceof UnpackagerTile) && tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent()) {
-				IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).resolve().get();
+			BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(direction));
+			if(blockEntity != null && !(blockEntity instanceof UnpackagerBlockEntity) && blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent()) {
+				IItemHandler itemHandler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).resolve().get();
 				boolean flag = true;
 				for(int i = 1; i >= endIndex; --i) {
 					ItemStack stack = this.itemHandler.getStackInSlot(i);
@@ -349,7 +345,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	@Override
-	public void setFusionStatus(double progress, ITextComponent stateText) {
+	public void setFusionStatus(double progress, Component stateText) {
 		if(progress < 0) {
 			this.progress = 0;
 		}
@@ -374,12 +370,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		setChanged();
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	@Override
-	public AxisAlignedBB getRenderBoundingBox() {
-		return new AxisAlignedBB(worldPosition.offset(-16, -16, -16), worldPosition.offset(17, 17, 17));
-	}
-
 	@Override
 	public void setRemoved() {
 		super.setRemoved();
@@ -387,66 +377,65 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	@Override
-	public void load(BlockState blockState, CompoundNBT nbt) {
-		super.load(blockState, nbt);
+	public void load(CompoundTag nbt) {
+		super.load(nbt);
 		fusionCounter = nbt.getInt("FusionCounter");
 		currentRecipe = null;
 		if(nbt.contains("Recipe")) {
-			CompoundNBT tag = nbt.getCompound("Recipe");
-			IPackageRecipeInfo recipe = MiscHelper.INSTANCE.readRecipe(tag);
-			if(recipe instanceof IFusionPackageRecipeInfo) {
-				currentRecipe = (IFusionPackageRecipeInfo)recipe;
+			CompoundTag tag = nbt.getCompound("Recipe");
+			IPackageRecipeInfo recipe = MiscHelper.INSTANCE.loadRecipe(tag);
+			if(recipe instanceof IFusionPackageRecipeInfo fusionRecipe) {
+				currentRecipe = fusionRecipe;
 			}
 		}
 	}
 
 	@Override
-	public CompoundNBT save(CompoundNBT nbt) {
-		super.save(nbt);
+	public void saveAdditional(CompoundTag nbt) {
+		super.saveAdditional(nbt);
 		nbt.putInt("FusionCounter", fusionCounter);
 		if(currentRecipe != null) {
-			CompoundNBT tag = MiscHelper.INSTANCE.writeRecipe(new CompoundNBT(), currentRecipe);
+			CompoundTag tag = MiscHelper.INSTANCE.saveRecipe(new CompoundTag(), currentRecipe);
 			nbt.put("Recipe", tag);
 		}
-		return nbt;
 	}
 
 	@Override
-	public void readSync(CompoundNBT nbt) {
-		super.readSync(nbt);
+	public void loadSync(CompoundTag nbt) {
+		super.loadSync(nbt);
 		isWorking = nbt.getBoolean("Working");
 		fusionState = FusionState.values()[nbt.getByte("FusionState")];
 		progress = nbt.getShort("Progress");
 		animProgress = nbt.getFloat("AnimProgress");
 		animLength = nbt.getShort("AnimLength");
-		itemHandler.read(nbt);
+		itemHandler.load(nbt);
 		injectors.clear();
-		ListNBT injectorsTag = nbt.getList("Injectors", 11);
+		ListTag injectorsTag = nbt.getList("Injectors", 11);
 		for(int i = 0; i < injectorsTag.size(); ++i) {
 			int[] posArray = injectorsTag.getIntArray(i);
 			BlockPos pos = new BlockPos(posArray[0], posArray[1], posArray[2]);
 			injectors.add(pos);
 		}
 		if(nbt.contains("EffectRecipe")) {
-			IRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("EffectRecipe"))).orElse(null);
-			if(recipe instanceof IFusionRecipe) {
-				effectRecipe = (IFusionRecipe)recipe;
+			Recipe recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("EffectRecipe"))).orElse(null);
+			if(recipe instanceof IFusionRecipe fusionRecipe) {
+				effectRecipe = fusionRecipe;
 			}
 		}
 	}
 
 	@Override
-	public CompoundNBT writeSync(CompoundNBT nbt) {
-		super.writeSync(nbt);
+	public CompoundTag saveSync(CompoundTag nbt) {
+		super.saveSync(nbt);
 		nbt.putBoolean("Working", isWorking);
 		nbt.putByte("FusionState", (byte)fusionState.ordinal());
 		nbt.putShort("Progress", progress);
 		nbt.putFloat("AnimProgress", animProgress);
 		nbt.putShort("AnimLength", animLength);
-		itemHandler.write(nbt);
-		ListNBT injectorsTag = new ListNBT();
+		itemHandler.save(nbt);
+		ListTag injectorsTag = new ListTag();
 		injectors.stream().map(pos->new int[] {pos.getX(), pos.getY(), pos.getZ()}).
-		forEach(arr->injectorsTag.add(new IntArrayNBT(arr)));
+		forEach(arr->injectorsTag.add(new IntArrayTag(arr)));
 		nbt.put("Injectors", injectorsTag);
 		if(effectRecipe != null) {
 			nbt.putString("EffectRecipe", effectRecipe.getId().toString());
@@ -469,8 +458,8 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	@Override
-	public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
-		syncTile(false);
-		return new FusionCrafterContainer(windowId, playerInventory, this);
+	public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
+		sync(false);
+		return new FusionCrafterMenu(windowId, inventory, this);
 	}
 }

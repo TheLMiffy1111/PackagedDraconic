@@ -1,7 +1,7 @@
 package thelm.packageddraconic;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
@@ -14,7 +14,7 @@ import thelm.packageddraconic.event.CommonEventHandler;
 public class PackagedDraconic {
 
 	public static final String MOD_ID = "packageddraconic";
-	public static final ItemGroup ITEM_GROUP = new ItemGroup("packageddraconic") {
+	public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab("packageddraconic") {
 		@OnlyIn(Dist.CLIENT)
 		@Override
 		public ItemStack makeIcon() {

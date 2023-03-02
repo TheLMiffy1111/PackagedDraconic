@@ -1,23 +1,23 @@
 package thelm.packageddraconic.slot;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
-import thelm.packageddraconic.tile.FusionCrafterTile;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
 //Code from CoFHCore
 public class FusionCrafterRemoveOnlySlot extends SlotItemHandler {
 
-	public final FusionCrafterTile tile;
+	public final FusionCrafterBlockEntity blockEntity;
 
-	public FusionCrafterRemoveOnlySlot(FusionCrafterTile tile, int index, int x, int y) {
-		super(tile.getItemHandler(), index, x, y);
-		this.tile = tile;
+	public FusionCrafterRemoveOnlySlot(FusionCrafterBlockEntity blockEntity, int index, int x, int y) {
+		super(blockEntity.getItemHandler(), index, x, y);
+		this.blockEntity = blockEntity;
 	}
 
 	@Override
-	public boolean mayPickup(PlayerEntity playerIn) {
-		return !tile.isWorking;
+	public boolean mayPickup(Player player) {
+		return !blockEntity.isWorking;
 	}
 
 	@Override

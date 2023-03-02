@@ -1,47 +1,48 @@
-package thelm.packageddraconic.tile;
+package thelm.packageddraconic.block.entity;
 
 import com.brandon3055.brandonscore.api.TechLevel;
 import com.brandon3055.brandonscore.capability.CapabilityOP;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 
-import net.minecraft.block.DirectionalBlock;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import thelm.packagedauto.tile.BaseTile;
+import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packageddraconic.block.MarkedInjectorBlock;
 import thelm.packageddraconic.inventory.MarkedInjectorItemHandler;
 import thelm.packageddraconic.op.MarkedInjectorOPStorage;
 
-public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
+public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusionInjector {
 
-	public static final TileEntityType<MarkedInjectorTile> TYPE_INSTANCE = (TileEntityType<MarkedInjectorTile>)TileEntityType.Builder.
-			of(MarkedInjectorTile::new, MarkedInjectorBlock.INSTANCE).
+	public static final BlockEntityType<MarkedInjectorBlockEntity> TYPE_INSTANCE = (BlockEntityType<MarkedInjectorBlockEntity>)BlockEntityType.Builder.
+			of(MarkedInjectorBlockEntity::new, MarkedInjectorBlock.INSTANCE).
 			build(null).setRegistryName("packageddraconic:marked_injector");
 
 	public MarkedInjectorOPStorage opStorage = new MarkedInjectorOPStorage(this);
 	public BlockPos crafterPos = null;
 
-	public MarkedInjectorTile() {
-		super(TYPE_INSTANCE);
+	public MarkedInjectorBlockEntity(BlockPos pos, BlockState state) {
+		super(TYPE_INSTANCE, pos, state);
 		setItemHandler(new MarkedInjectorItemHandler(this));
 	}
 
 	@Override
-	protected ITextComponent getDefaultName() {
-		return new TranslationTextComponent("block.packageddraconic.marked_injector");
+	protected Component getDefaultName() {
+		return new TranslatableComponent("block.packageddraconic.marked_injector");
 	}
 
 	public void spawnItem() {
@@ -58,8 +59,8 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 		}
 	}
 
-	public boolean setCrafter(FusionCrafterTile crafter) {
-		FusionCrafterTile oldCrafter = getCrafter();
+	public boolean setCrafter(FusionCrafterBlockEntity crafter) {
+		FusionCrafterBlockEntity oldCrafter = getCrafter();
 		if(oldCrafter != null && oldCrafter != crafter && oldCrafter.isWorking) {
 			oldCrafter.cancelCraft();
 		}
@@ -70,16 +71,16 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 			crafterPos = crafter.getBlockPos();
 		}
 		setEnergyRequirement(0, 0);
-		syncTile(false);
+		sync(false);
 		return true;
 	}
 
-	public FusionCrafterTile getCrafter() {
+	public FusionCrafterBlockEntity getCrafter() {
 		if(crafterPos == null || level == null) {
 			return null;
 		}
-		TileEntity tile = level.getBlockEntity(crafterPos);
-		return tile instanceof FusionCrafterTile ? (FusionCrafterTile)tile : null;
+		BlockEntity be = level.getBlockEntity(crafterPos);
+		return be instanceof FusionCrafterBlockEntity crafter ? crafter : null;
 	}
 
 	@Override
@@ -130,10 +131,10 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	}
 
 	@Override
-	public void readSync(CompoundNBT nbt) {
-		super.readSync(nbt);
-		itemHandler.read(nbt);
-		opStorage.read(nbt);
+	public void loadSync(CompoundTag nbt) {
+		super.loadSync(nbt);
+		itemHandler.load(nbt);
+		opStorage.load(nbt);
 		crafterPos = null;
 		if(nbt.contains("CrafterPos")) {
 			int[] posArray = nbt.getIntArray("CrafterPos");
@@ -142,10 +143,10 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	}
 
 	@Override
-	public CompoundNBT writeSync(CompoundNBT nbt) {
-		super.writeSync(nbt);
-		itemHandler.write(nbt);
-		opStorage.write(nbt);
+	public CompoundTag saveSync(CompoundTag nbt) {
+		super.saveSync(nbt);
+		itemHandler.save(nbt);
+		opStorage.save(nbt);
 		if(crafterPos != null) {
 			nbt.putIntArray("CrafterPos", new int[] {crafterPos.getX(), crafterPos.getY(), crafterPos.getZ()});
 		}
@@ -162,7 +163,7 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	}
 
 	@Override
-	public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
+	public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
 		return null;
 	}
 }

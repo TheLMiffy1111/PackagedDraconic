@@ -3,15 +3,15 @@ package thelm.packageddraconic.network.packet;
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor.TargetPoint;
+import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 import thelm.packageddraconic.network.PacketHandler;
-import thelm.packageddraconic.tile.MarkedInjectorTile;
 
 public class SyncInjectorPacket {
 
@@ -19,10 +19,10 @@ public class SyncInjectorPacket {
 	private long op;
 	private long req;
 
-	public SyncInjectorPacket(MarkedInjectorTile tile) {
-		pos = tile.getBlockPos();
-		op = tile.getInjectorEnergy();
-		req = tile.getEnergyRequirement();
+	public SyncInjectorPacket(MarkedInjectorBlockEntity injector) {
+		pos = injector.getBlockPos();
+		op = injector.getInjectorEnergy();
+		req = injector.getEnergyRequirement();
 	}
 
 	private SyncInjectorPacket(BlockPos pos, long op, long req) {
@@ -31,35 +31,34 @@ public class SyncInjectorPacket {
 		this.req = req;
 	}
 
-	public static void encode(SyncInjectorPacket pkt, PacketBuffer buf) {
+	public static void encode(SyncInjectorPacket pkt, FriendlyByteBuf buf) {
 		buf.writeBlockPos(pkt.pos);
 		buf.writeLong(pkt.op);
 		buf.writeLong(pkt.req);
 	}
 
-	public static SyncInjectorPacket decode(PacketBuffer buf) {
+	public static SyncInjectorPacket decode(FriendlyByteBuf buf) {
 		return new SyncInjectorPacket(buf.readBlockPos(), buf.readLong(), buf.readLong());
 	}
 
 	public static void handle(SyncInjectorPacket pkt, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(()->{
-			ClientWorld world = Minecraft.getInstance().level;
-			if(world.isLoaded(pkt.pos)) {
-				TileEntity te = world.getBlockEntity(pkt.pos);
-				if(te instanceof MarkedInjectorTile) {
-					MarkedInjectorTile tile = (MarkedInjectorTile)te;
-					tile.setInjectorEnergy(pkt.op);
-					tile.setEnergyRequirement(pkt.req, 0);
+			ClientLevel level = Minecraft.getInstance().level;
+			if(level.isLoaded(pkt.pos)) {
+				BlockEntity be = level.getBlockEntity(pkt.pos);
+				if(be instanceof MarkedInjectorBlockEntity injector) {
+					injector.setInjectorEnergy(pkt.op);
+					injector.setEnergyRequirement(pkt.req, 0);
 				}
 			}
 		});
 		ctx.get().setPacketHandled(true);
 	}
 
-	public static void sync(MarkedInjectorTile tile) {
-		double x = tile.getBlockPos().getX()+0.5;
-		double y = tile.getBlockPos().getY()+0.5;
-		double z = tile.getBlockPos().getZ()+0.5;
-		PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(()->new TargetPoint(x, y, z, 32, tile.getLevel().dimension())), new SyncInjectorPacket(tile));
+	public static void sync(MarkedInjectorBlockEntity injector) {
+		double x = injector.getBlockPos().getX()+0.5;
+		double y = injector.getBlockPos().getY()+0.5;
+		double z = injector.getBlockPos().getZ()+0.5;
+		PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(()->new TargetPoint(x, y, z, 32, injector.getLevel().dimension())), new SyncInjectorPacket(injector));
 	}
 }

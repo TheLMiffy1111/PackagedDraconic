@@ -1,24 +1,24 @@
 package thelm.packageddraconic.event;
 
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
 import thelm.packagedauto.util.ApiImpl;
 import thelm.packageddraconic.block.FusionCrafterBlock;
 import thelm.packageddraconic.block.MarkedInjectorBlock;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
+import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 import thelm.packageddraconic.config.PackagedDraconicConfig;
-import thelm.packageddraconic.container.FusionCrafterContainer;
+import thelm.packageddraconic.menu.FusionCrafterMenu;
 import thelm.packageddraconic.network.PacketHandler;
 import thelm.packageddraconic.recipe.FusionPackageRecipeType;
-import thelm.packageddraconic.tile.FusionCrafterTile;
-import thelm.packageddraconic.tile.MarkedInjectorTile;
 
 public class CommonEventHandler {
 
@@ -48,16 +48,16 @@ public class CommonEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> event) {
-		IForgeRegistry<TileEntityType<?>> registry = event.getRegistry();
-		registry.register(FusionCrafterTile.TYPE_INSTANCE);
-		registry.register(MarkedInjectorTile.TYPE_INSTANCE);
+	public void onBlockEntityRegister(RegistryEvent.Register<BlockEntityType<?>> event) {
+		IForgeRegistry<BlockEntityType<?>> registry = event.getRegistry();
+		registry.register(FusionCrafterBlockEntity.TYPE_INSTANCE);
+		registry.register(MarkedInjectorBlockEntity.TYPE_INSTANCE);
 	}
 
 	@SubscribeEvent
-	public void onContainerRegister(RegistryEvent.Register<ContainerType<?>> event) {
-		IForgeRegistry<ContainerType<?>> registry = event.getRegistry();
-		registry.register(FusionCrafterContainer.TYPE_INSTANCE);
+	public void onContainerRegister(RegistryEvent.Register<MenuType<?>> event) {
+		IForgeRegistry<MenuType<?>> registry = event.getRegistry();
+		registry.register(FusionCrafterMenu.TYPE_INSTANCE);
 	}
 
 	@SubscribeEvent
@@ -67,13 +67,10 @@ public class CommonEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onModConfig(ModConfig.ModConfigEvent event) {
+	public void onModConfig(ModConfigEvent event) {
 		switch(event.getConfig().getType()) {
-		case SERVER:
-			PackagedDraconicConfig.reloadServerConfig();
-			break;
-		default:
-			break;
+		case SERVER -> PackagedDraconicConfig.reloadServerConfig();
+		default -> {}
 		}
 	}
 }

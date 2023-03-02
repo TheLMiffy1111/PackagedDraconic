@@ -1,28 +1,28 @@
 package thelm.packageddraconic.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DirectionalBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import thelm.packagedauto.block.BaseBlock;
 import thelm.packageddraconic.PackagedDraconic;
-import thelm.packageddraconic.tile.MarkedInjectorTile;
+import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 
 public class MarkedInjectorBlock extends BaseBlock {
 
@@ -36,28 +36,28 @@ public class MarkedInjectorBlock extends BaseBlock {
 	public static final VoxelShape SHAPE_EAST = box(0, 1, 1, 10, 15, 15);
 
 	public MarkedInjectorBlock() {
-		super(AbstractBlock.Properties.of(Material.METAL).strength(15F, 25F).noOcclusion().sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of(Material.METAL).strength(15F, 25F).noOcclusion().sound(SoundType.METAL));
 		registerDefaultState(stateDefinition.any().setValue(DirectionalBlock.FACING, Direction.UP));
 		setRegistryName("packageddraconic:marked_injector");
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(DirectionalBlock.FACING);
 	}
 
 	@Override
-	public MarkedInjectorTile createTileEntity(BlockState state, IBlockReader worldIn) {
-		return MarkedInjectorTile.TYPE_INSTANCE.create();
+	public MarkedInjectorBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return MarkedInjectorBlockEntity.TYPE_INSTANCE.create(pos, state);
 	}
 
 	@Override
-	public BlockState getStateForPlacement(BlockItemUseContext context) {
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		return defaultBlockState().setValue(DirectionalBlock.FACING, context.getNearestLookingDirection().getOpposite());
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		Direction facing = state.getValue(DirectionalBlock.FACING);
 		switch(facing) {
 		case DOWN: return SHAPE_DOWN;
@@ -67,11 +67,11 @@ public class MarkedInjectorBlock extends BaseBlock {
 		case WEST: return SHAPE_WEST;
 		case EAST: return SHAPE_EAST;
 		}
-		return super.getShape(state, worldIn, pos, context);
+		return super.getShape(state, level, pos, context);
 	}
 
 	@Override
-	public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity playerIn, Hand hand, BlockRayTraceResult rayTraceResult) {
-		return ActionResultType.PASS;
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return InteractionResult.PASS;
 	}
 }

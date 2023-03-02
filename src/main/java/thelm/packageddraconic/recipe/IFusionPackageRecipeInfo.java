@@ -1,11 +1,10 @@
 package thelm.packageddraconic.recipe;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.brandon3055.draconicevolution.api.crafting.IFusionRecipe;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import thelm.packagedauto.api.IPackageRecipeInfo;
 
 public interface IFusionPackageRecipeInfo extends IPackageRecipeInfo {
@@ -22,6 +21,6 @@ public interface IFusionPackageRecipeInfo extends IPackageRecipeInfo {
 
 	@Override
 	default List<ItemStack> getOutputs() {
-		return Collections.singletonList(getOutput());
+		return List.of(getOutput());
 	}
 }

@@ -5,15 +5,15 @@ import java.util.function.Supplier;
 import com.brandon3055.draconicevolution.api.crafting.IFusionStateMachine;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor.TargetPoint;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 import thelm.packageddraconic.network.PacketHandler;
-import thelm.packageddraconic.tile.FusionCrafterTile;
 
 public class SyncCrafterPacket {
 
@@ -23,12 +23,12 @@ public class SyncCrafterPacket {
 	private float animProgress;
 	private short animLength;
 
-	public SyncCrafterPacket(FusionCrafterTile tile) {
-		pos = tile.getBlockPos();
-		fusionState = tile.fusionState;
-		progress = tile.progress;
-		animProgress = tile.animProgress;
-		animLength = tile.animLength;
+	public SyncCrafterPacket(FusionCrafterBlockEntity crafter) {
+		pos = crafter.getBlockPos();
+		fusionState = crafter.fusionState;
+		progress = crafter.progress;
+		animProgress = crafter.animProgress;
+		animLength = crafter.animLength;
 	}
 
 	private SyncCrafterPacket(BlockPos pos, byte fusionState, short progress, float animProgress, short animLength) {
@@ -39,7 +39,7 @@ public class SyncCrafterPacket {
 		this.animLength = animLength;
 	}
 
-	public static void encode(SyncCrafterPacket pkt, PacketBuffer buf) {
+	public static void encode(SyncCrafterPacket pkt, FriendlyByteBuf buf) {
 		buf.writeBlockPos(pkt.pos);
 		buf.writeByte(pkt.fusionState.ordinal());
 		buf.writeShort(pkt.progress);
@@ -47,31 +47,30 @@ public class SyncCrafterPacket {
 		buf.writeShort(pkt.animLength);
 	}
 
-	public static SyncCrafterPacket decode(PacketBuffer buf) {
+	public static SyncCrafterPacket decode(FriendlyByteBuf buf) {
 		return new SyncCrafterPacket(buf.readBlockPos(), buf.readByte(), buf.readShort(), buf.readFloat(), buf.readShort());
 	}
 
 	public static void handle(SyncCrafterPacket pkt, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(()->{
-			ClientWorld world = Minecraft.getInstance().level;
-			if(world.isLoaded(pkt.pos)) {
-				TileEntity te = world.getBlockEntity(pkt.pos);
-				if(te instanceof FusionCrafterTile) {
-					FusionCrafterTile tile = (FusionCrafterTile)te;
-					tile.fusionState = pkt.fusionState;
-					tile.progress = pkt.progress;
-					tile.animProgress = pkt.animProgress;
-					tile.animLength = pkt.animLength;
+			ClientLevel level = Minecraft.getInstance().level;
+			if(level.isLoaded(pkt.pos)) {
+				BlockEntity be = level.getBlockEntity(pkt.pos);
+				if(be instanceof FusionCrafterBlockEntity crafter) {
+					crafter.fusionState = pkt.fusionState;
+					crafter.progress = pkt.progress;
+					crafter.animProgress = pkt.animProgress;
+					crafter.animLength = pkt.animLength;
 				}
 			}
 		});
 		ctx.get().setPacketHandled(true);
 	}
 
-	public static void sync(FusionCrafterTile tile) {
-		double x = tile.getBlockPos().getX()+0.5;
-		double y = tile.getBlockPos().getY()+0.5;
-		double z = tile.getBlockPos().getZ()+0.5;
-		PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(()->new TargetPoint(x, y, z, 32, tile.getLevel().dimension())), new SyncCrafterPacket(tile));
+	public static void sync(FusionCrafterBlockEntity crafter) {
+		double x = crafter.getBlockPos().getX()+0.5;
+		double y = crafter.getBlockPos().getY()+0.5;
+		double z = crafter.getBlockPos().getZ()+0.5;
+		PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(()->new TargetPoint(x, y, z, 32, crafter.getLevel().dimension())), new SyncCrafterPacket(crafter));
 	}
 }

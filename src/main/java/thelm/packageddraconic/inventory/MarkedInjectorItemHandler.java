@@ -1,18 +1,18 @@
 package thelm.packageddraconic.inventory;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import thelm.packagedauto.inventory.BaseItemHandler;
-import thelm.packageddraconic.tile.MarkedInjectorTile;
+import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 
-public class MarkedInjectorItemHandler extends BaseItemHandler<MarkedInjectorTile> {
+public class MarkedInjectorItemHandler extends BaseItemHandler<MarkedInjectorBlockEntity> {
 
-	public MarkedInjectorItemHandler(MarkedInjectorTile tile) {
-		super(tile, 1);
+	public MarkedInjectorItemHandler(MarkedInjectorBlockEntity blockEntity) {
+		super(blockEntity, 1);
 	}
 
 	@Override
 	protected void onContentsChanged(int slot) {
-		syncTile(false);
+		sync(false);
 	}
 
 	@Override

@@ -2,25 +2,25 @@ package thelm.packageddraconic.client.sound;
 
 import com.brandon3055.draconicevolution.handlers.DESounds;
 
-import net.minecraft.client.audio.ITickableSound;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.util.SoundCategory;
-import thelm.packageddraconic.tile.FusionCrafterTile;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.TickableSoundInstance;
+import net.minecraft.sounds.SoundSource;
+import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
 //Code modified from FusionRotationSound
-public class FusionCrafterRotationSound extends SimpleSound implements ITickableSound {
+public class FusionCrafterRotationSound extends SimpleSoundInstance implements TickableSoundInstance {
 
-	private FusionCrafterTile tile;
+	private FusionCrafterBlockEntity blockEntity;
 
-	public FusionCrafterRotationSound(FusionCrafterTile tile) {
-		super(DESounds.fusionRotation, SoundCategory.BLOCKS, 1.5F, 1, tile.getBlockPos());
-		this.tile = tile;
+	public FusionCrafterRotationSound(FusionCrafterBlockEntity blockEntity) {
+		super(DESounds.fusionRotation, SoundSource.BLOCKS, 1.5F, 1, blockEntity.getBlockPos());
+		this.blockEntity = blockEntity;
 		looping = true;
 	}
 
 	@Override
 	public boolean isStopped() {
-		return tile.isRemoved() || !tile.isWorking;
+		return blockEntity.isRemoved() || !blockEntity.isWorking;
 	}
 
 	@Override
