@@ -80,8 +80,9 @@ public class CommonProxy {
 		Item component = Loader.isModLoaded("appliedenergistics2") ? ItemMisc.ME_PACKAGE_COMPONENT : ItemMisc.PACKAGE_COMPONENT;
 		RecipeManager.addFusion(RecipeManager.RecipeDifficulty.NORMAL,
 				new ItemStack(BlockFusionCrafter.INSTANCE), new ItemStack(DEFeatures.fusionCraftingCore),
-				16000000, 3, new Object[] {
+				50000000, 2, new Object[] {
 						"netherStar", "netherStar",
+						"ingotDraconiumAwakened", "ingotDraconiumAwakened",
 						DEFeatures.chaoticCore, "dragonEgg",
 						component, Items.ENDER_EYE,
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
@@ -89,9 +90,10 @@ public class CommonProxy {
 		});
 		RecipeManager.addFusion(RecipeManager.RecipeDifficulty.HARD,
 				new ItemStack(BlockFusionCrafter.INSTANCE), new ItemStack(DEFeatures.fusionCraftingCore),
-				36000000, 3, new Object[] {
+				100000000, 2, new Object[] {
 						"netherStar", "netherStar",
 						DEFeatures.chaoticCore, "dragonEgg",
+						"ingotDraconiumAwakened", "ingotDraconiumAwakened",
 						DEFeatures.chaoticCore, DEFeatures.chaosShard,
 						component, Items.ENDER_EYE,
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
