@@ -13,8 +13,8 @@
     "catalyst": {
         "item": "draconicevolution:crafting_core"
     },
-    "total_energy": 128000000,
-    "tier": "CHAOTIC",
+    "total_energy": 100000000,
+    "tier": "DRACONIC",
     "ingredients": [
         {
             "tag": "forge:nether_stars"
