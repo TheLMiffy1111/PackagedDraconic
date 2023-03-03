@@ -8,12 +8,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -29,11 +29,12 @@ import thelm.packageddraconic.op.MarkedInjectorOPStorage;
 public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusionInjector {
 
 	public static final BlockEntityType<MarkedInjectorBlockEntity> TYPE_INSTANCE = (BlockEntityType<MarkedInjectorBlockEntity>)BlockEntityType.Builder.
-			of(MarkedInjectorBlockEntity::new, MarkedInjectorBlock.INSTANCE).
+			of(MarkedInjectorBlockEntity::new, MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
 			build(null).setRegistryName("packageddraconic:marked_injector");
 
 	public MarkedInjectorOPStorage opStorage = new MarkedInjectorOPStorage(this);
 	public BlockPos crafterPos = null;
+	public int tier = -1;
 
 	public MarkedInjectorBlockEntity(BlockPos pos, BlockState state) {
 		super(TYPE_INSTANCE, pos, state);
@@ -42,7 +43,7 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 
 	@Override
 	protected Component getDefaultName() {
-		return new TranslatableComponent("block.packageddraconic.marked_injector");
+		return getBlockState().getBlock().getName();
 	}
 
 	public void spawnItem() {
@@ -85,7 +86,13 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 
 	@Override
 	public TechLevel getInjectorTier() {
-		return TechLevel.CHAOTIC;
+		if(tier == -1) {
+			Block block = level.getBlockState(worldPosition).getBlock();
+			if(block instanceof MarkedInjectorBlock) {
+				tier = ((MarkedInjectorBlock)block).tier;
+			}
+		}
+		return TechLevel.byIndex(tier);
 	}
 
 	@Override
@@ -127,7 +134,11 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 	}
 
 	public Direction getDirection() {
-		return getBlockState().getValue(DirectionalBlock.FACING);
+		BlockState state = level.getBlockState(worldPosition);
+		if(state.getBlock() instanceof MarkedInjectorBlock) {
+			return state.getValue(DirectionalBlock.FACING);
+		}
+		return Direction.UP;
 	}
 
 	@Override
@@ -155,8 +166,7 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction direction) {
-		Direction blockDir = getBlockState().getValue(DirectionalBlock.FACING);
-		if(blockDir != direction && (capability == CapabilityEnergy.ENERGY || capability == CapabilityOP.OP)) {
+		if(getDirection() != direction && (capability == CapabilityEnergy.ENERGY || capability == CapabilityOP.OP)) {
 			return LazyOptional.of(()->(T)opStorage);
 		}
 		return super.getCapability(capability, direction);

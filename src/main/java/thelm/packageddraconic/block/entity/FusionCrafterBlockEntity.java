@@ -72,6 +72,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	public FusionState fusionState = FusionState.START;
 	public int fusionCounter = 0;
 	public short progress = 0;
+	public int minTier = -1;
 	public IFusionPackageRecipeInfo currentRecipe;
 	public List<BlockPos> injectors = new ArrayList<>();
 
@@ -107,7 +108,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	public boolean acceptPackage(IPackageRecipeInfo recipeInfo, List<ItemStack> stacks, Direction direction) {
 		if(!isBusy() && recipeInfo instanceof IFusionPackageRecipeInfo recipe) {
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
-			List<BlockPos> emptyInjectors = getEmptyInjectors();
+			List<BlockPos> emptyInjectors = getEmptyInjectors(recipe.getTierRequired());
 			if(emptyInjectors.size() >= injectorInputs.size()) {
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));
@@ -174,13 +175,22 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 		forEach(be->((MarkedInjectorBlockEntity)be).spawnItem());
 		injectors.clear();
 		isWorking = false;
+		minTier = -1;
 		effectRecipe = null;
 		currentRecipe = null;
 		sync(false);
 		setChanged();
 	}
 
-	protected List<BlockPos> getEmptyInjectors() {
+	protected List<BlockPos> getEmptyInjectors(int minTier) {
+		List<BlockPos> positions = new ArrayList<>();
+		for(int i = 3; i >= minTier; --i) {
+			positions.addAll(getEmptyInjectorsForTier(i));
+		}
+		return positions;
+	}
+
+	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
 		List<BlockPos> positions = new ArrayList<>();
 		int range = DEConfig.fusionInjectorRange;
 		int radius = 1;
@@ -199,7 +209,8 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 				positions.clear();
 				return positions;
 			}
-			if(Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == be.getDirection().getOpposite() && be.getInjectorStack().isEmpty()) {
+			if(be.getInjectorTier().index == tier && be.getInjectorStack().isEmpty() &&
+					Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == be.getDirection().getOpposite()) {
 				BlockPos pos = be.getBlockPos();
 				Direction facing = be.getDirection();
 				boolean obstructed = false;
@@ -225,15 +236,15 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	public static int distanceInDirection(BlockPos fromPos, BlockPos toPos, Direction direction) {
-		switch(direction) {
-		case DOWN: return fromPos.getY() - toPos.getY();
-		case UP: return toPos.getY() - fromPos.getY();
-		case NORTH: return fromPos.getZ() - toPos.getZ();
-		case SOUTH: return toPos.getZ() - fromPos.getZ();
-		case WEST: return fromPos.getX() - toPos.getX();
-		case EAST: return toPos.getX() - fromPos.getX();
-		}
-		return 0;
+		return switch(direction) {
+		case DOWN -> fromPos.getY() - toPos.getY();
+		case UP -> toPos.getY() - fromPos.getY();
+		case NORTH -> fromPos.getZ() - toPos.getZ();
+		case SOUTH -> toPos.getZ() - fromPos.getZ();
+		case WEST -> fromPos.getX() - toPos.getX();
+		case EAST -> toPos.getX() - fromPos.getX();
+		default -> 0;
+		};
 	}
 
 	protected void ejectItems() {
@@ -301,7 +312,10 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 
 	@Override
 	public TechLevel getMinimumTier() {
-		return TechLevel.CHAOTIC;
+		if(minTier == -1) {
+			minTier = getInjectors().stream().mapToInt(c->c.getInjectorTier().index).min().orElse(-1);
+		}
+		return TechLevel.byIndex(minTier);
 	}
 
 	@Override
@@ -349,17 +363,11 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 		if(progress < 0) {
 			this.progress = 0;
 		}
-		switch(fusionState) {
-		case CHARGING:
-			this.progress = (short)(progress*10000);
-			break;
-		case CRAFTING:
-			this.progress = (short)(10000+progress*10000);
-			break;
-		default:
-			this.progress = (short)(progress*20000);
-			break;
-		}
+		this.progress = switch(fusionState) {
+		case CHARGING -> (short)(progress*10000);
+		case CRAFTING -> (short)(10000+progress*10000);
+		default -> (short)(progress*20000);
+		};
 		setChanged();
 	}
 

@@ -26,8 +26,14 @@ import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 
 public class MarkedInjectorBlock extends BaseBlock {
 
-	public static final MarkedInjectorBlock INSTANCE = new MarkedInjectorBlock();
-	public static final Item ITEM_INSTANCE = new BlockItem(INSTANCE, new Item.Properties().tab(PackagedDraconic.ITEM_GROUP)).setRegistryName("packageddraconic:marked_injector");
+	public static final MarkedInjectorBlock BASIC = new MarkedInjectorBlock(0, "packageddraconic:marked_draconium_injector");
+	public static final MarkedInjectorBlock WYVERN = new MarkedInjectorBlock(1, "packageddraconic:marked_wyvern_injector");
+	public static final MarkedInjectorBlock DRACONIC = new MarkedInjectorBlock(2, "packageddraconic:marked_draconic_injector");
+	public static final MarkedInjectorBlock CHAOTIC = new MarkedInjectorBlock(3, "packageddraconic:marked_chaotic_injector");
+	public static final Item BASIC_ITEM = new BlockItem(BASIC, new Item.Properties().tab(PackagedDraconic.ITEM_GROUP)).setRegistryName("packageddraconic:marked_draconium_injector");
+	public static final Item WYVERN_ITEM = new BlockItem(WYVERN, new Item.Properties().tab(PackagedDraconic.ITEM_GROUP)).setRegistryName("packageddraconic:marked_wyvern_injector");
+	public static final Item DRACONIC_ITEM = new BlockItem(DRACONIC, new Item.Properties().tab(PackagedDraconic.ITEM_GROUP)).setRegistryName("packageddraconic:marked_draconic_injector");
+	public static final Item CHAOTIC_ITEM = new BlockItem(CHAOTIC, new Item.Properties().tab(PackagedDraconic.ITEM_GROUP)).setRegistryName("packageddraconic:marked_chaotic_injector");
 	public static final VoxelShape SHAPE_DOWN = box(1, 6, 1, 15, 16, 15);
 	public static final VoxelShape SHAPE_UP = box(1, 0, 1, 15, 10, 15);
 	public static final VoxelShape SHAPE_NORTH = box(1, 1, 6, 15, 15, 16);
@@ -35,10 +41,13 @@ public class MarkedInjectorBlock extends BaseBlock {
 	public static final VoxelShape SHAPE_WEST = box(6, 1, 1, 16, 15, 15);
 	public static final VoxelShape SHAPE_EAST = box(0, 1, 1, 10, 15, 15);
 
-	public MarkedInjectorBlock() {
+	public final int tier;
+
+	public MarkedInjectorBlock(int tier, String name) {
 		super(BlockBehaviour.Properties.of(Material.METAL).strength(15F, 25F).noOcclusion().sound(SoundType.METAL));
 		registerDefaultState(stateDefinition.any().setValue(DirectionalBlock.FACING, Direction.UP));
-		setRegistryName("packageddraconic:marked_injector");
+		setRegistryName(name);
+		this.tier = tier;
 	}
 
 	@Override
@@ -59,15 +68,15 @@ public class MarkedInjectorBlock extends BaseBlock {
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		Direction facing = state.getValue(DirectionalBlock.FACING);
-		switch(facing) {
-		case DOWN: return SHAPE_DOWN;
-		case UP: return SHAPE_UP;
-		case NORTH: return SHAPE_NORTH;
-		case SOUTH: return SHAPE_SOUTH;
-		case WEST: return SHAPE_WEST;
-		case EAST: return SHAPE_EAST;
-		}
-		return super.getShape(state, level, pos, context);
+		return switch(facing) {
+		case DOWN -> SHAPE_DOWN;
+		case UP -> SHAPE_UP;
+		case NORTH -> SHAPE_NORTH;
+		case SOUTH -> SHAPE_SOUTH;
+		case WEST -> SHAPE_WEST;
+		case EAST -> SHAPE_EAST;
+		default -> super.getShape(state, level, pos, context);
+		};
 	}
 
 	@Override

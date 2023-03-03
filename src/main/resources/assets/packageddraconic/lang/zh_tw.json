@@ -1,8 +1,11 @@
 {
     "itemGroup.packageddraconic": "封包龍之進化",
 
-    "block.packageddraconic.fusion_crafter.name": "聚合封包合成器",
-    "block.packageddraconic.marked_injector.name": "標記聚合注入器",
+    "block.packageddraconic.fusion_crafter": "聚合封包合成器",
+    "block.packageddraconic.marked_draconium_injector": "標記基礎聚合注入器",
+    "block.packageddraconic.marked_wyvern_injector": "標記飛龍聚合注入器",
+    "block.packageddraconic.marked_draconic_injector": "標記神龍聚合注入器",
+    "block.packageddraconic.marked_chaotic_injector": "標記混沌聚合注入器",
 
     "recipe.packageddraconic.fusion": "聚合合成",
     "recipe.packageddraconic.fusion.short": "聚合"

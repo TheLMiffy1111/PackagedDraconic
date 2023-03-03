@@ -1,0 +1,30 @@
+{
+    "variants": {
+        "facing=down": {
+            "model": "packageddraconic:block/marked_wyvern_injector",
+            "x": 180
+        },
+        "facing=up": {
+            "model": "packageddraconic:block/marked_wyvern_injector"
+        },
+        "facing=north": {
+            "model": "packageddraconic:block/marked_wyvern_injector",
+            "x": 90
+        },
+        "facing=south": {
+            "model": "packageddraconic:block/marked_wyvern_injector",
+            "x": 90,
+            "y": 180
+        },
+        "facing=west": {
+            "model": "packageddraconic:block/marked_wyvern_injector",
+            "x": 90,
+            "y": 270
+        },
+        "facing=east": {
+            "model": "packageddraconic:block/marked_wyvern_injector",
+            "x": 90,
+            "y": 90
+        }
+    }
+}

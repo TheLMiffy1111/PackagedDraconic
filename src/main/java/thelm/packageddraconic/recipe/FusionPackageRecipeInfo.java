@@ -51,6 +51,9 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 			if(this.recipe.getCatalyst() instanceof IngredientStack ingStack) {
 				inputCore.setCount(ingStack.getCount());
 			}
+			else {
+				inputCore.setCount(1);
+			}
 			List<ItemStack> toCondense = new ArrayList<>(inputInjector);
 			toCondense.add(inputCore);
 			input.addAll(MiscHelper.INSTANCE.condenseStacks(toCondense));
@@ -111,6 +114,11 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 	}
 
 	@Override
+	public int getTierRequired() {
+		return recipe.getRecipeTier().index;
+	}
+
+	@Override
 	public long getEnergyRequired() {
 		return recipe.getEnergyCost();
 	}
@@ -153,8 +161,11 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 			this.recipe = recipe;
 			if(recipe.getCatalyst() instanceof IngredientStack ingStack) {
 				inputCore.setCount(ingStack.getCount());
-				inputCore = inputCore.copy();
 			}
+			else {
+				inputCore.setCount(1);
+			}
+			inputCore = inputCore.copy();
 			List<ItemStack> toCondense = new ArrayList<>(inputInjector);
 			toCondense.add(inputCore);
 			this.input.addAll(MiscHelper.INSTANCE.condenseStacks(toCondense));

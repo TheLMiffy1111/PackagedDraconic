@@ -15,6 +15,8 @@ public interface IFusionPackageRecipeInfo extends IPackageRecipeInfo {
 
 	ItemStack getOutput();
 
+	int getTierRequired();
+
 	long getEnergyRequired();
 
 	IFusionRecipe getRecipe();
