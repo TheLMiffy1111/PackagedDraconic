@@ -9,12 +9,14 @@ import net.minecraft.item.ItemStack;
 import thelm.packagedauto.api.IRecipeInfo;
 
 public interface IRecipeInfoFusion extends IRecipeInfo {
-
+	
 	ItemStack getCoreInput();
 
 	List<ItemStack> getInjectorInputs();
 
 	ItemStack getOutput();
+
+	int getTierRequired();
 
 	long getEnergyRequired();
 

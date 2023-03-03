@@ -1,8 +1,11 @@
 package thelm.packageddraconic.tile;
 
+import com.brandon3055.draconicevolution.api.fusioncrafting.ICraftingInjector;
 import com.brandon3055.draconicevolution.api.fusioncrafting.IFusionCraftingInventory;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,17 +15,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import thelm.packagedauto.tile.TileBase;
+import thelm.packageddraconic.block.BlockMarkedInjector;
 import thelm.packageddraconic.energy.EnergyStorageMarkedInjector;
 import thelm.packageddraconic.inventory.InventoryMarkedInjector;
 
-public class TileMarkedInjector extends TileBase implements IMarkedInjector {
+public class TileMarkedInjector extends TileBase implements ICraftingInjector {
 
 	public EnergyStorageMarkedInjector energyStorage = new EnergyStorageMarkedInjector(this);
 	public BlockPos crafterPos = null;
+	public int tier = -1;
 
 	public TileMarkedInjector() {
 		setInventory(new InventoryMarkedInjector(this));
@@ -30,10 +34,9 @@ public class TileMarkedInjector extends TileBase implements IMarkedInjector {
 
 	@Override
 	protected String getLocalizedName() {
-		return I18n.translateToLocal("tile.packagedexcrafting.marked_injector.name");
+		return getBlockType().getLocalizedName();
 	}
 
-	@Override
 	public void spawnItem() {
 		ItemStack stack = inventory.getStackInSlot(0);
 		inventory.setInventorySlotContents(0, ItemStack.EMPTY);
@@ -46,6 +49,17 @@ public class TileMarkedInjector extends TileBase implements IMarkedInjector {
 			entityitem.setDefaultPickupDelay();
 			world.spawnEntity(entityitem);
 		}
+	}
+
+	@Override
+	public int getPedestalTier() {
+		if(tier == -1) {
+			Block block = getBlockType();
+			if(block instanceof BlockMarkedInjector) {
+				tier = ((BlockMarkedInjector)block).tier;
+			}
+		}
+		return tier;
 	}
 
 	@Override
@@ -84,7 +98,11 @@ public class TileMarkedInjector extends TileBase implements IMarkedInjector {
 
 	@Override
 	public EnumFacing getDirection() {
-		return world.getBlockState(pos).getValue(BlockDirectional.FACING);
+		IBlockState state = world.getBlockState(pos);
+		if(state.getBlock() instanceof BlockMarkedInjector) {
+			return state.getValue(BlockDirectional.FACING);
+		}
+		return EnumFacing.UP;
 	}
 
 	@Override
@@ -147,13 +165,12 @@ public class TileMarkedInjector extends TileBase implements IMarkedInjector {
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing from) {
-		return capability == CapabilityEnergy.ENERGY || super.hasCapability(capability, from);
+		return capability == CapabilityEnergy.ENERGY && getDirection() != from || super.hasCapability(capability, from);
 	}
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		EnumFacing blockFacing = world.getBlockState(pos).getValue(BlockDirectional.FACING);
-		return capability == CapabilityEnergy.ENERGY && blockFacing != facing ? (T)energyStorage : super.getCapability(capability, facing);
+		return capability == CapabilityEnergy.ENERGY && getDirection() != facing ? (T)energyStorage : super.getCapability(capability, facing);
 	}
 
 	@Override

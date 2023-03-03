@@ -1,7 +1,7 @@
 {
     "type": "forge:ore_shapeless",
     "result": {
-        "item": "packageddraconic:marked_injector",
+        "item": "packageddraconic:marked_chaotic_injector",
         "count": 1
     },
     "ingredients": [

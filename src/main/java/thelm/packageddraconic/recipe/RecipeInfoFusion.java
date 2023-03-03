@@ -114,6 +114,11 @@ public class RecipeInfoFusion implements IRecipeInfoFusion {
 	}
 
 	@Override
+	public int getTierRequired() {
+		return recipe.getRecipeTier();
+	}
+
+	@Override
 	public long getEnergyRequired() {
 		return recipe.getIngredientEnergyCost();
 	}

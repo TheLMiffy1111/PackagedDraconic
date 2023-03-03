@@ -1,7 +1,10 @@
 itemGroup.packageddraconic=PackagedDraconic
 
 tile.packageddraconic.fusion_crafter.name=Fusion Package Crafter
-tile.packageddraconic.marked_injector.name=Marked Fusion Crafting Injector
+tile.packageddraconic.marked_basic_injector.name=Marked Basic Fusion Crafting Injector
+tile.packageddraconic.marked_wyvern_injector.name=Marked Wyvern Fusion Crafting Injector
+tile.packageddraconic.marked_draconic_injector.name=Marked Draconic Fusion Crafting Injector
+tile.packageddraconic.marked_chaotic_injector.name=Marked Chaotic Fusion Crafting Injector
 
 recipe.packageddraconic.fusion=Fusion Crafting
 recipe.packageddraconic.fusion.short=Fusion

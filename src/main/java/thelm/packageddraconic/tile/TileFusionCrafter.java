@@ -77,6 +77,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public boolean allLocked;
 	public boolean isWorking = false;
 	public short progress = 0;
+	public int minTier = -1;
 	public IRecipeInfoFusion currentRecipe;
 	public List<BlockPos> injectors = new ArrayList<>();
 
@@ -98,7 +99,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 		if(!world.isRemote) {
 			if(isWorking) {
 				tickProcess();
-				if(progress > 2000) {
+				if(progress >= 2000) {
 					finishProcess();
 					if(hostHelper != null && hostHelper.isActive()) {
 						hostHelper.ejectItem();
@@ -138,53 +139,53 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 			return;
 		}
 		double distFromCore = 1.2;
-        if(progress > 1600) {
-            distFromCore *= 1-(progress-1600)/400D;
-        }
-        if(allLocked) {
-            effectRotation -= Math.min(((progress-1100)/900D)*0.8, 0.5);
-            if(effectRotation > 0) {
-                effectRotation = 0;
-            }
-        }
-        int index = 0;
-        int count = effects.size();
-        boolean flag = true;
-        boolean isMoving = progress > 1000;
-        for(EffectTrackerFusionCrafting effect : effects) {
-            effect.onUpdate(isMoving);
-            if(!effect.positionLocked) {
-                flag = false;
-            }
-            if(isMoving) {
-                effect.scale = 0.7F+((float)(distFromCore/1.2)*0.3F);
-                effect.green = effect.blue = (float)(distFromCore-0.2);
-                effect.red = 1-(float)(distFromCore-0.2);
-            }
-            double indexPos = (double)index/(double)count;
-            double offset = indexPos*Math.PI*2;
-            double offsetX = Math.sin(effectRotation+offset)*distFromCore;
-            double offsetZ = Math.cos(effectRotation+offset)*distFromCore;
-            double mix = effectRotation/5;
-            double xAdditive = offsetX * Math.sin(-mix);
-            double zAdditive = offsetZ * Math.cos(-mix);
-            double offsetY = (xAdditive+zAdditive)*0.2*distFromCore/1.2;
-            effect.circlePosition.set(pos.getX()+0.5+offsetX, pos.getY()+0.5+offsetY, pos.getZ()+0.5+ offsetZ);
-            index++;
-        }
-        SoundHandler soundManager = FMLClientHandler.instance().getClient().getSoundHandler();
-        if(!allLocked && flag) {
-            soundManager.playSound(new FusionCrafterRotationSound(this));
-        }
-        allLocked = flag;
+		if(progress > 1600) {
+			distFromCore *= 1-(progress-1600)/400D;
+		}
+		if(allLocked) {
+			effectRotation -= Math.min(((progress-1100)/900D)*0.8, 0.5);
+			if(effectRotation > 0) {
+				effectRotation = 0;
+			}
+		}
+		int index = 0;
+		int count = effects.size();
+		boolean flag = true;
+		boolean isMoving = progress > 1000;
+		for(EffectTrackerFusionCrafting effect : effects) {
+			effect.onUpdate(isMoving);
+			if(!effect.positionLocked) {
+				flag = false;
+			}
+			if(isMoving) {
+				effect.scale = 0.7F+((float)(distFromCore/1.2)*0.3F);
+				effect.green = effect.blue = (float)(distFromCore-0.2);
+				effect.red = 1-(float)(distFromCore-0.2);
+			}
+			double indexPos = (double)index/(double)count;
+			double offset = indexPos*Math.PI*2;
+			double offsetX = Math.sin(effectRotation+offset)*distFromCore;
+			double offsetZ = Math.cos(effectRotation+offset)*distFromCore;
+			double mix = effectRotation/5;
+			double xAdditive = offsetX * Math.sin(-mix);
+			double zAdditive = offsetZ * Math.cos(-mix);
+			double offsetY = (xAdditive+zAdditive)*0.2*distFromCore/1.2;
+			effect.circlePosition.set(pos.getX()+0.5+offsetX, pos.getY()+0.5+offsetY, pos.getZ()+0.5+ offsetZ);
+			index++;
+		}
+		SoundHandler soundManager = FMLClientHandler.instance().getClient().getSoundHandler();
+		if(!allLocked && flag) {
+			soundManager.playSound(new FusionCrafterRotationSound(this));
+		}
+		allLocked = flag;
 
-        if(!isWorking) {
-            for(int i = 0; i < 100; i++) {
-                BCEffectHandler.spawnFXDirect(DEParticles.DE_SHEET, new EffectTrackerFusionCrafting.SubParticle(world, new Vec3D(pos).add(0.5, 0.5, 0.5)));
-            }
-            world.playSound(pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, DESoundHandler.fusionComplete, SoundCategory.BLOCKS, 2F, 1F, false);
-            effects = null;
-        }
+		if(!isWorking) {
+			for(int i = 0; i < 100; i++) {
+				BCEffectHandler.spawnFXDirect(DEParticles.DE_SHEET, new EffectTrackerFusionCrafting.SubParticle(world, new Vec3D(pos).add(0.5, 0.5, 0.5)));
+			}
+			world.playSound(pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, DESoundHandler.fusionComplete, SoundCategory.BLOCKS, 2F, 1F, false);
+			effects = null;
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -197,8 +198,8 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range))));
 		for(BlockPos checkPos : positions) {
 			TileEntity tile = world.getTileEntity(checkPos);
-			if(tile instanceof IMarkedInjector) {
-				IMarkedInjector injector = (IMarkedInjector)tile;
+			if(tile instanceof TileMarkedInjector) {
+				TileMarkedInjector injector = (TileMarkedInjector)tile;
 				Vec3i dirVec = checkPos.subtract(pos);
 				double distSq = checkPos.distanceSq(pos);
 				if(distSq >= 4 &&
@@ -212,7 +213,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 					boolean obstructed = false;
 					for(BlockPos bp : checkList) {
 						if(!world.isAirBlock(bp) &&
-								(world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof IMarkedInjector)) {
+								(world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
 							obstructed = true;
 							break;
 						}
@@ -247,7 +248,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 		if(!isBusy() && recipeInfo instanceof IRecipeInfoFusion) {
 			IRecipeInfoFusion recipe = (IRecipeInfoFusion)recipeInfo;
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
-			List<BlockPos> emptyInjectors = getEmptyInjectors();
+			List<BlockPos> emptyInjectors = getEmptyInjectors(recipe.getTierRequired());
 			if(emptyInjectors.size() >= injectorInputs.size()) {
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));
@@ -286,17 +287,14 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	}
 
 	protected void tickProcess() {
-		if(injectors.stream().map(world::getTileEntity).
-				anyMatch(tile->!(tile instanceof IMarkedInjector) || tile.isInvalid())) {
+		List<ICraftingInjector> craftInjectors = getInjectors();
+		if(craftInjectors.size() != injectors.size()) {
 			endProcess();
 		}
 		else {
 			PacketSyncCrafter.sync(this);
-			long totalCharge = 0;
-			for(ICraftingInjector injector : getInjectors()) {
-				totalCharge += injector.getInjectorCharge();
-			}
-			long averageCharge = totalCharge /injectors.size();
+			long totalCharge = getInjectors().stream().mapToLong(c->c.getInjectorCharge()).sum();
+			long averageCharge = totalCharge / injectors.size();
 			double percentage = averageCharge / (double)currentRecipe.getEnergyRequired();
 			if(percentage <= 1 && progress < 1000) {
 				progress = (short)(percentage*1000);
@@ -306,7 +304,10 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 			}
 			else if(progress < 2000 && energyStorage.extractEnergy(energyUsage, true) == energyUsage) {
 				energyStorage.extractEnergy(energyUsage, false);
-				progress += 7;
+				if(minTier == -1) {
+					minTier = craftInjectors.stream().mapToInt(c->c.getPedestalTier()).min().orElse(-1);
+				}
+				progress += 2 + Math.max(0, minTier*2-1);
 			}
 		}
 	}
@@ -316,8 +317,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 			endProcess();
 			return;
 		}
-		if(injectors.stream().map(world::getTileEntity).
-				anyMatch(tile->!(tile instanceof IMarkedInjector) || tile.isInvalid())) {
+		if(injectors.stream().map(world::getTileEntity).anyMatch(tile->!(tile instanceof TileMarkedInjector) || tile.isInvalid())) {
 			endProcess();
 			return;
 		}
@@ -330,17 +330,25 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 
 	public void endProcess() {
 		progress = 0;
-		injectors.stream().map(world::getTileEntity).
-		filter(tile->tile instanceof IMarkedInjector && !tile.isInvalid()).
-		forEach(tile->((IMarkedInjector)tile).spawnItem());
+		getInjectors().stream().
+		forEach(tile->((TileMarkedInjector)tile).spawnItem());
 		injectors.clear();
 		isWorking = false;
+		minTier = -1;
 		currentRecipe = null;
 		syncTile(false);
 		markDirty();
 	}
 
-	protected List<BlockPos> getEmptyInjectors() {
+	protected List<BlockPos> getEmptyInjectors(int minTier) {
+		List<BlockPos> positions = new ArrayList<>();
+		for(int i = 3; i >= minTier; --i) {
+			positions.addAll(getEmptyInjectorsForTier(i));
+		}
+		return positions;
+	}
+
+	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
 		int range = 16;
 		List<BlockPos> positions = new ArrayList<>();
 		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1))));
@@ -348,20 +356,18 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range))));
 		return positions.stream().filter(checkPos->{
 			TileEntity tile = world.getTileEntity(checkPos);
-			if(tile instanceof IMarkedInjector) {
-				IMarkedInjector injector = (IMarkedInjector)tile;
+			if(tile instanceof TileMarkedInjector) {
+				TileMarkedInjector injector = (TileMarkedInjector)tile;
 				Vec3i dirVec = checkPos.subtract(pos);
 				double distSq = checkPos.distanceSq(pos);
-				if(distSq >= 4 &&
-						EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite() &&
-						injector.getStackInPedestal().isEmpty()) {
+				if(distSq >= 4 && injector.getPedestalTier() == tier && injector.getStackInPedestal().isEmpty() &&
+						EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite()) {
 					EnumFacing facing = injector.getDirection();
 					List<BlockPos> checkList = Lists.newArrayList(BlockPos.getAllInBox(
 							checkPos.offset(facing),
 							checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1)));
 					for(BlockPos bp : checkList) {
-						if(!world.isAirBlock(bp) &&
-								(world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof IMarkedInjector)) {
+						if(!world.isAirBlock(bp) && (world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
 							return false;
 						}
 					}
@@ -375,7 +381,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	@Override
 	public List<ICraftingInjector> getInjectors() {
 		return injectors.stream().map(world::getTileEntity).
-				filter(tile->tile instanceof IMarkedInjector && !tile.isInvalid()).
+				filter(tile->tile instanceof TileMarkedInjector && !tile.isInvalid()).
 				map(tile->(ICraftingInjector)tile).collect(Collectors.toList());
 	}
 

@@ -1,7 +1,10 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "model": "packageddraconic:marked_injector"
+        "model": "packageddraconic:marked_injector",
+        "textures": {
+            "core": "packageddraconic:blocks/marked_draconic_injector_core"
+        }
     },
     "variants": {
         "facing": {

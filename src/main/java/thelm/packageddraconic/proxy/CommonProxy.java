@@ -53,19 +53,25 @@ public class CommonProxy {
 
 	protected void registerBlocks() {
 		registerBlock(BlockFusionCrafter.INSTANCE);
-		registerBlock(BlockMarkedInjector.INSTANCE);
+		registerBlock(BlockMarkedInjector.BASIC);
+		registerBlock(BlockMarkedInjector.WYVERN);
+		registerBlock(BlockMarkedInjector.DRACONIC);
+		registerBlock(BlockMarkedInjector.CHAOTIC);
 	}
 
 	protected void registerItems() {
 		registerItem(BlockFusionCrafter.ITEM_INSTANCE);
-		registerItem(BlockMarkedInjector.ITEM_INSTANCE);
+		registerItem(BlockMarkedInjector.BASIC_ITEM);
+		registerItem(BlockMarkedInjector.WYVERN_ITEM);
+		registerItem(BlockMarkedInjector.DRACONIC_ITEM);
+		registerItem(BlockMarkedInjector.CHAOTIC_ITEM);
 	}
 
 	protected void registerModels() {}
 
 	protected void registerTileEntities() {
 		GameRegistry.registerTileEntity(TileFusionCrafter.class, new ResourceLocation("packageddraconic:conbination_crafter"));
-		GameRegistry.registerTileEntity(TileMarkedInjector.class, new ResourceLocation("packageddraconic:marked_pedestal"));
+		GameRegistry.registerTileEntity(TileMarkedInjector.class, new ResourceLocation("packageddraconic:marked_injector"));
 	}
 
 	protected void registerRecipeTypes() {
@@ -80,22 +86,20 @@ public class CommonProxy {
 		Item component = Loader.isModLoaded("appliedenergistics2") ? ItemMisc.ME_PACKAGE_COMPONENT : ItemMisc.PACKAGE_COMPONENT;
 		RecipeManager.addFusion(RecipeManager.RecipeDifficulty.NORMAL,
 				new ItemStack(BlockFusionCrafter.INSTANCE), new ItemStack(DEFeatures.fusionCraftingCore),
-				50000000, 2, new Object[] {
-						"netherStar", "netherStar",
+				50000000, 1, new Object[] {
 						"ingotDraconiumAwakened", "ingotDraconiumAwakened",
-						DEFeatures.chaoticCore, "dragonEgg",
-						component, Items.ENDER_EYE,
+						DEFeatures.awakenedCore, "dragonEgg",
+						component, "netherStar",
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
 						Items.ENDER_EYE, Items.ENDER_EYE,
 		});
 		RecipeManager.addFusion(RecipeManager.RecipeDifficulty.HARD,
 				new ItemStack(BlockFusionCrafter.INSTANCE), new ItemStack(DEFeatures.fusionCraftingCore),
-				100000000, 2, new Object[] {
-						"netherStar", "netherStar",
+				100000000, 1, new Object[] {
 						"ingotDraconiumAwakened", "ingotDraconiumAwakened",
-						DEFeatures.chaoticCore, "dragonEgg",
-						DEFeatures.chaoticCore, DEFeatures.chaosShard,
-						component, Items.ENDER_EYE,
+						DEFeatures.awakenedCore, "dragonEgg",
+						DEFeatures.awakenedCore, DEFeatures.chaosShard,
+						component, "netherStar",
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
 						Items.ENDER_EYE, Items.ENDER_EYE,
 		});

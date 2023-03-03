@@ -2,12 +2,12 @@
     "type": "forge:ore_shapeless",
     "result": {
         "item": "draconicevolution:crafting_injector",
-        "data": 3,
+        "data": 0,
         "count": 1
     },
     "ingredients": [
         {
-            "item": "packageddraconic:marked_injector"
+            "item": "packageddraconic:marked_basic_injector"
         }
     ]
 }

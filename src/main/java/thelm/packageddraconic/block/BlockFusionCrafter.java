@@ -31,7 +31,7 @@ public class BlockFusionCrafter extends BlockBase {
 		setResistance(25F);
 		setSoundType(SoundType.METAL);
 		setTranslationKey("packageddraconic.fusion_crafter");
-		setRegistryName("fusion_crafter");
+		setRegistryName("packageddraconic:fusion_crafter");
 		setCreativeTab(PackagedDraconic.CREATIVE_TAB);
 	}
 

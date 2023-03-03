@@ -26,9 +26,14 @@ import thelm.packageddraconic.tile.TileMarkedInjector;
 
 public class BlockMarkedInjector extends BlockBase {
 
-	public static final BlockMarkedInjector INSTANCE = new BlockMarkedInjector();
-	public static final Item ITEM_INSTANCE = new ItemBlock(INSTANCE).setRegistryName("packageddraconic:marked_injector");
-	public static final ModelResourceLocation MODEL_LOCATION = new ModelResourceLocation("packageddraconic:marked_injector#facing=up");
+	public static final BlockMarkedInjector BASIC = new BlockMarkedInjector(0, "packageddraconic:marked_basic_injector");
+	public static final BlockMarkedInjector WYVERN = new BlockMarkedInjector(1, "packageddraconic:marked_wyvern_injector");
+	public static final BlockMarkedInjector DRACONIC = new BlockMarkedInjector(2, "packageddraconic:marked_draconic_injector");
+	public static final BlockMarkedInjector CHAOTIC = new BlockMarkedInjector(3, "packageddraconic:marked_chaotic_injector");
+	public static final Item BASIC_ITEM = new ItemBlock(BASIC).setRegistryName("packageddraconic:marked_basic_injector");
+	public static final Item WYVERN_ITEM = new ItemBlock(WYVERN).setRegistryName("packageddraconic:marked_wyvern_injector");
+	public static final Item DRACONIC_ITEM = new ItemBlock(DRACONIC).setRegistryName("packageddraconic:marked_draconic_injector");
+	public static final Item CHAOTIC_ITEM = new ItemBlock(CHAOTIC).setRegistryName("packageddraconic:marked_chaotic_injector");
 	public static final AxisAlignedBB AABB_DOWN = new AxisAlignedBB(0.0625, 0.375, 0.0625, 0.9375, 1, 0.9375);
 	public static final AxisAlignedBB AABB_UP = new AxisAlignedBB(0.0625, 0, 0.0625, 0.9375, 0.625, 0.9375);
 	public static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.0625, 0.0625, 0.375, 0.9375, 0.9375, 1);
@@ -36,15 +41,18 @@ public class BlockMarkedInjector extends BlockBase {
 	public static final AxisAlignedBB AABB_WEST = new AxisAlignedBB(0.375, 0.0625, 0.0625, 1, 0.9375, 0.9375);
 	public static final AxisAlignedBB AABB_EAST = new AxisAlignedBB(0, 0.0625, 0.0625, 0.625, 0.9375, 0.9375);
 
-	public BlockMarkedInjector() {
+	public final int tier;
+
+	public BlockMarkedInjector(int tier, String name) {
 		super(Material.IRON);
 		setDefaultState(blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.UP));
 		setHardness(15F);
 		setResistance(25F);
 		setSoundType(SoundType.METAL);
-		setTranslationKey("packageddraconic.marked_injector");
-		setRegistryName("marked_injector");
+		setTranslationKey(name.replace(':', '.'));
+		setRegistryName(name);
 		setCreativeTab(PackagedDraconic.CREATIVE_TAB);
+		this.tier = tier;
 	}
 
 	@Override
@@ -104,6 +112,6 @@ public class BlockMarkedInjector extends BlockBase {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerModels() {
-		ModelLoader.setCustomModelResourceLocation(ITEM_INSTANCE, 0, MODEL_LOCATION);
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "facing=up"));
 	}
 }

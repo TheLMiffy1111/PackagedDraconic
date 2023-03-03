@@ -1,7 +1,10 @@
 itemGroup.packageddraconic=封包龍之進化
 
 tile.packageddraconic.fusion_crafter.name=聚合封包合成器
-tile.packageddraconic.marked_injector.name=標記聚合注入器
+tile.packageddraconic.marked_basic_injector.name=標記基礎聚合注入器
+tile.packageddraconic.marked_wyvern_injector.name=標記飛龍聚合注入器
+tile.packageddraconic.marked_draconic_injector.name=標記神龍聚合注入器
+tile.packageddraconic.marked_chaotic_injector.name=標記混沌聚合注入器
 
 recipe.packageddraconic.fusion=聚合合成
 recipe.packageddraconic.fusion.short=聚合
