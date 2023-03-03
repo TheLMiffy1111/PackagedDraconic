@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 
 // Code modified from RenderTileFusionCraftingCore
@@ -28,7 +29,7 @@ public class RendererFusionCrafter extends TileEntitySpecialRenderer<TileFusionC
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(x+0.5, y+0.5, z+0.5);
 				GlStateManager.scale(0.5F, 0.5F, 0.5F);
-				GlStateManager.rotate((te.getWorld().getTotalWorldTime()+partialTicks)*0.8F, 0F, -1F, 0F);
+				GlStateManager.rotate((RenderTimer.INSTANCE.getTicks()+partialTicks)*0.8F, 0F, -1F, 0F);
 				Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.FIXED);
 				GlStateManager.popMatrix();
 			}

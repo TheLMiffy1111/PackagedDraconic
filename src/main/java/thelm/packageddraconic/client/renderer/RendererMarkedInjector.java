@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.tile.TileMarkedInjector;
 
 // Code modified from RenderTileCraftingInjector
@@ -31,7 +32,7 @@ public class RendererMarkedInjector extends TileEntitySpecialRenderer<TileMarked
 			else {
 				GlStateManager.rotate(90, facing.getZOffset(), 0, -facing.getXOffset());
 			}
-			GlStateManager.rotate((te.getWorld().getTotalWorldTime()+partialTicks)*0.8F, 0, -1, 0);
+			GlStateManager.rotate((RenderTimer.INSTANCE.getTicks()+partialTicks)*0.8F, 0, -1, 0);
 			Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.FIXED);
 			GlStateManager.popMatrix();
 		}

@@ -71,7 +71,7 @@ dependencies {
     deobfCompile "CraftTweaker2:CraftTweaker2-API:4.1.20.683"
     deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.683"
 
-    deobfCompile "curse.maven:packagedauto-308380:4376035"
+    deobfCompile "curse.maven:packagedauto-308380:4420185"
     deobfCompile "curse.maven:applied-energistics-2-223794:2747063"
     deobfCompile "curse.maven:baubles-227083:2518667"
     deobfCompile "curse.maven:redstone-flux-270789:2920436"
