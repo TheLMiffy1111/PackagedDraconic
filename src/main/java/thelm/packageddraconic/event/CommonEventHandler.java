@@ -37,14 +37,20 @@ public class CommonEventHandler {
 	public void onBlockRegister(RegistryEvent.Register<Block> event) {
 		IForgeRegistry<Block> registry = event.getRegistry();
 		registry.register(FusionCrafterBlock.INSTANCE);
-		registry.register(MarkedInjectorBlock.INSTANCE);
+		registry.register(MarkedInjectorBlock.BASIC);
+		registry.register(MarkedInjectorBlock.WYVERN);
+		registry.register(MarkedInjectorBlock.DRACONIC);
+		registry.register(MarkedInjectorBlock.CHAOTIC);
 	}
 
 	@SubscribeEvent
 	public void onItemRegister(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> registry = event.getRegistry();
 		registry.register(FusionCrafterBlock.ITEM_INSTANCE);
-		registry.register(MarkedInjectorBlock.ITEM_INSTANCE);
+		registry.register(MarkedInjectorBlock.BASIC_ITEM);
+		registry.register(MarkedInjectorBlock.WYVERN_ITEM);
+		registry.register(MarkedInjectorBlock.DRACONIC_ITEM);
+		registry.register(MarkedInjectorBlock.CHAOTIC_ITEM);
 	}
 
 	@SubscribeEvent

@@ -3,7 +3,7 @@
 	"textures": {
 		"particle": "packageddraconic:blocks/marked_injector_base",
 		"base": "packageddraconic:blocks/marked_injector_base",
-		"core": "packageddraconic:blocks/marked_injector_core",
+		"core": "#core",
 		"ring": "packageddraconic:blocks/marked_injector_ring"
 	},
 	"elements": [

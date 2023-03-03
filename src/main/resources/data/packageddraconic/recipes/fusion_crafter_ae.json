@@ -14,22 +14,16 @@
         "item": "draconicevolution:crafting_core"
     },
     "total_energy": 100000000,
-    "tier": "DRACONIC",
+    "tier": "WYVERN",
     "ingredients": [
         {
-            "tag": "forge:nether_stars"
-        },
-        {
-            "tag": "forge:nether_stars"
-        },
-        {
             "tag": "forge:ingots/draconium_awakened"
         },
         {
             "tag": "forge:ingots/draconium_awakened"
         },
         {
-            "item": "draconicevolution:chaotic_core"
+            "item": "draconicevolution:awakened_core"
         },
         {
             "item": "minecraft:dragon_egg"
@@ -38,7 +32,7 @@
             "item": "packagedauto:me_package_component"
         },
         {
-            "item": "minecraft:ender_eye"
+            "tag": "forge:nether_stars"
         },
         {
             "tag": "forge:ender_pearls"

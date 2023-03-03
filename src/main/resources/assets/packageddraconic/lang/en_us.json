@@ -2,7 +2,10 @@
     "itemGroup.packageddraconic": "PackagedDraconic",
 
     "block.packageddraconic.fusion_crafter": "Fusion Package Crafter",
-    "block.packageddraconic.marked_injector": "Marked Fusion Crafting Injector",
+    "block.packageddraconic.marked_draconium_injector": "Marked Draconium Fusion Crafting Injector",
+    "block.packageddraconic.marked_wyvern_injector": "Marked Wyvern Fusion Crafting Injector",
+    "block.packageddraconic.marked_draconic_injector": "Marked Draconic Fusion Crafting Injector",
+    "block.packageddraconic.marked_chaotic_injector": "Marked Chaotic Fusion Crafting Injector",
 
     "recipe.packageddraconic.fusion": "Fusion Crafting",
     "recipe.packageddraconic.fusion.short": "Fusion"

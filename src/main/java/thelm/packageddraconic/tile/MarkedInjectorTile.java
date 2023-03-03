@@ -4,6 +4,8 @@ import com.brandon3055.brandonscore.api.TechLevel;
 import com.brandon3055.brandonscore.capability.CapabilityOP;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.DirectionalBlock;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,7 +18,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -28,11 +29,12 @@ import thelm.packageddraconic.op.MarkedInjectorOPStorage;
 public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 
 	public static final TileEntityType<MarkedInjectorTile> TYPE_INSTANCE = (TileEntityType<MarkedInjectorTile>)TileEntityType.Builder.
-			of(MarkedInjectorTile::new, MarkedInjectorBlock.INSTANCE).
+			of(MarkedInjectorTile::new, MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
 			build(null).setRegistryName("packageddraconic:marked_injector");
 
 	public MarkedInjectorOPStorage opStorage = new MarkedInjectorOPStorage(this);
 	public BlockPos crafterPos = null;
+	public int tier = -1;
 
 	public MarkedInjectorTile() {
 		super(TYPE_INSTANCE);
@@ -41,7 +43,7 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 
 	@Override
 	protected ITextComponent getDefaultName() {
-		return new TranslationTextComponent("block.packageddraconic.marked_injector");
+		return getBlockState().getBlock().getName();
 	}
 
 	public void spawnItem() {
@@ -84,7 +86,13 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 
 	@Override
 	public TechLevel getInjectorTier() {
-		return TechLevel.CHAOTIC;
+		if(tier == -1) {
+			Block block = level.getBlockState(worldPosition).getBlock();
+			if(block instanceof MarkedInjectorBlock) {
+				tier = ((MarkedInjectorBlock)block).tier;
+			}
+		}
+		return TechLevel.byIndex(tier);
 	}
 
 	@Override
@@ -126,7 +134,11 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	}
 
 	public Direction getDirection() {
-		return getBlockState().getValue(DirectionalBlock.FACING);
+		BlockState state = level.getBlockState(worldPosition);
+		if(state.getBlock() instanceof MarkedInjectorBlock) {
+			return state.getValue(DirectionalBlock.FACING);
+		}
+		return Direction.UP;
 	}
 
 	@Override
@@ -154,8 +166,7 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction direction) {
-		Direction blockDir = getBlockState().getValue(DirectionalBlock.FACING);
-		if(blockDir != direction && (capability == CapabilityEnergy.ENERGY || capability == CapabilityOP.OP)) {
+		if(getDirection() != direction && (capability == CapabilityEnergy.ENERGY || capability == CapabilityOP.OP)) {
 			return LazyOptional.of(()->(T)opStorage);
 		}
 		return super.getCapability(capability, direction);

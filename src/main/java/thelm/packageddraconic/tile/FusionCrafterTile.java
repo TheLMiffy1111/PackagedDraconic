@@ -74,6 +74,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public FusionState fusionState = FusionState.START;
 	public int fusionCounter = 0;
 	public short progress = 0;
+	public int minTier = -1;
 	public IFusionPackageRecipeInfo currentRecipe;
 	public List<BlockPos> injectors = new ArrayList<>();
 
@@ -110,7 +111,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		if(!isBusy() && recipeInfo instanceof IFusionPackageRecipeInfo) {
 			IFusionPackageRecipeInfo recipe = (IFusionPackageRecipeInfo)recipeInfo;
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
-			List<BlockPos> emptyInjectors = getEmptyInjectors();
+			List<BlockPos> emptyInjectors = getEmptyInjectors(recipe.getTierRequired());
 			if(emptyInjectors.size() >= injectorInputs.size()) {
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));
@@ -178,13 +179,22 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		forEach(tile->((MarkedInjectorTile)tile).spawnItem());
 		injectors.clear();
 		isWorking = false;
+		minTier = -1;
 		effectRecipe = null;
 		currentRecipe = null;
 		syncTile(false);
 		setChanged();
 	}
 
-	protected List<BlockPos> getEmptyInjectors() {
+	protected List<BlockPos> getEmptyInjectors(int minTier) {
+		List<BlockPos> positions = new ArrayList<>();
+		for(int i = 3; i >= minTier; --i) {
+			positions.addAll(getEmptyInjectorsForTier(i));
+		}
+		return positions;
+	}
+
+	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
 		List<BlockPos> positions = new ArrayList<>();
 		int range = DEConfig.fusionInjectorRange;
 		int radius = 1;
@@ -203,7 +213,8 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 				positions.clear();
 				return positions;
 			}
-			if(Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == tile.getDirection().getOpposite() && tile.getInjectorStack().isEmpty()) {
+			if(tile.getInjectorTier().index == tier && tile.getInjectorStack().isEmpty() &&
+					Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == tile.getDirection().getOpposite()) {
 				BlockPos pos = tile.getBlockPos();
 				Direction facing = tile.getDirection();
 				boolean obstructed = false;
@@ -305,7 +316,10 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 
 	@Override
 	public TechLevel getMinimumTier() {
-		return TechLevel.CHAOTIC;
+		if(minTier == -1) {
+			minTier = getInjectors().stream().mapToInt(c->c.getInjectorTier().index).min().orElse(-1);
+		}
+		return TechLevel.byIndex(minTier);
 	}
 
 	@Override

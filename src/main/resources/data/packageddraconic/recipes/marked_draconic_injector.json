@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "result": {
+        "item": "packageddraconic:marked_draconic_injector",
+        "count": 1
+    },
+    "ingredients": [
+        {
+            "item": "draconicevolution:awakened_crafting_injector"
+        },
+        {
+            "tag": "forge:dusts/draconium"
+        }
+    ]
+}
