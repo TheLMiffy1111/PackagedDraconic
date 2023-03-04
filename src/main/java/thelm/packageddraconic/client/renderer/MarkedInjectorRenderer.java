@@ -41,7 +41,7 @@ public class MarkedInjectorRenderer extends TileEntityRenderer<MarkedInjectorTil
 				}
 			}
 			else {
-				matrixStack.mulPose(new Quaternion(facing.getStepZ() * 90, 0, facing.getStepX() * -90, true));
+				matrixStack.mulPose(new Quaternion(facing.getStepZ()*90, 0, facing.getStepX()*-90, true));
 			}
 			matrixStack.mulPose(new Quaternion(0, (RenderTimer.INSTANCE.getTicks()+partialTicks)*-0.8F, 0, true));
 			ItemStack stack = te.getItemHandler().getStackInSlot(0);

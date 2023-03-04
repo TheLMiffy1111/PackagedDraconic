@@ -89,7 +89,7 @@ public class FusionCrafterFXHandler implements Runnable {
 		}
 		long totalCharge = crafter.getInjectors().stream().mapToLong(IFusionInjector::getInjectorEnergy).sum();
 		chargeState = totalCharge / (float)recipe.getEnergyCost();
-		float arcChance = chargeState*0.1F + crafter.animProgress*0.2F + (rotationSpeed > 1 ? ((rotationSpeed-1)*0.25F) : 0F);
+		float arcChance = chargeState*0.1F + crafter.animProgress*0.2F + (rotationSpeed > 1 ? (rotationSpeed-1)*0.25F : 0F);
 		if(coreDischarge != -1) {
 			coreDischarge = -1;
 		}
