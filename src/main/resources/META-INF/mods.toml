@@ -13,7 +13,7 @@ description="A PackagedAuto addon that adds Draconic Evolution fusion autocrafti
 [[dependencies.packageddraconic]]
     modId="forge"
     mandatory=true
-    versionRange="[34.0.0,)"
+    versionRange="[34,)"
     ordering="NONE"
     side="BOTH"
 
@@ -27,6 +27,6 @@ description="A PackagedAuto addon that adds Draconic Evolution fusion autocrafti
 [[dependencies.packageddraconic]]
     modId="packagedauto"
     mandatory=true
-    versionRange="[2.0.0.0,)"
+    versionRange="[2.0.1.15,)"
     ordering="NONE"
     side="BOTH"

@@ -1,6 +1,5 @@
 package thelm.packageddraconic.client.renderer;
 
-import com.brandon3055.brandonscore.api.TimeKeeper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.block.BlockState;
@@ -13,6 +12,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Quaternion;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.tile.MarkedInjectorTile;
 
 // Code modified from RenderTileCraftingInjector
@@ -43,7 +43,7 @@ public class MarkedInjectorRenderer extends TileEntityRenderer<MarkedInjectorTil
 			else {
 				matrixStack.mulPose(new Quaternion(facing.getStepZ() * 90, 0, facing.getStepX() * -90, true));
 			}
-			matrixStack.mulPose(new Quaternion(0, (TimeKeeper.getClientTick()+partialTicks) * -0.8F, 0, true));
+			matrixStack.mulPose(new Quaternion(0, (RenderTimer.INSTANCE.getTicks()+partialTicks)*-0.8F, 0, true));
 			ItemStack stack = te.getItemHandler().getStackInSlot(0);
 			Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, combinedLight, combinedOverlay, matrixStack, buffer);
 		}

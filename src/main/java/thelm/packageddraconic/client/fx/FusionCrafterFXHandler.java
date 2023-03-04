@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.brandon3055.brandonscore.api.TimeKeeper;
 import com.brandon3055.brandonscore.utils.MathUtils;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 import com.brandon3055.draconicevolution.api.crafting.IFusionRecipe;
@@ -16,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.client.sound.FusionCrafterRotationSound;
 import thelm.packageddraconic.tile.FusionCrafterTile;
 import thelm.packageddraconic.tile.MarkedInjectorTile;
@@ -83,10 +83,8 @@ public class FusionCrafterFXHandler implements Runnable {
 				}
 			}
 			injectTime = Math.max(0, (rotationTick-beamStartTime)/(float)(baseCraftTime-beamStartTime));
-			if(injectTime > 0) {
-				if(TimeKeeper.getClientTick() % 5 == 0) {
-					crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 1F, 1F, false);
-				}
+			if(injectTime > 0 && RenderTimer.INSTANCE.getTicks() % 5 == 0) {
+				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundCategory.BLOCKS, 1F, 1F, false);
 			}
 		}
 		long totalCharge = crafter.getInjectors().stream().mapToLong(IFusionInjector::getInjectorEnergy).sum();
@@ -168,7 +166,7 @@ public class FusionCrafterFXHandler implements Runnable {
 		}
 
 		public double getChargeAnim(float partialTicks) {
-			return TimeKeeper.getClientTick()+partialTicks;
+			return RenderTimer.INSTANCE.getTicks()+partialTicks;
 		}
 
 		public float getCharge() {
