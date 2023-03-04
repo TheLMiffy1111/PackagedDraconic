@@ -31,6 +31,9 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
@@ -463,6 +466,12 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 			return 0;
 		}
 		return scale * progress / 20000;
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	@Override
+	public AABB getRenderBoundingBox() {
+		return new AABB(worldPosition).inflate(16);
 	}
 
 	@Override
