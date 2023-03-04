@@ -3,7 +3,6 @@ package thelm.packageddraconic.client.renderer;
 import java.util.List;
 import java.util.Random;
 
-import com.brandon3055.brandonscore.api.TimeKeeper;
 import com.brandon3055.brandonscore.utils.MathUtils;
 import com.brandon3055.draconicevolution.client.DEMiscSprites;
 import com.brandon3055.draconicevolution.client.render.EffectLib;
@@ -30,6 +29,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 import thelm.packageddraconic.client.fx.FusionCrafterFXHandler;
 
@@ -64,8 +64,8 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 		if(!stack.isEmpty()) {
 			poseStack.pushPose();
 			poseStack.translate(0.5, 0.5, 0.5);
-			poseStack.scale(0.5F, 0.5F, 0.5F);
-			poseStack.mulPose(new Quaternion(0, (TimeKeeper.getClientTick()+partialTicks)*0.8F, 0, true));
+			poseStack.scale(0.5F, 0.5F, 0.5F);mc.getFrameTime();
+			poseStack.mulPose(new Quaternion(0, (RenderTimer.INSTANCE.getTicks()+partialTicks)*0.8F, 0, true));
 			mc.getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLight, packetOverlay, poseStack, buffer, (int)blockEntity.getBlockPos().asLong());
 			poseStack.popPose();
 		}
@@ -74,6 +74,8 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 	private void renderEffects(FusionCrafterBlockEntity blockEntity, FusionCrafterFXHandler handler, float partialTicks, PoseStack poseStack, MultiBufferSource getter, int combinedLight, int packetOverlay) {
 		Minecraft mc = Minecraft.getInstance();
 		Camera camera = mc.gameRenderer.getMainCamera();
+		int ticks = RenderTimer.INSTANCE.getTicks();
+		float time = ticks+partialTicks;
 		poseStack.translate(0.5, 0.5, 0.5);
 		ParticleStatus pStatus = mc.options.particles;
 		double particleSetting = pStatus == ParticleStatus.ALL ? 1 : pStatus == ParticleStatus.DECREASED ? 2/3D : 1/3D;
@@ -84,7 +86,7 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 		for(FusionCrafterFXHandler.IngredFX ingred : ingredFXList) {
 			renderIngredientEffect(camera, poseStack, getter, partialTicks, i++, ingred, maxParticles/ingredFXList.size());
 			if(ingred.arcPos != null) {
-				EffectLib.renderLightningP2PRotate(poseStack, getter, ingred.pos, ingred.arcPos, 8, TimeKeeper.getClientTick()/2, 0.06F, 0.04F, false, 0, 0x6300BD);
+				EffectLib.renderLightningP2PRotate(poseStack, getter, ingred.pos, ingred.arcPos, 8, ticks/2, 0.06F, 0.04F, false, 0, 0x6300BD);
 			}
 		}
 		Rotation cameraRotation = new Rotation(new Quat(camera.rotation()));
@@ -112,9 +114,9 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 		//Outer Loopy Effects
 		if(handler.chargeState > 0) {
 			for(i = 0; i < 4; i++) {
-				float loopOffset = ((i/4F)*(float)Math.PI*2)+(TimeKeeper.getClientTick()/100F);
+				float loopOffset = (i/4F)*(float)Math.PI*2 + time/100;
 				for(int j = 0; j < 8; j++) {
-					float rot = ((j/64F)*(float)Math.PI*2)+(TimeKeeper.getClientTick()/10F)+loopOffset;
+					float rot = (j/64F)*(float)Math.PI*2 + time/10 + loopOffset;
 					if(j > handler.chargeState*8) {
 						continue;
 					}
@@ -125,18 +127,18 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 					EffectLib.drawParticle(cameraRotation, builder, getTexture(DEMiscSprites.ENERGY_PARTICLE, j), 106/255F, 13/255F, 173/255F, x, y, z, scale, 240);
 				}
 			}
-			if(handler.injectTime > 0 && TimeKeeper.getClientTick() % 5 == 0) {
+			if(handler.injectTime > 0 && ticks % 5 == 0) {
 				int pos = rand.nextInt(4);
 				for(i = 0; i < 4; i++) {
 					if(i != pos) {
 						continue;
 					}
-					float loopOffset = (i/4F)*(float)Math.PI*2+(TimeKeeper.getClientTick()/100F);
-					float rot = (7/64F)*(float)Math.PI*2+(TimeKeeper.getClientTick()/10F)+loopOffset;
+					float loopOffset = (i/4F)*(float)Math.PI*2 + time/100;
+					float rot = (7/64F)*(float)Math.PI*2 + time/10 + loopOffset;
 					double x = Mth.sin(rot)*2;
 					double z = Mth.cos(rot)*2;
 					double y = Mth.cos(rot+loopOffset)*1;
-					EffectLib.renderLightningP2PRotate(poseStack, getter, new Vector3(x, y, z), Vector3.ZERO, 8, TimeKeeper.getClientTick()/2, 0.06F, 0.04F, false, 0, 0x6300BD);
+					EffectLib.renderLightningP2PRotate(poseStack, getter, new Vector3(x, y, z), Vector3.ZERO, 8, ticks/2, 0.06F, 0.04F, false, 0, 0x6300BD);
 				}
 			}
 		}
@@ -209,10 +211,10 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 	}
 
 	public TextureAtlasSprite getTexture(TextureAtlasSprite[] arr) {
-		return arr[Math.floorMod(rand.nextInt(arr.length)+TimeKeeper.getClientTick(), arr.length)];
+		return arr[Math.floorMod(rand.nextInt(arr.length)+RenderTimer.INSTANCE.getTicks(), arr.length)];
 	}
 
 	public TextureAtlasSprite getTexture(TextureAtlasSprite[] arr, int shift) {
-		return arr[Math.floorMod(shift+TimeKeeper.getClientTick(), arr.length)];
+		return arr[Math.floorMod(shift+RenderTimer.INSTANCE.getTicks(), arr.length)];
 	}
 }

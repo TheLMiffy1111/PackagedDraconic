@@ -1,6 +1,5 @@
 package thelm.packageddraconic.client.renderer;
 
-import com.brandon3055.brandonscore.api.TimeKeeper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 
@@ -13,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 
 // Code modified from RenderTileCraftingInjector
@@ -41,9 +41,9 @@ public class MarkedInjectorRenderer implements BlockEntityRenderer<MarkedInjecto
 				}
 			}
 			else {
-				poseStack.mulPose(new Quaternion(facing.getStepZ() * 90, 0, facing.getStepX() * -90, true));
+				poseStack.mulPose(new Quaternion(facing.getStepZ()*90, 0, facing.getStepX()*-90, true));
 			}
-			poseStack.mulPose(new Quaternion(0, (TimeKeeper.getClientTick()+partialTicks) * -0.8F, 0, true));
+			poseStack.mulPose(new Quaternion(0, (RenderTimer.INSTANCE.getTicks()+partialTicks)*-0.8F, 0, true));
 			ItemStack stack = blockEntity.getItemHandler().getStackInSlot(0);
 			Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLight, combinedOverlay, poseStack, buffer, (int)blockEntity.getBlockPos().asLong());
 		}

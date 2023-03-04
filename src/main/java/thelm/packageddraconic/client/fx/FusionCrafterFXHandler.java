@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.brandon3055.brandonscore.api.TimeKeeper;
 import com.brandon3055.brandonscore.utils.MathUtils;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 import com.brandon3055.draconicevolution.api.crafting.IFusionRecipe;
@@ -16,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 import thelm.packageddraconic.client.sound.FusionCrafterRotationSound;
@@ -83,15 +83,13 @@ public class FusionCrafterFXHandler implements Runnable {
 				}
 			}
 			injectTime = Math.max(0, (rotationTick-beamStartTime)/(float)(baseCraftTime-beamStartTime));
-			if(injectTime > 0) {
-				if(TimeKeeper.getClientTick() % 5 == 0) {
-					crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundSource.BLOCKS, 1F, 1F, false);
-				}
+			if(injectTime > 0 && RenderTimer.INSTANCE.getTicks() % 5 == 0) {
+				crafter.getLevel().playLocalSound(corePos.x, corePos.y, corePos.z, DESounds.energyBolt, SoundSource.BLOCKS, 1F, 1F, false);
 			}
 		}
 		long totalCharge = crafter.getInjectors().stream().mapToLong(IFusionInjector::getInjectorEnergy).sum();
 		chargeState = totalCharge / (float)recipe.getEnergyCost();
-		float arcChance = chargeState*0.1F + crafter.animProgress*0.2F + (rotationSpeed > 1 ? ((rotationSpeed-1)*0.25F) : 0F);
+		float arcChance = chargeState*0.1F + crafter.animProgress*0.2F + (rotationSpeed > 1 ? (rotationSpeed-1)*0.25F : 0F);
 		if(coreDischarge != -1) {
 			coreDischarge = -1;
 		}
@@ -168,7 +166,7 @@ public class FusionCrafterFXHandler implements Runnable {
 		}
 
 		public double getChargeAnim(float partialTicks) {
-			return TimeKeeper.getClientTick()+partialTicks;
+			return RenderTimer.INSTANCE.getTicks()+partialTicks;
 		}
 
 		public float getCharge() {
