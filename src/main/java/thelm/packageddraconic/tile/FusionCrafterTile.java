@@ -388,12 +388,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		setChanged();
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	@Override
-	public AxisAlignedBB getRenderBoundingBox() {
-		return new AxisAlignedBB(worldPosition.offset(-16, -16, -16), worldPosition.offset(17, 17, 17));
-	}
-
 	@Override
 	public void setRemoved() {
 		super.setRemoved();
@@ -480,6 +474,12 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 			return 0;
 		}
 		return scale * progress / 20000;
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return new AxisAlignedBB(worldPosition).inflate(16);
 	}
 
 	@Override
