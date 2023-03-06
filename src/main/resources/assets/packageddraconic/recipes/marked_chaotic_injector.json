@@ -10,7 +10,8 @@
             "data": 3
         },
         {
-            "item": "draconicevolution:draconium_dust"
+            "type": "forge:ore_dict",
+            "ore": "dustDraconium"
         }
     ]
 }

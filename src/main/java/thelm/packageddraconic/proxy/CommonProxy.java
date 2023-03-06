@@ -97,8 +97,8 @@ public class CommonProxy {
 				new ItemStack(BlockFusionCrafter.INSTANCE), new ItemStack(DEFeatures.fusionCraftingCore),
 				100000000, 1, new Object[] {
 						"ingotDraconiumAwakened", "ingotDraconiumAwakened",
-						DEFeatures.awakenedCore, "dragonEgg",
-						DEFeatures.awakenedCore, DEFeatures.chaosShard,
+						DEFeatures.awakenedCore, DEFeatures.awakenedCore,
+						"dragonEgg", DEFeatures.chaosShard,
 						component, "netherStar",
 						Items.ENDER_PEARL, Items.ENDER_PEARL,
 						Items.ENDER_EYE, Items.ENDER_EYE,
