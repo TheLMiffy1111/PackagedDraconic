@@ -382,12 +382,6 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	@Override
-	public void setRemoved() {
-		super.setRemoved();
-		endProcess();
-	}
-
-	@Override
 	public void load(CompoundTag nbt) {
 		super.load(nbt);
 		fusionCounter = nbt.getInt("FusionCounter");

@@ -41,6 +41,15 @@ public class FusionCrafterBlock extends BaseBlock {
 	}
 
 	@Override
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+		if(blockEntity instanceof FusionCrafterBlockEntity crafter && crafter.isWorking) {
+			crafter.cancelCraft();
+		}
+		super.onRemove(state, level, pos, newState, isMoving);
+	}
+
+	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return SHAPE;
 	}
