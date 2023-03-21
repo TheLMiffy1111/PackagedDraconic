@@ -110,7 +110,7 @@ dependencies {
     //JitPack
 
     //CurseMaven
-    implementation fg.deobf("curse.maven:packagedauto-308380:4449381")
+    implementation fg.deobf("curse.maven:packagedauto-308380:4449685")
     implementation fg.deobf("curse.maven:ato-405593:3405905")
 }
 
