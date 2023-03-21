@@ -42,6 +42,9 @@ public class FusionCrafterBlock extends BaseBlock {
 
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		if(state.getBlock() == newState.getBlock()) {
+			return;
+		}
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if(blockEntity instanceof FusionCrafterBlockEntity crafter && crafter.isWorking) {
 			crafter.cancelCraft();
