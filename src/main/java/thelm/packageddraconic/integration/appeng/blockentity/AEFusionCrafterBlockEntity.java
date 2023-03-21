@@ -58,6 +58,14 @@ public class AEFusionCrafterBlockEntity extends FusionCrafterBlockEntity impleme
 	}
 
 	@Override
+	public void onChunkUnloaded() {
+		super.onChunkUnloaded();
+		if(gridNode != null) {
+			gridNode.destroy();
+		}
+	}
+
+	@Override
 	public IGridNode getGridNode(Direction dir) {
 		return getActionableNode();
 	}
