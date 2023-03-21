@@ -73,7 +73,7 @@ public class AEFusionCrafterTile extends FusionCrafterTile implements IGridHost,
 	public IGridNode getActionableNode() {
 		if(gridNode == null && level != null && !level.isClientSide) {
 			IAppEngApi api = Api.instance();
-			gridNode = Api.instance().grid().createGridNode(gridBlock);
+			gridNode = api.grid().createGridNode(gridBlock);
 			if(ownerUUID != null) {
 				gridNode.setPlayerID(api.registries().players().getID(new GameProfile(this.ownerUUID, "[UNKNOWN]")));
 			}
