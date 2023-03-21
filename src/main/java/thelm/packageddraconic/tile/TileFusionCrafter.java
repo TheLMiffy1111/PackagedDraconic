@@ -486,6 +486,14 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 		}
 	}
 
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if(hostHelper != null) {
+			hostHelper.invalidate();
+		}
+	}
+
 	@Optional.Method(modid="appliedenergistics2")
 	@Override
 	public IGridNode getGridNode(AEPartLocation dir) {
