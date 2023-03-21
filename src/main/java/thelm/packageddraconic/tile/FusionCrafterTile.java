@@ -389,12 +389,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	@Override
-	public void setRemoved() {
-		super.setRemoved();
-		endProcess();
-	}
-
-	@Override
 	public void load(BlockState blockState, CompoundNBT nbt) {
 		super.load(blockState, nbt);
 		fusionCounter = nbt.getInt("FusionCounter");
