@@ -481,16 +481,9 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		endProcess();
 		if(hostHelper != null) {
 			hostHelper.invalidate();
 		}
-	}
-
-	@Optional.Method(modid="appliedenergistics2")
-	@Override
-	public void setPlacer(EntityPlayer placer) {
-		placerID = AEApi.instance().registries().players().getID(placer);
 	}
 
 	@Optional.Method(modid="appliedenergistics2")
