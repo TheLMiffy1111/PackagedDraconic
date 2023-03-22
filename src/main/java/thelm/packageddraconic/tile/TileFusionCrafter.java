@@ -348,7 +348,6 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 
 	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
 		int range = 16;
-		List<BlockPos> positions = new ArrayList<>();
 		return Streams.stream(Iterables.concat(
 				BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
 				BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1)),
