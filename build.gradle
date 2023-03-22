@@ -67,7 +67,7 @@ sourceSets {
     main
 }
 
-version = "3.0.0.1"
+version = "3.0.0.2"
 group = "thelm.packageddraconic"
 archivesBaseName = "PackagedDraconic-1.18.2"
 
