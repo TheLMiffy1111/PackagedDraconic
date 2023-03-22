@@ -2,6 +2,7 @@ package thelm.packageddraconic.tile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.brandon3055.brandonscore.api.TechLevel;
@@ -195,41 +196,33 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
-		List<BlockPos> positions = new ArrayList<>();
 		int range = DEConfig.fusionInjectorRange;
 		int radius = 1;
-		List<MarkedInjectorTile> searchTiles = Streams.concat(
+		return Streams.concat(
 				BlockPos.betweenClosedStream(worldPosition.offset(-range, -radius, -radius), worldPosition.offset(range, radius, radius)),
 				BlockPos.betweenClosedStream(worldPosition.offset(-radius, -range, -radius), worldPosition.offset(radius, range, radius)),
 				BlockPos.betweenClosedStream(worldPosition.offset(-radius, -radius, -range), worldPosition.offset(radius, radius, range))).
-				map(level::getBlockEntity).
-				filter(t->t instanceof MarkedInjectorTile).
-				map(t->(MarkedInjectorTile)t).
-				collect(Collectors.toList());
-		for(MarkedInjectorTile tile : searchTiles) {
-			Vector3i dirVec = tile.getBlockPos().subtract(worldPosition);
-			int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
-			if(dist <= DEConfig.fusionInjectorMinDist) {
-				positions.clear();
-				return positions;
-			}
-			if(tile.getInjectorTier().index == tier && tile.getInjectorStack().isEmpty() &&
-					Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == tile.getDirection().getOpposite()) {
-				BlockPos pos = tile.getBlockPos();
-				Direction facing = tile.getDirection();
-				boolean obstructed = false;
-				for(BlockPos bp : BlockPos.betweenClosed(pos.relative(facing), pos.relative(facing, distanceInDirection(pos, worldPosition, facing) - 1))) {
-					if(!level.isEmptyBlock(bp) && level.getBlockState(bp).canOcclude() || level.getBlockEntity(bp) instanceof MarkedInjectorTile || level.getBlockEntity(bp) instanceof FusionCrafterTile) {
-						obstructed = true;
-						break;
+				map(checkPos->{
+					TileEntity tile = level.getBlockEntity(checkPos);
+					if(tile instanceof MarkedInjectorTile) {
+						MarkedInjectorTile injector = (MarkedInjectorTile)tile;
+						Vector3i dirVec = checkPos.subtract(worldPosition);
+						int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
+						if(dist >= DEConfig.fusionInjectorMinDist && injector.getInjectorTier().index == tier && injector.getInjectorStack().isEmpty() &&
+								Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite()) {
+							Direction facing = injector.getDirection();
+							for(BlockPos bp : BlockPos.betweenClosed(
+									checkPos.relative(facing),
+									checkPos.relative(facing, distanceInDirection(checkPos, worldPosition, facing)-1))) {
+								if(!level.isEmptyBlock(bp) && level.getBlockState(bp).canOcclude() || level.getBlockEntity(bp) instanceof MarkedInjectorTile || level.getBlockEntity(bp) instanceof FusionCrafterTile) {
+									return null;
+								}
+							}
+							return checkPos.immutable();
+						}
 					}
-				}
-				if(!obstructed) {
-					positions.add(tile.getBlockPos());
-				}
-			}
-		}
-		return positions;
+					return null;
+				}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	@Override
