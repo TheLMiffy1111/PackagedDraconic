@@ -3,6 +3,7 @@ package thelm.packageddraconic.tile;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.brandon3055.brandonscore.client.particle.BCEffectHandler;
@@ -15,7 +16,6 @@ import com.brandon3055.draconicevolution.client.render.effect.EffectTrackerFusio
 import com.brandon3055.draconicevolution.lib.DESoundHandler;
 import com.brandon3055.draconicevolution.lib.RecipeManager;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Ints;
 
@@ -194,36 +194,31 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public void initializeEffects() {
 		injectors.clear();
 		int range = 16;
-		for(BlockPos checkPos : Iterables.concat(
-				BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
-				BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1)),
-				BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range)))) {
+		Streams.stream(Iterables.concat(
+				BlockPos.getAllInBoxMutable(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
+				BlockPos.getAllInBoxMutable(pos.add(-1, -range, -1), pos.add(1, range, 1)),
+				BlockPos.getAllInBoxMutable(pos.add(-1, -1, -range), pos.add(1, 1, range)))).
+		forEach(checkPos->{
 			TileEntity tile = world.getTileEntity(checkPos);
 			if(tile instanceof TileMarkedInjector) {
 				TileMarkedInjector injector = (TileMarkedInjector)tile;
 				Vec3i dirVec = checkPos.subtract(pos);
 				int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
-				if(dist >= 2 &&
-						EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite() &&
+				if(dist >= 2 && EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite() &&
 						injector.setCraftingInventory(this)) {
 					EnumFacing facing = injector.getDirection();
-					boolean obstructed = false;
 					for(BlockPos bp : BlockPos.getAllInBox(
 							checkPos.offset(facing),
 							checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1))) {
 						if(!world.isAirBlock(bp) && (world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
-							obstructed = true;
-							break;
+							injector.setCraftingInventory(null);
+							return;
 						}
 					}
-					if(!obstructed) {
-						injectors.add(checkPos);
-						continue;
-					}
-					injector.setCraftingInventory(null);
+					injectors.add(checkPos.toImmutable());
 				}
 			}
-		}
+		});
 		effectRecipe = RecipeManager.FUSION_REGISTRY.findRecipe(this, world, pos);
 		if(effectRecipe == null) {
 			effects = null;
@@ -349,10 +344,10 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
 		int range = 16;
 		return Streams.stream(Iterables.concat(
-				BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
-				BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1)),
-				BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range)))).
-				filter(checkPos->{
+				BlockPos.getAllInBoxMutable(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
+				BlockPos.getAllInBoxMutable(pos.add(-1, -range, -1), pos.add(1, range, 1)),
+				BlockPos.getAllInBoxMutable(pos.add(-1, -1, -range), pos.add(1, 1, range)))).
+				map(checkPos->{
 					TileEntity tile = world.getTileEntity(checkPos);
 					if(tile instanceof TileMarkedInjector) {
 						TileMarkedInjector injector = (TileMarkedInjector)tile;
@@ -365,14 +360,14 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 									checkPos.offset(facing),
 									checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1))) {
 								if(!world.isAirBlock(bp) && (world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
-									return false;
+									return null;
 								}
 							}
-							return true;
+							return checkPos.toImmutable();
 						}
 					}
-					return false;
-				}).collect(Collectors.toList());
+					return null;
+				}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	@Override
