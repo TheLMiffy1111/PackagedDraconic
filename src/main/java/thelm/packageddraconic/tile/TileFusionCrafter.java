@@ -14,9 +14,11 @@ import com.brandon3055.draconicevolution.client.DEParticles;
 import com.brandon3055.draconicevolution.client.render.effect.EffectTrackerFusionCrafting;
 import com.brandon3055.draconicevolution.lib.DESoundHandler;
 import com.brandon3055.draconicevolution.lib.RecipeManager;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
+import com.google.common.primitives.Ints;
 
-import appeng.api.AEApi;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
@@ -192,28 +194,24 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public void initializeEffects() {
 		injectors.clear();
 		int range = 16;
-		List<BlockPos> positions = new ArrayList<>();
-		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1))));
-		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1))));
-		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range))));
-		for(BlockPos checkPos : positions) {
+		for(BlockPos checkPos : Iterables.concat(
+				BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
+				BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1)),
+				BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range)))) {
 			TileEntity tile = world.getTileEntity(checkPos);
 			if(tile instanceof TileMarkedInjector) {
 				TileMarkedInjector injector = (TileMarkedInjector)tile;
 				Vec3i dirVec = checkPos.subtract(pos);
-				double distSq = checkPos.distanceSq(pos);
-				if(distSq >= 4 &&
+				int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
+				if(dist >= 2 &&
 						EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite() &&
 						injector.setCraftingInventory(this)) {
-					BlockPos pPos = tile.getPos();
 					EnumFacing facing = injector.getDirection();
-					List<BlockPos> checkList = Lists.newArrayList(BlockPos.getAllInBox(
-							checkPos.offset(facing),
-							checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1)));
 					boolean obstructed = false;
-					for(BlockPos bp : checkList) {
-						if(!world.isAirBlock(bp) &&
-								(world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
+					for(BlockPos bp : BlockPos.getAllInBox(
+							checkPos.offset(facing),
+							checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1))) {
+						if(!world.isAirBlock(bp) && (world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
 							obstructed = true;
 							break;
 						}
@@ -351,31 +349,31 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	protected List<BlockPos> getEmptyInjectorsForTier(int tier) {
 		int range = 16;
 		List<BlockPos> positions = new ArrayList<>();
-		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1))));
-		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1))));
-		positions.addAll(Lists.newArrayList(BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range))));
-		return positions.stream().filter(checkPos->{
-			TileEntity tile = world.getTileEntity(checkPos);
-			if(tile instanceof TileMarkedInjector) {
-				TileMarkedInjector injector = (TileMarkedInjector)tile;
-				Vec3i dirVec = checkPos.subtract(pos);
-				double distSq = checkPos.distanceSq(pos);
-				if(distSq >= 4 && injector.getPedestalTier() == tier && injector.getStackInPedestal().isEmpty() &&
-						EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite()) {
-					EnumFacing facing = injector.getDirection();
-					List<BlockPos> checkList = Lists.newArrayList(BlockPos.getAllInBox(
-							checkPos.offset(facing),
-							checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1)));
-					for(BlockPos bp : checkList) {
-						if(!world.isAirBlock(bp) && (world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
-							return false;
+		return Streams.stream(Iterables.concat(
+				BlockPos.getAllInBox(pos.add(-range, -1, -1), pos.add(range, 1, 1)),
+				BlockPos.getAllInBox(pos.add(-1, -range, -1), pos.add(1, range, 1)),
+				BlockPos.getAllInBox(pos.add(-1, -1, -range), pos.add(1, 1, range)))).
+				filter(checkPos->{
+					TileEntity tile = world.getTileEntity(checkPos);
+					if(tile instanceof TileMarkedInjector) {
+						TileMarkedInjector injector = (TileMarkedInjector)tile;
+						Vec3i dirVec = checkPos.subtract(pos);
+						int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
+						if(dist >= 2 && injector.getPedestalTier() == tier && injector.getStackInPedestal().isEmpty() &&
+								EnumFacing.getFacingFromVector(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite()) {
+							EnumFacing facing = injector.getDirection();
+							for(BlockPos bp : BlockPos.getAllInBox(
+									checkPos.offset(facing),
+									checkPos.offset(facing, distanceInDirection(checkPos, pos, facing)-1))) {
+								if(!world.isAirBlock(bp) && (world.getBlockState(bp).isFullCube() || world.getTileEntity(bp) instanceof TileMarkedInjector)) {
+									return false;
+								}
+							}
+							return true;
 						}
 					}
-					return true;
-				}
-			}
-			return false;
-		}).collect(Collectors.toList());
+					return false;
+				}).collect(Collectors.toList());
 	}
 
 	@Override
