@@ -206,7 +206,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 					if(be instanceof MarkedInjectorBlockEntity injector) {
 						Vec3i dirVec = checkPos.subtract(worldPosition);
 						int dist = Ints.max(Math.abs(dirVec.getX()), Math.abs(dirVec.getY()), Math.abs(dirVec.getZ()));
-						if(dist >= DEConfig.fusionInjectorMinDist && injector.getInjectorTier().index == tier && injector.getInjectorStack().isEmpty() &&
+						if(dist > DEConfig.fusionInjectorMinDist && injector.getInjectorTier().index == tier && injector.getInjectorStack().isEmpty() &&
 								Direction.getNearest(dirVec.getX(), dirVec.getY(), dirVec.getZ()) == injector.getDirection().getOpposite()) {
 							Direction facing = injector.getDirection();
 							for(BlockPos bp : BlockPos.betweenClosed(
