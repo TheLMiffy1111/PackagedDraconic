@@ -1,6 +1,7 @@
 package thelm.packageddraconic.block.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -72,6 +75,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	public IFusionRecipe effectRecipe;
 	public float animProgress = 0;
 	public short animLength = 0;
+	public int[] requiredInjectors = {0, 0, 0, 0};
 	public boolean isWorking = false;	
 	public FusionState fusionState = FusionState.START;
 	public int fusionCounter = 0;
@@ -89,6 +93,53 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	@Override
 	protected Component getDefaultName() {
 		return new TranslatableComponent("block.packageddraconic.fusion_crafter");
+	}
+
+	public Component getMessage() {
+		if(isWorking) {
+			return null;
+		}
+		MutableComponent message = new TranslatableComponent("block.packageddraconic.fusion_crafter.injectors.usable");
+		MutableComponent usable = new TextComponent(" ");
+		for(int i = 0; i <= 3; ++i) {
+			int usableInjectors = getEmptyInjectorsForTier(i).size();
+			if(usableInjectors > 0) {
+				if(!usable.getSiblings().isEmpty()) {
+					usable.append(", ");
+				}
+				usable.append(new TranslatableComponent("block.packageddraconic.fusion_crafter.injectors."+i, usableInjectors));
+			}
+		}
+		if(usable.getSiblings().isEmpty()) {
+			message.append(" 0");
+		}
+		else {
+			message.append("\n");
+			message.append(usable);
+		}
+		if(Arrays.stream(requiredInjectors).anyMatch(i->i > 0)) {
+			message.append("\n");
+			message.append(new TranslatableComponent("block.packageddraconic.fusion_crafter.injectors.required"));
+			int[] actualRequiredInjectors = {
+					requiredInjectors[0]-requiredInjectors[1]-requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[1]-requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[3]
+			};
+			MutableComponent required = new TextComponent(" ");
+			for(int i = 0; i <= 3; ++i) {
+				int requiredInjectors = actualRequiredInjectors[i];
+				if(requiredInjectors > 0) {
+					if(!required.getSiblings().isEmpty()) {
+						required.append(", ");
+					}
+					required.append(new TranslatableComponent("block.packageddraconic.fusion_crafter.injectors."+i, requiredInjectors));
+				}
+			}
+			message.append("\n");
+			message.append(required);
+		}
+		return message;
 	}
 
 	@Override
@@ -111,8 +162,10 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	@Override
 	public boolean acceptPackage(IPackageRecipeInfo recipeInfo, List<ItemStack> stacks, Direction direction) {
 		if(!isBusy() && recipeInfo instanceof IFusionPackageRecipeInfo recipe) {
+			int tier = recipe.getTierRequired();
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
-			List<BlockPos> emptyInjectors = getEmptyInjectors(recipe.getTierRequired());
+			List<BlockPos> emptyInjectors = getEmptyInjectors(tier);
+			requiredInjectors[tier] = Math.max(requiredInjectors[tier], injectorInputs.size());
 			if(emptyInjectors.size() >= injectorInputs.size()) {
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));
