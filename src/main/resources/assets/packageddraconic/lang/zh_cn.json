@@ -2,6 +2,12 @@
     "itemGroup.packageddraconic": "封包龙之进化",
 
     "block.packageddraconic.fusion_crafter": "聚合封包合成器",
+    "block.packageddraconic.fusion_crafter.injectors.usable": "目前可用标记聚合注入器:",
+    "block.packageddraconic.fusion_crafter.injectors.required": "最低所需标记聚合注入器:",
+    "block.packageddraconic.fusion_crafter.injectors.0": "基础 %s",
+    "block.packageddraconic.fusion_crafter.injectors.1": "飞龙 %s",
+    "block.packageddraconic.fusion_crafter.injectors.2": "神龙 %s",
+    "block.packageddraconic.fusion_crafter.injectors.3": "混沌 %s",
     "block.packageddraconic.marked_draconium_injector": "标记基础聚合注入器",
     "block.packageddraconic.marked_wyvern_injector": "标记飞龙聚合注入器",
     "block.packageddraconic.marked_draconic_injector": "标记神龙聚合注入器",

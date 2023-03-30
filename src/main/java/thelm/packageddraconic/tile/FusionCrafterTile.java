@@ -1,6 +1,7 @@
 package thelm.packageddraconic.tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -32,7 +33,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -71,6 +74,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public IFusionRecipe effectRecipe;
 	public float animProgress = 0;
 	public short animLength = 0;
+	public int[] requiredInjectors = {0, 0, 0, 0};
 	public boolean isWorking = false;	
 	public FusionState fusionState = FusionState.START;
 	public int fusionCounter = 0;
@@ -88,6 +92,53 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	@Override
 	protected ITextComponent getDefaultName() {
 		return new TranslationTextComponent("block.packageddraconic.fusion_crafter");
+	}
+
+	public ITextComponent getMessage() {
+		if(isWorking) {
+			return null;
+		}
+		IFormattableTextComponent message = new TranslationTextComponent("block.packageddraconic.fusion_crafter.injectors.usable");
+		IFormattableTextComponent usable = new StringTextComponent(" ");
+		for(int i = 0; i <= 3; ++i) {
+			int usableInjectors = getEmptyInjectorsForTier(i).size();
+			if(usableInjectors > 0) {
+				if(!usable.getSiblings().isEmpty()) {
+					usable.append(", ");
+				}
+				usable.append(new TranslationTextComponent("block.packageddraconic.fusion_crafter.injectors."+i, usableInjectors));
+			}
+		}
+		if(usable.getSiblings().isEmpty()) {
+			message.append(" 0");
+		}
+		else {
+			message.append("\n");
+			message.append(usable);
+		}
+		if(Arrays.stream(requiredInjectors).anyMatch(i->i > 0)) {
+			message.append("\n");
+			message.append(new TranslationTextComponent("block.packageddraconic.fusion_crafter.injectors.required"));
+			int[] actualRequiredInjectors = {
+					requiredInjectors[0]-requiredInjectors[1]-requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[1]-requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[3]
+			};
+			IFormattableTextComponent required = new StringTextComponent(" ");
+			for(int i = 0; i <= 3; ++i) {
+				int requiredInjectors = actualRequiredInjectors[i];
+				if(requiredInjectors > 0) {
+					if(!required.getSiblings().isEmpty()) {
+						required.append(", ");
+					}
+					required.append(new TranslationTextComponent("block.packageddraconic.fusion_crafter.injectors."+i, requiredInjectors));
+				}
+			}
+			message.append("\n");
+			message.append(required);
+		}
+		return message;
 	}
 
 	@Override
@@ -111,8 +162,10 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public boolean acceptPackage(IPackageRecipeInfo recipeInfo, List<ItemStack> stacks, Direction direction) {
 		if(!isBusy() && recipeInfo instanceof IFusionPackageRecipeInfo) {
 			IFusionPackageRecipeInfo recipe = (IFusionPackageRecipeInfo)recipeInfo;
+			int tier = recipe.getTierRequired();
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
-			List<BlockPos> emptyInjectors = getEmptyInjectors(recipe.getTierRequired());
+			List<BlockPos> emptyInjectors = getEmptyInjectors(tier);
+			requiredInjectors[tier] = Math.max(requiredInjectors[tier], injectorInputs.size());
 			if(emptyInjectors.size() >= injectorInputs.size()) {
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));
