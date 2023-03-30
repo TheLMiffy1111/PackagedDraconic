@@ -1,6 +1,7 @@
 package thelm.packageddraconic.tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +40,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -77,6 +81,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public LinkedList<EffectTrackerFusionCrafting> effects;
 	public double effectRotation;
 	public boolean allLocked;
+	public int[] requiredInjectors = {0, 0, 0, 0};
 	public boolean isWorking = false;
 	public short progress = 0;
 	public int minTier = -1;
@@ -94,6 +99,53 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	@Override
 	protected String getLocalizedName() {
 		return I18n.translateToLocal("tile.packageddraconic.fusion_crafter.name");
+	}
+
+	public ITextComponent getMessage() {
+		if(isWorking) {
+			return null;
+		}
+		ITextComponent message = new TextComponentTranslation("tile.packageddraconic.fusion_crafter.injectors.usable");
+		ITextComponent usable = new TextComponentString(" ");
+		for(int i = 0; i <= 3; ++i) {
+			int usableInjectors = getEmptyInjectorsForTier(i).size();
+			if(usableInjectors > 0) {
+				if(!usable.getSiblings().isEmpty()) {
+					usable.appendText(", ");
+				}
+				usable.appendSibling(new TextComponentTranslation("tile.packageddraconic.fusion_crafter.injectors."+i, usableInjectors));
+			}
+		}
+		if(usable.getSiblings().isEmpty()) {
+			message.appendText(" 0");
+		}
+		else {
+			message.appendText("\n");
+			message.appendSibling(usable);
+		}
+		if(Arrays.stream(requiredInjectors).anyMatch(i->i > 0)) {
+			message.appendText("\n");
+			message.appendSibling(new TextComponentTranslation("tile.packageddraconic.fusion_crafter.injectors.required"));
+			int[] actualRequiredInjectors = {
+					requiredInjectors[0]-requiredInjectors[1]-requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[1]-requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[2]-requiredInjectors[3],
+					requiredInjectors[3]
+			};
+			ITextComponent required = new TextComponentString(" ");
+			for(int i = 0; i <= 3; ++i) {
+				int requiredInjectors = actualRequiredInjectors[i];
+				if(requiredInjectors > 0) {
+					if(!required.getSiblings().isEmpty()) {
+						required.appendText(", ");
+					}
+					required.appendSibling(new TextComponentTranslation("tile.packageddraconic.fusion_crafter.injectors."+i, requiredInjectors));
+				}
+			}
+			message.appendText("\n");
+			message.appendSibling(required);
+		}
+		return message;
 	}
 
 	@Override
@@ -240,8 +292,10 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public boolean acceptPackage(IRecipeInfo recipeInfo, List<ItemStack> stacks, EnumFacing facing) {
 		if(!isBusy() && recipeInfo instanceof IRecipeInfoFusion) {
 			IRecipeInfoFusion recipe = (IRecipeInfoFusion)recipeInfo;
+			int tier = recipe.getTierRequired();
 			List<ItemStack> injectorInputs = recipe.getInjectorInputs();
-			List<BlockPos> emptyInjectors = getEmptyInjectors(recipe.getTierRequired());
+			List<BlockPos> emptyInjectors = getEmptyInjectors(tier);
+			requiredInjectors[tier] = Math.max(requiredInjectors[tier], injectorInputs.size());
 			if(emptyInjectors.size() >= injectorInputs.size()) {
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));

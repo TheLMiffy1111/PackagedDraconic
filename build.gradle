@@ -46,7 +46,7 @@ repositories {
     }
 }
 
-version = "1.12.2-1.0.0.3"
+version = "1.12.2-1.0.0.4"
 group = "thelm.packageddraconic"
 archivesBaseName = "PackagedDraconic"
 

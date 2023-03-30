@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.IngredientNBT;
@@ -115,7 +116,7 @@ public class RecipeInfoFusion implements IRecipeInfoFusion {
 
 	@Override
 	public int getTierRequired() {
-		return recipe.getRecipeTier();
+		return MathHelper.clamp(recipe.getRecipeTier(), 0, 3);
 	}
 
 	@Override

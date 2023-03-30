@@ -1,6 +1,12 @@
 itemGroup.packageddraconic=PackagedDraconic
 
 tile.packageddraconic.fusion_crafter.name=Fusion Package Crafter
+tile.packageddraconic.fusion_crafter.injectors.usable=Currently Usable Marked Fusion Crafting Injectors:
+tile.packageddraconic.fusion_crafter.injectors.required=Minimum Required Marked Fusion Crafting Injectors:
+tile.packageddraconic.fusion_crafter.injectors.0=Basic %s
+tile.packageddraconic.fusion_crafter.injectors.1=Wyvern %s
+tile.packageddraconic.fusion_crafter.injectors.2=Draconic %s
+tile.packageddraconic.fusion_crafter.injectors.3=Chaotic %s
 tile.packageddraconic.marked_basic_injector.name=Marked Basic Fusion Crafting Injector
 tile.packageddraconic.marked_wyvern_injector.name=Marked Wyvern Fusion Crafting Injector
 tile.packageddraconic.marked_draconic_injector.name=Marked Draconic Fusion Crafting Injector
