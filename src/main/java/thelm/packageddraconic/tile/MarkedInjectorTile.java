@@ -142,6 +142,11 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	}
 
 	@Override
+	public int getComparatorSignal() {
+		return itemHandler.getStackInSlot(0).isEmpty() ? 0 : 15;
+	}
+
+	@Override
 	public void readSync(CompoundNBT nbt) {
 		super.readSync(nbt);
 		itemHandler.read(nbt);

@@ -435,6 +435,17 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	@Override
+	public int getComparatorSignal() {
+		if(isWorking) {
+			return 1;
+		}
+		if(!itemHandler.getStacks().subList(0, 2).stream().allMatch(ItemStack::isEmpty)) {
+			return 15;
+		}
+		return 0;
+	}
+
+	@Override
 	public void load(BlockState blockState, CompoundNBT nbt) {
 		super.load(blockState, nbt);
 		fusionCounter = nbt.getInt("FusionCounter");
