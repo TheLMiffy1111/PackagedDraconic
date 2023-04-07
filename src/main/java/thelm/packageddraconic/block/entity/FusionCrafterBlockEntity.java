@@ -441,6 +441,17 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	@Override
+	public int getComparatorSignal() {
+		if(isWorking) {
+			return 1;
+		}
+		if(!itemHandler.getStacks().subList(0, 2).stream().allMatch(ItemStack::isEmpty)) {
+			return 15;
+		}
+		return 0;
+	}
+
+	@Override
 	public void saveAdditional(CompoundTag nbt) {
 		super.saveAdditional(nbt);
 		nbt.putInt("FusionCounter", fusionCounter);
