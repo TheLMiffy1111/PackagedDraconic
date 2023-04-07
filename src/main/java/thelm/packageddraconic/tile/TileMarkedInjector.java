@@ -130,6 +130,11 @@ public class TileMarkedInjector extends TileBase implements ICraftingInjector {
 	}
 
 	@Override
+	public int getComparatorSignal() {
+		return inventory.getStackInSlot(0).isEmpty() ? 0 : 15;
+	}
+
+	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		energyStorage.readFromNBT(nbt);

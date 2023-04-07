@@ -13,6 +13,7 @@ public class InventoryFusionCrafter extends InventoryTileBase {
 	public InventoryFusionCrafter(TileFusionCrafter tile) {
 		super(tile, 3);
 		this.tile = tile;
+		slots = new int[] {0, 1};
 	}
 
 	@Override
