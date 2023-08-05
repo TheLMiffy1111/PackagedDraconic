@@ -147,10 +147,22 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	}
 
 	@Override
+	public void load(BlockState blockState, CompoundNBT nbt) {
+		super.load(blockState, nbt);
+		opStorage.read(nbt);
+	}
+
+	@Override
+	public CompoundNBT save(CompoundNBT nbt) {
+		super.save(nbt);
+		opStorage.write(nbt);
+		return nbt;
+	}
+
+	@Override
 	public void readSync(CompoundNBT nbt) {
 		super.readSync(nbt);
 		itemHandler.read(nbt);
-		opStorage.read(nbt);
 		crafterPos = null;
 		if(nbt.contains("CrafterPos")) {
 			int[] posArray = nbt.getIntArray("CrafterPos");
@@ -162,7 +174,6 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 	public CompoundNBT writeSync(CompoundNBT nbt) {
 		super.writeSync(nbt);
 		itemHandler.write(nbt);
-		opStorage.write(nbt);
 		if(crafterPos != null) {
 			nbt.putIntArray("CrafterPos", new int[] {crafterPos.getX(), crafterPos.getY(), crafterPos.getZ()});
 		}

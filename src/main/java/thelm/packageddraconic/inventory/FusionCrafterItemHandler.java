@@ -31,6 +31,7 @@ public class FusionCrafterItemHandler extends BaseItemHandler<FusionCrafterTile>
 		switch(id) {
 		case 0: return tile.progress;
 		case 1: return tile.isWorking ? 1 : 0;
+		case 2: return tile.getEnergyStorage().getEnergyStored();
 		default: return 0;
 		}
 	}
@@ -44,11 +45,14 @@ public class FusionCrafterItemHandler extends BaseItemHandler<FusionCrafterTile>
 		case 1:
 			tile.isWorking = value != 0;
 			break;
+		case 2:
+			tile.getEnergyStorage().setEnergyStored(value);
+			break;
 		}
 	}
 
 	@Override
 	public int getCount() {
-		return 2;
+		return 3;
 	}
 }

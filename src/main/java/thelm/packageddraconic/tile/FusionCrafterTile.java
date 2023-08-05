@@ -151,7 +151,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 			if(level.getGameTime() % 8 == 0) {
 				ejectItems();
 			}
-			energyStorage.updateIfChanged();
 		}
 		else {
 			fxHandler.run();
@@ -448,6 +447,10 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	@Override
 	public void load(BlockState blockState, CompoundNBT nbt) {
 		super.load(blockState, nbt);
+		fusionState = FusionState.values()[nbt.getByte("FusionState")];
+		progress = nbt.getShort("Progress");
+		animProgress = nbt.getFloat("AnimProgress");
+		animLength = nbt.getShort("AnimLength");
 		fusionCounter = nbt.getInt("FusionCounter");
 		currentRecipe = null;
 		if(nbt.contains("Recipe")) {
@@ -462,6 +465,10 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	@Override
 	public CompoundNBT save(CompoundNBT nbt) {
 		super.save(nbt);
+		nbt.putByte("FusionState", (byte)fusionState.ordinal());
+		nbt.putShort("Progress", progress);
+		nbt.putFloat("AnimProgress", animProgress);
+		nbt.putShort("AnimLength", animLength);
 		nbt.putInt("FusionCounter", fusionCounter);
 		if(currentRecipe != null) {
 			CompoundNBT tag = MiscHelper.INSTANCE.writeRecipe(new CompoundNBT(), currentRecipe);
@@ -474,10 +481,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public void readSync(CompoundNBT nbt) {
 		super.readSync(nbt);
 		isWorking = nbt.getBoolean("Working");
-		fusionState = FusionState.values()[nbt.getByte("FusionState")];
-		progress = nbt.getShort("Progress");
-		animProgress = nbt.getFloat("AnimProgress");
-		animLength = nbt.getShort("AnimLength");
 		itemHandler.read(nbt);
 		injectors.clear();
 		ListNBT injectorsTag = nbt.getList("Injectors", 11);
@@ -498,10 +501,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public CompoundNBT writeSync(CompoundNBT nbt) {
 		super.writeSync(nbt);
 		nbt.putBoolean("Working", isWorking);
-		nbt.putByte("FusionState", (byte)fusionState.ordinal());
-		nbt.putShort("Progress", progress);
-		nbt.putFloat("AnimProgress", animProgress);
-		nbt.putShort("AnimLength", animLength);
 		itemHandler.write(nbt);
 		ListNBT injectorsTag = new ListNBT();
 		injectors.stream().map(pos->new int[] {pos.getX(), pos.getY(), pos.getZ()}).
