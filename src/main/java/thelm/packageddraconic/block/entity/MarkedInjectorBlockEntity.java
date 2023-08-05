@@ -147,10 +147,21 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 	}
 
 	@Override
+	public void load(CompoundTag nbt) {
+		super.load(nbt);
+		opStorage.load(nbt);
+	}
+
+	@Override
+	public void saveAdditional(CompoundTag nbt) {
+		super.saveAdditional(nbt);
+		opStorage.save(nbt);
+	}
+
+	@Override
 	public void loadSync(CompoundTag nbt) {
 		super.loadSync(nbt);
 		itemHandler.load(nbt);
-		opStorage.load(nbt);
 		crafterPos = null;
 		if(nbt.contains("CrafterPos")) {
 			int[] posArray = nbt.getIntArray("CrafterPos");
@@ -162,7 +173,6 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 	public CompoundTag saveSync(CompoundTag nbt) {
 		super.saveSync(nbt);
 		itemHandler.save(nbt);
-		opStorage.save(nbt);
 		if(crafterPos != null) {
 			nbt.putIntArray("CrafterPos", new int[] {crafterPos.getX(), crafterPos.getY(), crafterPos.getZ()});
 		}

@@ -152,7 +152,6 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 			if(level.getGameTime() % 8 == 0) {
 				ejectItems();
 			}
-			energyStorage.updateIfChanged();
 		}
 		else {
 			fxHandler.run();
@@ -427,8 +426,23 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	@Override
+	public int getComparatorSignal() {
+		if(isWorking) {
+			return 1;
+		}
+		if(!itemHandler.getStacks().subList(0, 2).stream().allMatch(ItemStack::isEmpty)) {
+			return 15;
+		}
+		return 0;
+	}
+
+	@Override
 	public void load(CompoundTag nbt) {
 		super.load(nbt);
+		fusionState = FusionState.values()[nbt.getByte("FusionState")];
+		progress = nbt.getShort("Progress");
+		animProgress = nbt.getFloat("AnimProgress");
+		animLength = nbt.getShort("AnimLength");
 		fusionCounter = nbt.getInt("FusionCounter");
 		currentRecipe = null;
 		if(nbt.contains("Recipe")) {
@@ -441,19 +455,12 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	@Override
-	public int getComparatorSignal() {
-		if(isWorking) {
-			return 1;
-		}
-		if(!itemHandler.getStacks().subList(0, 2).stream().allMatch(ItemStack::isEmpty)) {
-			return 15;
-		}
-		return 0;
-	}
-
-	@Override
 	public void saveAdditional(CompoundTag nbt) {
 		super.saveAdditional(nbt);
+		nbt.putByte("FusionState", (byte)fusionState.ordinal());
+		nbt.putShort("Progress", progress);
+		nbt.putFloat("AnimProgress", animProgress);
+		nbt.putShort("AnimLength", animLength);
 		nbt.putInt("FusionCounter", fusionCounter);
 		if(currentRecipe != null) {
 			CompoundTag tag = MiscHelper.INSTANCE.saveRecipe(new CompoundTag(), currentRecipe);
@@ -465,10 +472,6 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	public void loadSync(CompoundTag nbt) {
 		super.loadSync(nbt);
 		isWorking = nbt.getBoolean("Working");
-		fusionState = FusionState.values()[nbt.getByte("FusionState")];
-		progress = nbt.getShort("Progress");
-		animProgress = nbt.getFloat("AnimProgress");
-		animLength = nbt.getShort("AnimLength");
 		itemHandler.load(nbt);
 		injectors.clear();
 		ListTag injectorsTag = nbt.getList("Injectors", 11);
@@ -489,10 +492,6 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	public CompoundTag saveSync(CompoundTag nbt) {
 		super.saveSync(nbt);
 		nbt.putBoolean("Working", isWorking);
-		nbt.putByte("FusionState", (byte)fusionState.ordinal());
-		nbt.putShort("Progress", progress);
-		nbt.putFloat("AnimProgress", animProgress);
-		nbt.putShort("AnimLength", animLength);
 		itemHandler.save(nbt);
 		ListTag injectorsTag = new ListTag();
 		injectors.stream().map(pos->new int[] {pos.getX(), pos.getY(), pos.getZ()}).
