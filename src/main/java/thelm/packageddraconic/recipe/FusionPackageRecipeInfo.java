@@ -42,7 +42,7 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 		inputCore = ItemStack.of(nbt.getCompound("InputCore"));
 		MiscHelper.INSTANCE.loadAllItems(nbt.getList("InputInjector", 10), inputInjector);
 		patterns.clear();
-		IRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("Recipe"))).orElse(null);
+		IRecipe<?> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("Recipe"))).orElse(null);
 		if(inputInjector.isEmpty()) {
 			return;
 		}

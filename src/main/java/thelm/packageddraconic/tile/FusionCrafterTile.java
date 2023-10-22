@@ -328,7 +328,6 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	}
 
 	protected void chargeEnergy() {
-		int prevStored = energyStorage.getEnergyStored();
 		ItemStack energyStack = itemHandler.getStackInSlot(2);
 		if(energyStack.getCapability(CapabilityEnergy.ENERGY, null).isPresent()) {
 			int energyRequest = Math.min(energyStorage.getMaxReceive(), energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored());
@@ -490,7 +489,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 			injectors.add(pos);
 		}
 		if(nbt.contains("EffectRecipe")) {
-			IRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("EffectRecipe"))).orElse(null);
+			IRecipe<?> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("EffectRecipe"))).orElse(null);
 			if(recipe instanceof IFusionRecipe) {
 				effectRecipe = (IFusionRecipe)recipe;
 			}
