@@ -65,16 +65,6 @@ public class FusionPackageRecipeType implements IPackageRecipeType {
 	}
 
 	@Override
-	public boolean canSetOutput() {
-		return false;
-	}
-
-	@Override
-	public boolean hasMachine() {
-		return true;
-	}
-
-	@Override
 	public boolean hasContainerItem() {
 		return false;
 	}
