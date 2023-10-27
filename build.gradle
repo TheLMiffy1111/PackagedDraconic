@@ -48,7 +48,7 @@ def specVersion = "2"
 def vendor = "thelm"
 
 group = "thelm.packageddraconic"
-version = "2.0.0.6"
+version = "2.0.0.7"
 
 archivesBaseName = "${modName}-${mcVersion}"
 
@@ -98,7 +98,7 @@ dependencies {
 	implementation fg.deobf("mekanism:Mekanism:1.16.5-10.1.2.457:generators")
 
 	//CurseMaven
-	implementation fg.deobf("curse.maven:packagedauto-308380:4819131")
+	implementation fg.deobf("curse.maven:packagedauto-308380:4819404")
 	implementation fg.deobf("curse.maven:ato-405593:3405905")
 }
 

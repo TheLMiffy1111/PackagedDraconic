@@ -44,6 +44,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import thelm.packagedauto.api.IPackageCraftingMachine;
 import thelm.packagedauto.api.IPackageRecipeInfo;
 import thelm.packagedauto.energy.EnergyStorage;
@@ -302,26 +303,13 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 			TileEntity tile = level.getBlockEntity(worldPosition.relative(direction));
 			if(tile != null && !(tile instanceof UnpackagerTile) && tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent()) {
 				IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).resolve().get();
-				boolean flag = true;
 				for(int i = 1; i >= endIndex; --i) {
 					ItemStack stack = this.itemHandler.getStackInSlot(i);
 					if(stack.isEmpty()) {
 						continue;
 					}
-					for(int slot = 0; slot < itemHandler.getSlots(); ++slot) {
-						ItemStack stackRem = itemHandler.insertItem(slot, stack, false);
-						if(stackRem.getCount() < stack.getCount()) {
-							stack = stackRem;
-							flag = false;
-						}
-						if(stack.isEmpty()) {
-							break;
-						}
-					}
-					this.itemHandler.setStackInSlot(i, stack);
-					if(flag) {
-						break;
-					}
+					ItemStack stackRem = ItemHandlerHelper.insertItem(itemHandler, stack, false);
+					this.itemHandler.setStackInSlot(i, stackRem);
 				}
 			}
 		}
