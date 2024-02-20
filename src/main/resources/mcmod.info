@@ -1,0 +1,11 @@
+[
+	{
+		"modid": "packageddraconic",
+		"version": "0@VERSION@",
+		"name": "PackagedDraconic",
+		"description": "A PackagedAuto addon that adds Draconic Evolution fusion autocrafting.",
+		"logoFile": "packageddraconic.logo.png",
+		"authorList": ["TheLMiffy1111"],
+		"url": "https://www.curseforge.com/minecraft/mc-mods/packageddraconic"
+	}
+]

@@ -1,13 +1,13 @@
 {
-    "type": "forge:ore_shapeless",
-    "result": {
-        "item": "draconicevolution:crafting_injector",
-        "data": 1,
-        "count": 1
-    },
-    "ingredients": [
-        {
-            "item": "packageddraconic:marked_wyvern_injector"
-        }
-    ]
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "draconicevolution:crafting_injector",
+		"data": 1,
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"item": "packageddraconic:marked_wyvern_injector"
+		}
+	]
 }

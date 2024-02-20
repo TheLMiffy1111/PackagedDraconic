@@ -1,17 +1,17 @@
 {
-    "type": "forge:ore_shapeless",
-    "result": {
-        "item": "packageddraconic:marked_chaotic_injector",
-        "count": 1
-    },
-    "ingredients": [
-        {
-            "item": "draconicevolution:crafting_injector",
-            "data": 3
-        },
-        {
-            "type": "forge:ore_dict",
-            "ore": "dustDraconium"
-        }
-    ]
+	"type": "forge:ore_shapeless",
+	"result": {
+		"item": "packageddraconic:marked_chaotic_injector",
+		"count": 1
+	},
+	"ingredients": [
+		{
+			"item": "draconicevolution:crafting_injector",
+			"data": 3
+		},
+		{
+			"type": "forge:ore_dict",
+			"ore": "dustDraconium"
+		}
+	]
 }
