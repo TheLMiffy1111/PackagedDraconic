@@ -21,12 +21,10 @@ public class PackagedDraconic {
 			return new ItemStack(FusionCrafterBlock.INSTANCE);
 		}
 	};
-	public static PackagedDraconic core;
 
 	public PackagedDraconic() {
-		core = this;
 		CommonEventHandler.getInstance().onConstruct();
-		DistExecutor.runWhenOn(Dist.CLIENT, ()->()->{
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, ()->()->{
 			ClientEventHandler.getInstance().onConstruct();
 		});
 	}

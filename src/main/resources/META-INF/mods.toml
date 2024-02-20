@@ -1,32 +1,28 @@
-modLoader="javafml"
-loaderVersion="[34,)"
-license="MIT"
-issueTrackerURL="https://github.com/TheLMiffy1111/PackagedDraconic/issues"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/packageddraconic"
-authors="TheLMiffy1111"
+modLoader = "javafml"
+loaderVersion = "[34,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/TheLMiffy1111/PackagedDraconic/issues"
+
 [[mods]]
-modId="packageddraconic"
-version="${file.jarVersion}"
-displayName="PackagedDraconic"
-description="A PackagedAuto addon that adds Draconic Evolution fusion autocrafting."
+	modId="packageddraconic"
+	version = "0@VERSION@"
+	displayName="PackagedDraconic"
+	description = "A PackagedAuto addon that adds Draconic Evolution fusion autocrafting."
+	logoFile = "packageddraconic.logo.png"
+	authors = "TheLMiffy1111"
+	displayURL = "https://www.curseforge.com/minecraft/mc-mods/packageddraconic"
 
 [[dependencies.packageddraconic]]
-    modId="forge"
-    mandatory=true
-    versionRange="[34,)"
-    ordering="NONE"
-    side="BOTH"
+	modId = "forge"
+	versionRange = "[34,)"
+	mandatory = true
 
 [[dependencies.packageddraconic]]
-    modId="draconicevolution"
-    mandatory=true
-    versionRange="[3.0,)"
-    ordering="NONE"
-    side="BOTH"
+	modId = "packagedauto"
+	versionRange = "[2.0.5,)"
+	mandatory = true
 
 [[dependencies.packageddraconic]]
-    modId="packagedauto"
-    mandatory=true
-    versionRange="[2.0.5,)"
-    ordering="NONE"
-    side="BOTH"
+	modId = "draconicevolution"
+	versionRange = "[3,)"
+	mandatory = true

@@ -1,9 +1,10 @@
 plugins {
-	id "net.neoforged.gradle" version "[6.0.13,7)"
-	id "org.parchmentmc.librarian.forgegradle" version "[1,)"
+	id "com.crystaelix.loom" version "jitpack-f5998d25"
 	id "eclipse"
 	id "idea"
 	id "maven-publish"
+	id "net.kyori.blossom" version "[1,2)"
+	id "me.modmuss50.mod-publish-plugin" version "0.5.0"
 }
 
 repositories {
@@ -11,29 +12,59 @@ repositories {
 	flatDir {
 		dirs "libs"
 	}
-	maven {
-		url = "https://maven.minecraftforge.net/"
+	exclusiveContent {
+		forRepository {
+			maven {
+				url = "https://maven.parchmentmc.net/"
+			}
+		}
+		filter {
+			includeGroup "org.parchmentmc.data"
+		}
 	}
-	maven {
-		url = "https://repo.spongepowered.org/maven/"
+	exclusiveContent {
+		forRepository {
+			maven {
+				url = "https://maven.blamejared.com/"
+			}
+		}
+		filter {
+			includeGroup "mezz.jei"
+			includeGroup "vazkii.patchouli"
+		}
 	}
-	maven {
-		url = "https://maven.tterrag.com/"
+	exclusiveContent {
+		forRepository {
+			maven {
+				url = "https://maven.covers1624.net/"
+			}
+		}
+		filter {
+			includeGroup "codechicken"
+			includeGroup "com.brandon3055.brandonscore"
+			includeGroup "com.brandon3055.draconicevolution"
+		}
 	}
-	maven {
-		url = "https://maven.blamejared.com/"
-	}
-	maven {
-		url = "https://maven.covers1624.net/"
-	}
-	maven {
-		url = "https://cursemaven.com/"
-		content {
+	exclusiveContent {
+		forRepository {
+			maven {
+				url = "https://cursemaven.com/"
+			}
+		}
+		filter {
 			includeGroup "curse.maven"
 		}
 	}
-	maven {
-		url = "https://modmaven.dev/"
+	exclusiveContent {
+		forRepository {
+			maven {
+				url = "https://modmaven.dev/"
+			}
+		}
+		filter {
+			includeGroup "appeng"
+			includeGroup "mekanism"
+		}
 	}
 }
 
@@ -48,7 +79,7 @@ def specVersion = "2"
 def vendor = "thelm"
 
 group = "thelm.packageddraconic"
-version = "2.0.0.7"
+version = "2.0.0.8"
 
 archivesBaseName = "${modName}-${mcVersion}"
 
@@ -61,21 +92,12 @@ tasks.withType(JavaCompile).configureEach {
 	options.encoding = "UTF-8"
 }
 
-minecraft {
-	mappings channel: "parchment", version: "2022.03.06-1.16.5"
-	generateRunFolders = true
+loom {
+	silentMojangMappingsLicense()
+	interfaceInjection.enableDependencyInterfaceInjection = false
 	runs {
 		configureEach {
-			workingDirectory project.file("run")
-			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
-			property "forge.logging.console.level", "debug"
-			property "mixin.env.remapRefMap", "true"
-			property "mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg"
-			mods {
-				"${modId}" {
-					source sourceSets.main
-				}
-			}
+			property "fabric.log.console.level", "debug"
 		}
 		client
 		server
@@ -83,29 +105,58 @@ minecraft {
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:1.16.5-36.2.39"
+	// Log4j
+	implementation "org.apache.logging.log4j:log4j-core:2.22.1"
 
-	implementation fg.deobf("appeng:appliedenergistics2:8.4.7")
-	implementation fg.deobf("codechicken:CodeChickenLib:1.16.5-4.0.7.445:universal")
-	implementation fg.deobf("com.brandon3055.brandonscore:BrandonsCore:1.16.5-3.0.15.248:universal")
-	implementation fg.deobf("com.brandon3055.draconicevolution:Draconic-Evolution:1.16.5-3.0.29.518:universal")
-	implementation fg.deobf("mezz.jei:jei-1.16.5:7.8.0.1009")
-	implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:7.1.2.526")
-	implementation fg.deobf("vazkii.patchouli:Patchouli:1.16.4-53.3")
-	implementation fg.deobf("com.jozufozu.flywheel:Flywheel:1.16-0.2.5.53")
-	implementation fg.deobf("com.simibubi.create:Create:mc1.16.5_v0.3.2g+480")
-	implementation fg.deobf("mekanism:Mekanism:1.16.5-10.1.2.457")
-	implementation fg.deobf("mekanism:Mekanism:1.16.5-10.1.2.457:generators")
+	// Minecraft
+	minecraft "com.mojang:minecraft:1.16.5"
+	mappings loom.layered {
+		mappings("de.oceanlabs.mcp:mcp_config:1.16.5-20210115.111550@zip") {
+			mappingPath "config/joined.tsrg"
+			fallbackNamespaces "official", "named"
+			mergeNamespace "official"
+		}
+		officialMojangMappings {
+			skipClassNames = true
+		}
+		parchment "org.parchmentmc.data:parchment-1.16.5:2022.03.06@zip"
+	}
+	forge "net.minecraftforge:forge:1.16.5-36.2.39"
 
-	//CurseMaven
-	implementation fg.deobf("curse.maven:packagedauto-308380:4819404")
-	implementation fg.deobf("curse.maven:ato-405593:3405905")
+	// Dependencies
+	modImplementation "curse.maven:packagedauto-308380:5118644"
+	modImplementation "codechicken:CodeChickenLib:1.16.5-4.0.7.445:universal"
+	modImplementation "com.brandon3055.brandonscore:BrandonsCore:1.16.5-3.0.15.248:universal"
+	modImplementation "com.brandon3055.draconicevolution:Draconic-Evolution:1.16.5-3.0.29.518:universal"
+	modImplementation "mezz.jei:jei-1.16.5:7.8.0.1009"
+	modImplementation "appeng:appliedenergistics2:8.4.7"
+	modImplementation "vazkii.patchouli:Patchouli:1.16.4-53.3"
 
-	//Performance
-	implementation fg.deobf("curse.maven:shutup-experimental-settings-407174:3188120")
-	implementation fg.deobf("curse.maven:modernfix-790626:4980927")
-	implementation fg.deobf("curse.maven:ferritecore-429235:4074330")
-	implementation fg.deobf("curse.maven:lazy-dfu-forge-460819:3249059")
+	// Testing
+	modImplementation "mekanism:Mekanism:1.16.5-10.1.2.457"
+
+	// Performance
+	modImplementation "curse.maven:shutup-experimental-settings-407174:3188120"
+	modImplementation "curse.maven:modernfix-790626:5077294"
+	modImplementation "curse.maven:ferritecore-429235:3435176"
+	modImplementation "curse.maven:lazy-dfu-forge-460819:3249059"
+}
+
+def replacements = [
+	"0@VERSION@": version
+]
+
+blossom {
+	replaceToken(replacements)
+}
+
+processResources {
+	inputs.properties(replacements)
+	filesMatching(["mcmod.info", "META-INF/mods.toml"]) {
+		filter {
+			it.replace(replacements)
+		}
+	}
 }
 
 def manifestAttributes = [
@@ -119,9 +170,33 @@ def manifestAttributes = [
 
 jar {
 	manifest.attributes(manifestAttributes)
-	finalizedBy("reobfJar")
 }
 
 sourcesJar {
 	manifest.attributes(manifestAttributes)
+}
+
+publishMods {
+	file = remapJar.archiveFile
+	version = displayName = "${mcVersion}-${project.version}"
+	changelog = file("changelog.md").text
+	type = BETA
+	modLoaders.add("forge")
+	additionalFiles.from(remapSourcesJar.archiveFile)
+
+	curseforge {
+		accessToken = providers.gradleProperty("curseforge.token")
+		projectId = "833931"
+		minecraftVersions.add(mcVersion)
+		requires "packagedauto", "draconic-evolution"
+		optional "applied-energistics-2"
+	}
+
+	modrinth {
+		accessToken = providers.gradleProperty("modrinth.token")
+		projectId = "dNduUQBR"
+		minecraftVersions.add(mcVersion)
+		requires "packagedauto"
+		optional "ae2"
+	}
 }

@@ -1,53 +1,53 @@
 {
-    "conditions": [
-        {
-            "type": "forge:not",
-            "value": {
-                "type": "forge:mod_loaded",
-                "modid": "appliedenergistics2"
-            }
-        }
-    ],
-    "type": "draconicevolution:fusion_crafting",
-    "result": {
-        "item": "packageddraconic:fusion_crafter",
-        "count": 1
-    },
-    "catalyst": {
-        "item": "draconicevolution:crafting_core"
-    },
-    "total_energy": 50000000,
-    "tier": "WYVERN",
-    "ingredients": [
-        {
-            "tag": "forge:ingots/draconium_awakened"
-        },
-        {
-            "tag": "forge:ingots/draconium_awakened"
-        },
-        {
-            "item": "draconicevolution:awakened_core"
-        },
-        {
-            "item": "minecraft:dragon_egg"
-        },
-        {
-            "item": "packagedauto:package_component"
-        },
-        {
-            "tag": "forge:nether_stars"
-        },
-        {
-            "tag": "forge:ender_pearls"
-        },
-        {
-            "tag": "forge:ender_pearls"
-        },
-        {
-            "item": "minecraft:ender_eye"
-        },
-        {
-            "item": "minecraft:ender_eye"
-        }
-    ]
+	"conditions": [
+		{
+			"type": "forge:not",
+			"value": {
+				"type": "forge:mod_loaded",
+				"modid": "appliedenergistics2"
+			}
+		}
+	],
+	"type": "draconicevolution:fusion_crafting",
+	"result": {
+		"item": "packageddraconic:fusion_crafter",
+		"count": 1
+	},
+	"catalyst": {
+		"item": "draconicevolution:crafting_core"
+	},
+	"total_energy": 50000000,
+	"tier": "WYVERN",
+	"ingredients": [
+		{
+			"tag": "forge:ingots/draconium_awakened"
+		},
+		{
+			"tag": "forge:ingots/draconium_awakened"
+		},
+		{
+			"item": "draconicevolution:awakened_core"
+		},
+		{
+			"item": "minecraft:dragon_egg"
+		},
+		{
+			"item": "packagedauto:package_component"
+		},
+		{
+			"tag": "forge:nether_stars"
+		},
+		{
+			"tag": "forge:ender_pearls"
+		},
+		{
+			"tag": "forge:ender_pearls"
+		},
+		{
+			"item": "minecraft:ender_eye"
+		},
+		{
+			"item": "minecraft:ender_eye"
+		}
+	]
 }
