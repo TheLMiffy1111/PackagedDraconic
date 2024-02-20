@@ -1,10 +1,10 @@
 {
-    "replace": false,
-    "values": [
-        "packageddraconic:fusion_crafter",
-        "packageddraconic:marked_draconium_injector",
-        "packageddraconic:marked_wyvern_injector",
-        "packageddraconic:marked_draconic_injector",
-        "packageddraconic:marked_chaotic_injector"
-    ]
+	"replace": false,
+	"values": [
+		"packageddraconic:fusion_crafter",
+		"packageddraconic:marked_draconium_injector",
+		"packageddraconic:marked_wyvern_injector",
+		"packageddraconic:marked_draconic_injector",
+		"packageddraconic:marked_chaotic_injector"
+	]
 }

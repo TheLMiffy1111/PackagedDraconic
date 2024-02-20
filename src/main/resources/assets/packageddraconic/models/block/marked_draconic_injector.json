@@ -1,6 +1,6 @@
 {
-    "parent": "packageddraconic:block/marked_injector",
-    "textures": {
-        "core": "packageddraconic:blocks/marked_draconic_injector_core"
-    }
+	"parent": "packageddraconic:block/marked_injector",
+	"textures": {
+		"core": "packageddraconic:blocks/marked_draconic_injector_core"
+	}
 }

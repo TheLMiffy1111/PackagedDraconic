@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "packageddraconic:block/fusion_crafter"
-        }
-    }
+	"variants": {
+		"": {
+			"model": "packageddraconic:block/fusion_crafter"
+		}
+	}
 }
