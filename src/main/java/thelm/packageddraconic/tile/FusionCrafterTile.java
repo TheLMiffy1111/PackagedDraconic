@@ -230,7 +230,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 		animLength = 0;
 		injectors.stream().map(level::getBlockEntity).
 		filter(tile->tile instanceof MarkedInjectorTile && !tile.isRemoved()).
-		forEach(tile->((MarkedInjectorTile)tile).spawnItem());
+		forEach(tile->((MarkedInjectorTile)tile).ejectItem());
 		injectors.clear();
 		isWorking = false;
 		minTier = -1;

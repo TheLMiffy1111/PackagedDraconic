@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -21,15 +22,20 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fml.ModList;
 import thelm.packagedauto.tile.BaseTile;
+import thelm.packagedauto.util.MiscHelper;
 import thelm.packageddraconic.block.MarkedInjectorBlock;
+import thelm.packageddraconic.integration.appeng.tile.AEMarkedInjectorTile;
 import thelm.packageddraconic.inventory.MarkedInjectorItemHandler;
 import thelm.packageddraconic.op.MarkedInjectorOPStorage;
 
-public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
+public class MarkedInjectorTile extends BaseTile implements ITickableTileEntity, IFusionInjector {
 
 	public static final TileEntityType<MarkedInjectorTile> TYPE_INSTANCE = (TileEntityType<MarkedInjectorTile>)TileEntityType.Builder.
-			of(MarkedInjectorTile::new, MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
+			of(MiscHelper.INSTANCE.conditionalSupplier(()->ModList.get().isLoaded("appliedenergistics2"),
+					()->AEMarkedInjectorTile::new, ()->MarkedInjectorTile::new),
+					MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
 			build(null).setRegistryName("packageddraconic:marked_injector");
 
 	public MarkedInjectorOPStorage opStorage = new MarkedInjectorOPStorage(this);
@@ -46,10 +52,13 @@ public class MarkedInjectorTile extends BaseTile implements IFusionInjector {
 		return getBlockState().getBlock().getName();
 	}
 
-	public void spawnItem() {
+	@Override
+	public void tick() {}
+
+	public void ejectItem() {
 		ItemStack stack = itemHandler.getStackInSlot(0);
 		itemHandler.setStackInSlot(0, ItemStack.EMPTY);
-		if(!level.isClientSide && !stack.isEmpty()) {
+		if(!stack.isEmpty()) {
 			Direction direction = getDirection();
 			double dx = level.random.nextFloat()/2+0.25+direction.getStepX()*0.5;
 			double dy = level.random.nextFloat()/2+0.25+direction.getStepY()*0.5;
