@@ -377,7 +377,7 @@ public class TileFusionCrafter extends TileBase implements ITickable, IPackageCr
 	public void endProcess() {
 		progress = 0;
 		getInjectors().stream().
-		forEach(tile->((TileMarkedInjector)tile).spawnItem());
+		forEach(tile->((TileMarkedInjector)tile).ejectItem());
 		injectors.clear();
 		isWorking = false;
 		minTier = -1;

@@ -77,7 +77,7 @@ def specVersion = "1"
 def vendor = "thelm"
 
 group = "thelm.packageddraconic"
-version = "1.0.0.9"
+version = "1.0.0.10"
 
 archivesBaseName = "${modName}-${mcVersion}"
 
@@ -116,7 +116,7 @@ dependencies {
 	legacyForge "net.minecraftforge:forge:1.12.2-14.23.5.2860"
 
 	// Dependencies
-	modImplementation "curse.maven:packagedauto-308380:5118642"
+	modImplementation "curse.maven:packagedauto-308380:5148829"
 	modImplementation "codechicken:CodeChickenLib:1.12.2-3.2.3.358:universal"
 	modImplementation "curse.maven:redstone-flux-270789:2920436"
 	modImplementation "com.brandon3055.brandonscore:BrandonsCore:1.12.2-2.4.20.162:universal"
@@ -131,9 +131,9 @@ dependencies {
 
 	// Performance
 	implementation("zone.rong:mixinbooter:9.1") {transitive = false}
-	modImplementation "curse.maven:reid-629017:4949840"
+	modImplementation "curse.maven:reid-629017:5143492"
 	modImplementation "curse.maven:vintagefix-871198:5010926"
-	modImplementation "curse.maven:lolasm-460609:4800875"
+	modImplementation "curse.maven:lolasm-460609:5120166"
 }
 
 def replacements = [

@@ -3,6 +3,11 @@ package thelm.packageddraconic.tile;
 import com.brandon3055.draconicevolution.api.fusioncrafting.ICraftingInjector;
 import com.brandon3055.draconicevolution.api.fusioncrafting.IFusionCraftingInventory;
 
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionHost;
+import appeng.api.util.AECableType;
+import appeng.api.util.AEPartLocation;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
@@ -14,22 +19,34 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 import thelm.packagedauto.tile.TileBase;
 import thelm.packageddraconic.block.BlockMarkedInjector;
 import thelm.packageddraconic.energy.EnergyStorageMarkedInjector;
+import thelm.packageddraconic.integration.appeng.networking.HostHelperTileMarkedInjector;
 import thelm.packageddraconic.inventory.InventoryMarkedInjector;
 
-public class TileMarkedInjector extends TileBase implements ICraftingInjector {
+@Optional.InterfaceList({
+	@Optional.Interface(iface="appeng.api.networking.IGridHost", modid="appliedenergistics2"),
+	@Optional.Interface(iface="appeng.api.networking.security.IActionHost", modid="appliedenergistics2"),
+})
+public class TileMarkedInjector extends TileBase implements ITickable, ICraftingInjector, IGridHost, IActionHost {
 
+	public boolean firstTick = true;
 	public EnergyStorageMarkedInjector energyStorage = new EnergyStorageMarkedInjector(this);
 	public BlockPos crafterPos = null;
 	public int tier = -1;
 
 	public TileMarkedInjector() {
 		setInventory(new InventoryMarkedInjector(this));
+		if(Loader.isModLoaded("appliedenergistics2")) {
+			hostHelper = new HostHelperTileMarkedInjector(this);
+		}
 	}
 
 	@Override
@@ -37,10 +54,23 @@ public class TileMarkedInjector extends TileBase implements ICraftingInjector {
 		return getBlockType().getLocalizedName();
 	}
 
-	public void spawnItem() {
+	@Override
+	public void update() {
+		if(firstTick) {
+			firstTick = false;
+			if(!world.isRemote && hostHelper != null) {
+				hostHelper.isActive();
+			}
+		}
+	}
+
+	public void ejectItem() {
+		if(hostHelper != null && hostHelper.isActive()) {
+			hostHelper.ejectItem();
+		}
 		ItemStack stack = inventory.getStackInSlot(0);
 		inventory.setInventorySlotContents(0, ItemStack.EMPTY);
-		if(!world.isRemote && !stack.isEmpty()) {
+		if(!stack.isEmpty()) {
 			EnumFacing facing = getDirection();
 			double dx = world.rand.nextFloat()/2+0.25+facing.getXOffset()*0.5;
 			double dy = world.rand.nextFloat()/2+0.25+facing.getYOffset()*0.5;
@@ -134,6 +164,48 @@ public class TileMarkedInjector extends TileBase implements ICraftingInjector {
 		return inventory.getStackInSlot(0).isEmpty() ? 0 : 15;
 	}
 
+	public HostHelperTileMarkedInjector hostHelper;
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		if(hostHelper != null) {
+			hostHelper.invalidate();
+		}
+	}
+
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if(hostHelper != null) {
+			hostHelper.invalidate();
+		}
+	}
+
+	@Optional.Method(modid="appliedenergistics2")
+	@Override
+	public IGridNode getGridNode(AEPartLocation dir) {
+		return getActionableNode();
+	}
+
+	@Optional.Method(modid="appliedenergistics2")
+	@Override
+	public AECableType getCableConnectionType(AEPartLocation dir) {
+		return AECableType.SMART;
+	}
+
+	@Optional.Method(modid="appliedenergistics2")
+	@Override
+	public void securityBreak() {
+		world.destroyBlock(pos, true);
+	}
+
+	@Optional.Method(modid="appliedenergistics2")
+	@Override
+	public IGridNode getActionableNode() {
+		return hostHelper.getNode();
+	}
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
@@ -143,6 +215,9 @@ public class TileMarkedInjector extends TileBase implements ICraftingInjector {
 			int[] posArray = nbt.getIntArray("CrafterPos");
 			crafterPos = new BlockPos(posArray[0], posArray[1], posArray[2]);
 		}
+		if(hostHelper != null) {
+			hostHelper.readFromNBT(nbt);
+		}
 	}
 
 	@Override
@@ -151,6 +226,9 @@ public class TileMarkedInjector extends TileBase implements ICraftingInjector {
 		energyStorage.writeToNBT(nbt);
 		if(crafterPos != null) {
 			nbt.setIntArray("CrafterPos", new int[] {crafterPos.getX(), crafterPos.getY(), crafterPos.getZ()});
+		}
+		if(hostHelper != null) {
+			hostHelper.writeToNBT(nbt);
 		}
 		return nbt;
 	}
