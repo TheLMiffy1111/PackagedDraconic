@@ -21,15 +21,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.fml.ModList;
 import thelm.packagedauto.block.entity.BaseBlockEntity;
+import thelm.packagedauto.util.MiscHelper;
 import thelm.packageddraconic.block.MarkedInjectorBlock;
+import thelm.packageddraconic.integration.appeng.blockentity.AEMarkedInjectorBlockEntity;
 import thelm.packageddraconic.inventory.MarkedInjectorItemHandler;
 import thelm.packageddraconic.op.MarkedInjectorOPStorage;
 
 public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusionInjector {
 
 	public static final BlockEntityType<MarkedInjectorBlockEntity> TYPE_INSTANCE = (BlockEntityType<MarkedInjectorBlockEntity>)BlockEntityType.Builder.
-			of(MarkedInjectorBlockEntity::new, MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
+			of(MiscHelper.INSTANCE.<BlockEntityType.BlockEntitySupplier<MarkedInjectorBlockEntity>>conditionalSupplier(
+					()->ModList.get().isLoaded("ae2"),
+					()->()->AEMarkedInjectorBlockEntity::new, ()->()->MarkedInjectorBlockEntity::new).get(),
+					MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
 			build(null).setRegistryName("packageddraconic:marked_injector");
 
 	public MarkedInjectorOPStorage opStorage = new MarkedInjectorOPStorage(this);
@@ -46,10 +52,10 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 		return getBlockState().getBlock().getName();
 	}
 
-	public void spawnItem() {
+	public void ejectItem() {
 		ItemStack stack = itemHandler.getStackInSlot(0);
 		itemHandler.setStackInSlot(0, ItemStack.EMPTY);
-		if(!level.isClientSide && !stack.isEmpty()) {
+		if(!stack.isEmpty()) {
 			Direction direction = getDirection();
 			double dx = level.random.nextFloat()/2+0.25+direction.getStepX()*0.5;
 			double dy = level.random.nextFloat()/2+0.25+direction.getStepY()*0.5;

@@ -229,7 +229,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 		animLength = 0;
 		injectors.stream().map(level::getBlockEntity).
 		filter(be->be instanceof MarkedInjectorBlockEntity && !be.isRemoved()).
-		forEach(be->((MarkedInjectorBlockEntity)be).spawnItem());
+		forEach(be->((MarkedInjectorBlockEntity)be).ejectItem());
 		injectors.clear();
 		isWorking = false;
 		minTier = -1;

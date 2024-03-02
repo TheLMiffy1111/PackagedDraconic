@@ -79,7 +79,7 @@ def specVersion = "3"
 def vendor = "thelm"
 
 group = "thelm.packageddraconic"
-version = "3.0.0.8"
+version = "3.0.0.9"
 
 archivesBaseName = "${modName}-${mcVersion}"
 
@@ -117,7 +117,7 @@ dependencies {
 	forge "net.minecraftforge:forge:1.18.2-40.2.17"
 
 	// Dependencies
-	modImplementation "curse.maven:packagedauto-308380:5118647"
+	modImplementation "curse.maven:packagedauto-308380:5148836"
 	modImplementation "codechicken:CodeChickenLib:1.18.2-4.1.4.488:universal"
 	modImplementation "com.brandon3055.brandonscore:BrandonsCore:1.18.2-3.1.10.283:universal"
 	modImplementation "com.brandon3055.draconicevolution:Draconic-Evolution:1.18.2-3.0.31.531:universal"

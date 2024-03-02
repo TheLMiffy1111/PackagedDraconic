@@ -13,6 +13,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -21,6 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import thelm.packagedauto.block.BaseBlock;
+import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packageddraconic.PackagedDraconic;
 import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 
@@ -58,6 +62,11 @@ public class MarkedInjectorBlock extends BaseBlock {
 	@Override
 	public MarkedInjectorBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
 		return MarkedInjectorBlockEntity.TYPE_INSTANCE.create(pos, state);
+	}
+
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+		return BaseBlockEntity::tick;
 	}
 
 	@Override
