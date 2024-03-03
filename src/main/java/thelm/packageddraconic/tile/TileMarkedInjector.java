@@ -25,6 +25,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import thelm.packagedauto.tile.TileBase;
 import thelm.packageddraconic.block.BlockMarkedInjector;
 import thelm.packageddraconic.energy.EnergyStorageMarkedInjector;
@@ -256,6 +258,7 @@ public class TileMarkedInjector extends TileBase implements ITickable, ICrafting
 		return capability == CapabilityEnergy.ENERGY && getDirection() != facing ? (T)energyStorage : super.getCapability(capability, facing);
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public GuiContainer getClientGuiElement(EntityPlayer player, Object... args) {
 		return null;
