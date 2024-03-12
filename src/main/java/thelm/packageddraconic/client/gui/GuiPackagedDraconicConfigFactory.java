@@ -9,9 +9,7 @@ import net.minecraftforge.fml.client.IModGuiFactory;
 public class GuiPackagedDraconicConfigFactory implements IModGuiFactory {
 
 	@Override
-	public void initialize(Minecraft minecraft) {
-
-	}
+	public void initialize(Minecraft minecraft) {}
 
 	@Override
 	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
