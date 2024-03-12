@@ -87,8 +87,6 @@ public class FusionCrafterScreen extends BaseScreen<FusionCrafterMenu> {
 		}
 
 		@Override
-		public void updateNarration(NarrationElementOutput narrationElementOutput) {
-
-		}
+		public void updateNarration(NarrationElementOutput narrationElementOutput) {}
 	}
 }

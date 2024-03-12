@@ -18,9 +18,7 @@ import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
 // Code modified from RenderTileCraftingInjector
 public class MarkedInjectorRenderer implements BlockEntityRenderer<MarkedInjectorBlockEntity> {
 
-	public MarkedInjectorRenderer(BlockEntityRendererProvider.Context context) {
-
-	}
+	public MarkedInjectorRenderer(BlockEntityRendererProvider.Context context) {}
 
 	@Override
 	public void render(MarkedInjectorBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {

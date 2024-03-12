@@ -45,9 +45,7 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 			setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, true)).
 			createCompositeState(false));
 
-	public FusionCrafterRenderer(BlockEntityRendererProvider.Context context) {
-
-	}
+	public FusionCrafterRenderer(BlockEntityRendererProvider.Context context) {}
 
 	@Override
 	public void render(FusionCrafterBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
