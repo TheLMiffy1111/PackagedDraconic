@@ -1,0 +1,18 @@
+{
+	"itemGroup.packageddraconic": "PackagedDraconic",
+
+	"block.packageddraconic.fusion_crafter": "融合梱包クラフター",
+	"block.packageddraconic.fusion_crafter.injectors.usable": "現在使用可能なマーク付き融合クラフトインジェクター:",
+	"block.packageddraconic.fusion_crafter.injectors.required": "最低限必要なマーク付き融合クラフトインジェクター:",
+	"block.packageddraconic.fusion_crafter.injectors.0": "ドラコニウム %s",
+	"block.packageddraconic.fusion_crafter.injectors.1": "ワイバーン %s",
+	"block.packageddraconic.fusion_crafter.injectors.2": "ドラコニック %s",
+	"block.packageddraconic.fusion_crafter.injectors.3": "カオティック %s",
+	"block.packageddraconic.marked_draconium_injector": "マーク付きドラコニウム融合クラフトインジェクター",
+	"block.packageddraconic.marked_wyvern_injector": "マーク付きワイバーン融合クラフトインジェクター",
+	"block.packageddraconic.marked_draconic_injector": "マーク付きドラコニック融合クラフトインジェクター",
+	"block.packageddraconic.marked_chaotic_injector": "マーク付きカオティック融合クラフトインジェクター",
+
+	"recipe.packageddraconic.fusion": "融合クラフト",
+	"recipe.packageddraconic.fusion.short": "融合"
+}
