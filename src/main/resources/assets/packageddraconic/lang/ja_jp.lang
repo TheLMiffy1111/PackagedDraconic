@@ -1,0 +1,16 @@
+itemGroup.packageddraconic=PackagedDraconic
+
+tile.packageddraconic.fusion_crafter.name=融合梱包クラフター
+tile.packageddraconic.fusion_crafter.injectors.usable=現在使用可能なマーク付き融合クラフトインジェクター:
+tile.packageddraconic.fusion_crafter.injectors.required=最低限必要なマーク付き融合クラフトインジェクター:
+tile.packageddraconic.fusion_crafter.injectors.0=ベーシック %s
+tile.packageddraconic.fusion_crafter.injectors.1=ワイバーン %s
+tile.packageddraconic.fusion_crafter.injectors.2=ドラコニック %s
+tile.packageddraconic.fusion_crafter.injectors.3=カオティック %s
+tile.packageddraconic.marked_basic_injector.name=マーク付きベーシック融合クラフトインジェクター
+tile.packageddraconic.marked_wyvern_injector.name=マーク付きワイバーン融合クラフトインジェクター
+tile.packageddraconic.marked_draconic_injector.name=マーク付きドラコニック融合クラフトインジェクター
+tile.packageddraconic.marked_chaotic_injector.name=マーク付きカオティック融合クラフトインジェクター
+
+recipe.packageddraconic.fusion=融合クラフト
+recipe.packageddraconic.fusion.short=融合
