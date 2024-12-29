@@ -1,7 +1,7 @@
 {
 	"itemGroup.packageddraconic": "PackagedDraconic",
 
-	"block.packageddraconic.fusion_crafter": "融合パッケージクラフター",
+	"block.packageddraconic.fusion_crafter": "融合梱包クラフター",
 	"block.packageddraconic.fusion_crafter.injectors.usable": "現在使用可能なマーク付き融合クラフトインジェクター:",
 	"block.packageddraconic.fusion_crafter.injectors.required": "最低限必要なマーク付き融合クラフトインジェクター:",
 	"block.packageddraconic.fusion_crafter.injectors.0": "ドラコニウム %s",
