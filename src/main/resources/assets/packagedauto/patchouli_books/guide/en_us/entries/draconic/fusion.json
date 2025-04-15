@@ -38,13 +38,13 @@
 			"title": "Crafting"
 		},
 		{
-			"type": "packagedauto:fusion_recipe",
+			"type": "packagedauto:draconic/fusion_recipe",
 			"flag": "!mod:ae2",
 			"recipe": "packageddraconic:fusion_crafter",
 			"title": "Fusion Crafting"
 		},
 		{
-			"type": "packagedauto:fusion_recipe",
+			"type": "packagedauto:draconic/fusion_recipe",
 			"flag": "mod:ae2",
 			"recipe": "packageddraconic:fusion_crafter_ae",
 			"title": "Fusion Crafting"
