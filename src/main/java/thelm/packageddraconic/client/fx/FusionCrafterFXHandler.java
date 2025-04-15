@@ -31,7 +31,7 @@ public class FusionCrafterFXHandler implements Runnable {
 
 	private int baseCraftTime = 300;
 	private int translateStartTime = 0;
-	private int rotStartTime = 30;	
+	private int rotStartTime = 30;
 	private int beamStartTime = 60;
 	private int dieOutStart = 100;
 	private float animRadius = 2;

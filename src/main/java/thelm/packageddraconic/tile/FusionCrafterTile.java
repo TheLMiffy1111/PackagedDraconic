@@ -78,7 +78,7 @@ public class FusionCrafterTile extends BaseTile implements ITickableTileEntity, 
 	public float animProgress = 0;
 	public short animLength = 0;
 	public int[] requiredInjectors = {0, 0, 0, 0};
-	public boolean isWorking = false;	
+	public boolean isWorking = false;
 	public FusionState fusionState = FusionState.START;
 	public int fusionCounter = 0;
 	public short progress = 0;

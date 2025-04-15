@@ -1,0 +1,14 @@
+{
+	"name": "PackagedDraconic",
+	"category": "packagedauto:recipe",
+	"icon": "packageddraconic:fusion_crafter",
+	"pages": [
+		{
+			"type": "patchouli:text",
+			"text": "$(#822)PackagedDraconic/$ adds recipe types for $(#822)Draconic Evolution/$ recipes to $(#822)PackagedAuto/$."
+		}
+	],
+	"read_by_default": true,
+	"sortnum": 4000,
+	"entry_color": "882222"
+}
