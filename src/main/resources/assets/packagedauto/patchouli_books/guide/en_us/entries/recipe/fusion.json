@@ -1,0 +1,55 @@
+{
+	"name": "Fusion Crafting",
+	"category": "packagedauto:recipe",
+	"icon": "packageddraconic:fusion_crafter",
+	"pages": [
+		{
+			"type": "patchouli:text",
+			"text": "$(thing)Fusion Crafting/$ is a crafting recipe type that uses the $(item)Fusion Package Crafter/$ to craft recipes craftable in a $(item)Fusion Crafting Core/$."
+		},
+		{
+			"type": "packagedauto:spotlight2",
+			"item1": "packageddraconic:fusion_crafter",
+			"item2": "packageddraconic:marked_draconium_injector,packageddraconic:marked_wyvern_injector,packageddraconic:marked_draconic_injector,packageddraconic:marked_chaotic_injector",
+			"title": "Usage",
+			"text": "To use the $(item)Fusion Package Crafter/$, place enough sufficiently tiered $(item)Marked Injectors/$ at least 3 blocks away, facing the crafter unobstructed and connected to power.$(p)The $(item)Fusion Package Crafter/$ itself also requires some power."
+		},
+		{
+			"type": "patchouli:text",
+			"title": "Usage (cont.)",
+			"text": "You can $(thing)$(k:sneak) + $(k:use)/$ with an empty hand on an idle $(item)Fusion Package Crafting Altar/$ to check its currently usable and required amount and tier of $(item)Marked Injectors/$.$(p)Items crafted by the $(item)Fusion Package Crafter/$ will be ejected into adjacent inventories."
+		},
+		{
+			"type": "patchouli:text",
+			"flag": "mod:ae2",
+			"title": "AE2 Integration",
+			"text": "The $(item)Fusion Package Crafter/$ and $(item)Marked Injectors/$ can be connected to an $(thing)ME Network/$.$(p)The crafter will extract power to use, and both the crafter and the injectors will instead eject crafted and remaining items into the network."
+		},
+		{
+			"type": "patchouli:crafting",
+			"recipe": "packageddraconic:marked_draconium_injector",
+			"recipe2": "packageddraconic:marked_wyvern_injector",
+			"title": "Crafting"
+		},
+		{
+			"type": "patchouli:crafting",
+			"recipe": "packageddraconic:marked_draconic_injector",
+			"recipe2": "packageddraconic:marked_chaotic_injector",
+			"title": "Crafting"
+		},
+		{
+			"type": "packagedauto:fusion_recipe",
+			"flag": "!mod:ae2",
+			"recipe": "packageddraconic:fusion_crafter",
+			"title": "Fusion Crafting"
+		},
+		{
+			"type": "packagedauto:fusion_recipe",
+			"flag": "mod:ae2",
+			"recipe": "packageddraconic:fusion_crafter_ae",
+			"title": "Fusion Crafting"
+		}
+	],
+	"read_by_default": true,
+	"sortnum": 4001
+}

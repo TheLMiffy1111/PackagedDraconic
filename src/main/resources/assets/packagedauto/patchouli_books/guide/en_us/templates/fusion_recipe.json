@@ -1,0 +1,47 @@
+{
+	"components": [
+		{
+			"type": "patchouli:custom",
+			"class": "thelm.packageddraconic.integration.patchouli.component.FusionRecipeItemListComponent",
+			"x": 50,
+			"y": 43,
+			"recipe": "#recipe"
+		},
+		{
+			"type": "patchouli:item",
+			"x": 50,
+			"y": 43,
+			"item": "#catalyst",
+			"framed": true
+		},
+		{
+			"type": "patchouli:item",
+			"x": 50,
+			"y": 98,
+			"item": "#output",
+			"framed": true,
+			"link_recipe": true
+		},
+		{
+			"type": "patchouli:header",
+			"x": -1,
+			"y": 120,
+			"text": "#tier",
+			"color": "#tier_color"
+		},
+		{
+			"type": "patchouli:header",
+			"x": -1,
+			"y": 130,
+			"text": "#energy",
+			"color": "44AAFF"
+		},
+		{
+			"type": "patchouli:header",
+			"x": -1,
+			"y": -1,
+			"text": "#title"
+		}
+	],
+	"processor": "thelm.packageddraconic.integration.patchouli.processor.FusionRecipeProcessor"
+}

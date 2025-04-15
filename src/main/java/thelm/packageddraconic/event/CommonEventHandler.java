@@ -62,7 +62,7 @@ public class CommonEventHandler {
 		menuRegister.register(modEventBus);
 		menuRegister.register("fusion_crafter", ()->FusionCrafterMenu.TYPE_INSTANCE);
 
-		DeferredRegister<CreativeModeTab> creativeTabRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, "packagedexcrafting");
+		DeferredRegister<CreativeModeTab> creativeTabRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, "packageddraconic");
 		creativeTabRegister.register(modEventBus);
 		creativeTabRegister.register("tab",
 				()->CreativeModeTab.builder().

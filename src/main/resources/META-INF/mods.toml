@@ -19,7 +19,7 @@ issueTrackerURL = "https://github.com/TheLMiffy1111/PackagedDraconic/issues"
 
 [[dependencies.packageddraconic]]
 	modId = "packagedauto"
-	versionRange = "[3.4.8,)"
+	versionRange = "[3.4.11,)"
 	mandatory = true
 
 [[dependencies.packageddraconic]]

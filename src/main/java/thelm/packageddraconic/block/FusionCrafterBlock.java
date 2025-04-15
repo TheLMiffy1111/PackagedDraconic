@@ -46,8 +46,7 @@ public class FusionCrafterBlock extends BaseBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if(player.isShiftKeyDown()) {
-			BlockEntity blockEntity = level.getBlockEntity(pos);
-			if(blockEntity instanceof FusionCrafterBlockEntity crafter && !crafter.isWorking) {
+			if(level.getBlockEntity(pos) instanceof FusionCrafterBlockEntity crafter && !crafter.isWorking) {
 				if(!level.isClientSide) {
 					Component message = crafter.getMessage();
 					if(message != null) {
