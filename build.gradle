@@ -1,16 +1,26 @@
 plugins {
-	id "com.crystaelix.loom" version "jitpack-ca3766c3"
+	id "com.crystaelix.loom" version "1.10.0"
 	id "eclipse"
 	id "idea"
 	id "maven-publish"
 	id "net.kyori.blossom" version "[1,2)"
-	id "me.modmuss50.mod-publish-plugin" version "0.7.4"
+	id "me.modmuss50.mod-publish-plugin" version "0.8.4"
 }
 
 repositories {
 	mavenCentral()
 	flatDir {
 		dirs "libs"
+	}
+	exclusiveContent {
+		forRepository {
+			maven {
+				url = "https://maven.crystaelix.com/releases/"
+			}
+		}
+		filter {
+			includeGroup "thelm.packagedauto"
+		}
 	}
 	exclusiveContent {
 		forRepository {
@@ -66,10 +76,6 @@ repositories {
 	}
 }
 
-sourceSets {
-	main
-}
-
 def mcVersion = "1.12.2"
 def modName = "PackagedDraconic"
 def modId = "packageddraconic"
@@ -77,12 +83,21 @@ def specVersion = "1"
 def vendor = "thelm"
 
 group = "thelm.packageddraconic"
-version = "1.0.2.19"
+version = "1.0.3.20"
 
 archivesBaseName = "${modName}-${mcVersion}"
 
+sourceSets {
+	main {
+		output.resourcesDir = java.destinationDirectory = layout.buildDirectory.dir("outputs/main")
+	}
+}
+
 java {
-	toolchain.languageVersion = JavaLanguageVersion.of(8)
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(8)
+		vendor = JvmVendorSpec.AZUL
+	}
 	withSourcesJar()
 }
 
@@ -92,7 +107,6 @@ tasks.withType(JavaCompile).configureEach {
 
 loom {
 	silentMojangMappingsLicense()
-	interfaceInjection.enableDependencyInterfaceInjection = false
 	runs {
 		configureEach {
 			property "fabric.log.console.level", "debug"
@@ -108,7 +122,7 @@ loom {
 
 dependencies {
 	// Log4j
-	implementation "org.apache.logging.log4j:log4j-core:2.24.1"
+	implementation "org.apache.logging.log4j:log4j-core:2.24.3"
 
 	// Minecraft
 	minecraft "com.mojang:minecraft:1.12.2"
@@ -116,7 +130,7 @@ dependencies {
 	legacyForge "net.minecraftforge:forge:1.12.2-14.23.5.2860"
 
 	// Dependencies
-	modImplementation "curse.maven:packagedauto-308380:6028154"
+	modImplementation "thelm.packagedauto:PackagedAuto-1.12.2:1.0.18.63"
 	modImplementation "codechicken:CodeChickenLib:1.12.2-3.2.3.358:universal"
 	modImplementation "curse.maven:redstone-flux-270789:2920436"
 	modImplementation "com.brandon3055.brandonscore:BrandonsCore:1.12.2-2.4.20.162:universal"
@@ -130,10 +144,10 @@ dependencies {
 	modImplementation "curse.maven:mekanism-268560:2835175"
 
 	// Performance
-	implementation("zone.rong:mixinbooter:10.2") {transitive = false}
-	modImplementation "curse.maven:reid-629017:5502915"
-	modImplementation "curse.maven:vintagefix-871198:5536276"
-	modImplementation "curse.maven:lolasm-460609:5257348"
+	implementation("zone.rong:mixinbooter:10.6") {transitive = false}
+	modImplementation "curse.maven:reid-629017:6292779"
+	modImplementation "curse.maven:vintagefix-871198:6300725"
+	modImplementation "curse.maven:lolasm-460609:6333774"
 }
 
 def replacements = [
@@ -170,13 +184,32 @@ sourcesJar {
 	manifest.attributes(manifestAttributes)
 }
 
+publishing {
+	publications {
+		register("mavenJava", MavenPublication) {
+			artifactId = archivesBaseName
+			artifact remapJar
+			artifact sourcesJar
+		}
+	}
+	repositories {
+		if(project.hasProperty("CrystaelixMavenUsername") && project.hasProperty("CrystaelixMavenPassword")) {
+			maven {
+				name = "CrystaelixMaven"
+				url = "https://maven.crystaelix.com/releases/"
+				credentials(PasswordCredentials)
+			}
+		}
+	}
+}
+
 publishMods {
 	file = remapJar.archiveFile
 	version = displayName = "${mcVersion}-${project.version}"
 	changelog = file("changelog.md").text
 	type = BETA
 	modLoaders.add("forge")
-	additionalFiles.from(remapSourcesJar.archiveFile)
+	additionalFiles.from(sourcesJar.archiveFile)
 
 	curseforge {
 		accessToken = providers.gradleProperty("curseforge.token")

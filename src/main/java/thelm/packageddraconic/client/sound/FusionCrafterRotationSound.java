@@ -9,7 +9,7 @@ import thelm.packageddraconic.tile.TileFusionCrafter;
 
 // Code modified from FusionRotationSound
 public class FusionCrafterRotationSound extends PositionedSound implements ITickableSound {
-	
+
 	private TileFusionCrafter tile;
 
 	public FusionCrafterRotationSound(TileFusionCrafter tile) {
