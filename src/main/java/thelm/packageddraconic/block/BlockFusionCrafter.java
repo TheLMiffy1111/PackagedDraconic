@@ -32,7 +32,7 @@ public class BlockFusionCrafter extends BlockBase {
 
 	public BlockFusionCrafter() {
 		super(Material.IRON);
-		setHardness(15F);
+		setHardness(10F);
 		setResistance(25F);
 		setSoundType(SoundType.METAL);
 		setTranslationKey("packageddraconic.fusion_crafter");

@@ -46,7 +46,7 @@ public class BlockMarkedInjector extends BlockBase {
 	public BlockMarkedInjector(int tier, String name) {
 		super(Material.IRON);
 		setDefaultState(blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.UP));
-		setHardness(15F);
+		setHardness(10F);
 		setResistance(25F);
 		setSoundType(SoundType.METAL);
 		setTranslationKey(name.replace(':', '.'));
