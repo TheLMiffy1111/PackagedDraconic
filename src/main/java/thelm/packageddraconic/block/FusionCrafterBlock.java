@@ -32,7 +32,7 @@ public class FusionCrafterBlock extends BaseBlock {
 	public static final VoxelShape SHAPE = box(1, 1, 1, 15, 15, 15);
 
 	public FusionCrafterBlock() {
-		super(BlockBehaviour.Properties.of(Material.METAL).strength(15F, 25F).noOcclusion().sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of(Material.METAL).strength(10F, 15F).noOcclusion().sound(SoundType.METAL));
 		setRegistryName("packageddraconic:fusion_crafter");
 	}
 
