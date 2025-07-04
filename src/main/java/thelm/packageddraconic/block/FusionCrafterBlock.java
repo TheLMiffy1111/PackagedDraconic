@@ -30,7 +30,7 @@ public class FusionCrafterBlock extends BaseBlock {
 	public static final VoxelShape SHAPE = box(1, 1, 1, 15, 15, 15);
 
 	public FusionCrafterBlock() {
-		super(BlockBehaviour.Properties.of().strength(15F, 25F).noOcclusion().mapColor(MapColor.METAL).sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of().strength(10F, 15F).noOcclusion().mapColor(MapColor.METAL).sound(SoundType.METAL));
 	}
 
 	@Override

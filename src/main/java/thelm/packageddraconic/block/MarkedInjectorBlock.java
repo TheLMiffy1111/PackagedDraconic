@@ -47,7 +47,7 @@ public class MarkedInjectorBlock extends BaseBlock {
 	public final int tier;
 
 	public MarkedInjectorBlock(int tier) {
-		super(BlockBehaviour.Properties.of().strength(15F, 25F).noOcclusion().mapColor(MapColor.METAL).sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of().strength(10F, 15F).noOcclusion().mapColor(MapColor.METAL).sound(SoundType.METAL));
 		registerDefaultState(stateDefinition.any().setValue(DirectionalBlock.FACING, Direction.UP));
 		this.tier = tier;
 	}
