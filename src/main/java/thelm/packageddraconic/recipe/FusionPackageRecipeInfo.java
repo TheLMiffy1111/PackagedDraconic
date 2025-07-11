@@ -178,7 +178,7 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 	public Int2ObjectMap<ItemStack> getEncoderStacks() {
 		Int2ObjectMap<ItemStack> map = new Int2ObjectOpenHashMap<>();
 		int[] slotArray = FusionPackageRecipeType.SLOTS.toIntArray();
-		ArrayUtils.remove(slotArray, 27);
+		slotArray = ArrayUtils.remove(slotArray, 27);
 		map.put(40, inputCore);
 		for(int i = 0; i < inputInjector.size(); ++i) {
 			map.put(slotArray[i], inputInjector.get(i));
