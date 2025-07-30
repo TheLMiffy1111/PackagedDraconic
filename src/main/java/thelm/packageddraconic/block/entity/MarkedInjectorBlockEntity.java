@@ -1,11 +1,11 @@
 package thelm.packageddraconic.block.entity;
 
 import com.brandon3055.brandonscore.api.TechLevel;
-import com.brandon3055.brandonscore.capability.CapabilityOP;
 import com.brandon3055.draconicevolution.api.crafting.IFusionInjector;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -16,34 +16,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.ModList;
 import thelm.packagedauto.block.entity.BaseBlockEntity;
-import thelm.packagedauto.util.MiscHelper;
 import thelm.packageddraconic.block.MarkedInjectorBlock;
-import thelm.packageddraconic.integration.appeng.blockentity.AEMarkedInjectorBlockEntity;
 import thelm.packageddraconic.inventory.MarkedInjectorItemHandler;
 import thelm.packageddraconic.op.MarkedInjectorOPStorage;
 
 public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusionInjector {
-
-	public static final BlockEntityType<MarkedInjectorBlockEntity> TYPE_INSTANCE = BlockEntityType.Builder.
-			of(MiscHelper.INSTANCE.<BlockEntityType.BlockEntitySupplier<MarkedInjectorBlockEntity>>conditionalSupplier(
-					()->ModList.get().isLoaded("ae2"),
-					()->()->AEMarkedInjectorBlockEntity::new, ()->()->MarkedInjectorBlockEntity::new).get(),
-					MarkedInjectorBlock.BASIC, MarkedInjectorBlock.WYVERN, MarkedInjectorBlock.DRACONIC, MarkedInjectorBlock.CHAOTIC).
-			build(null);
 
 	public MarkedInjectorOPStorage opStorage = new MarkedInjectorOPStorage(this);
 	public BlockPos crafterPos = null;
 	public int tier = -1;
 
 	public MarkedInjectorBlockEntity(BlockPos pos, BlockState state) {
-		super(TYPE_INSTANCE, pos, state);
+		super(PackagedDraconicBlockEntities.MARKED_INJECTOR.get(), pos, state);
 		setItemHandler(new MarkedInjectorItemHandler(this));
 	}
 
@@ -153,44 +139,36 @@ public class MarkedInjectorBlockEntity extends BaseBlockEntity implements IFusio
 	}
 
 	@Override
-	public void load(CompoundTag nbt) {
-		super.load(nbt);
+	public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadAdditional(nbt, registries);
 		opStorage.load(nbt);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag nbt) {
-		super.saveAdditional(nbt);
+	public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveAdditional(nbt, registries);
 		opStorage.save(nbt);
 	}
 
 	@Override
-	public void loadSync(CompoundTag nbt) {
-		super.loadSync(nbt);
-		itemHandler.load(nbt);
+	public void loadSync(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadSync(nbt, registries);
+		itemHandler.load(nbt, registries);
 		crafterPos = null;
-		if(nbt.contains("CrafterPos")) {
-			int[] posArray = nbt.getIntArray("CrafterPos");
+		if(nbt.contains("crafter_pos")) {
+			int[] posArray = nbt.getIntArray("crafter_pos");
 			crafterPos = new BlockPos(posArray[0], posArray[1], posArray[2]);
 		}
 	}
 
 	@Override
-	public CompoundTag saveSync(CompoundTag nbt) {
-		super.saveSync(nbt);
-		itemHandler.save(nbt);
+	public CompoundTag saveSync(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveSync(nbt, registries);
+		itemHandler.save(nbt, registries);
 		if(crafterPos != null) {
-			nbt.putIntArray("CrafterPos", new int[] {crafterPos.getX(), crafterPos.getY(), crafterPos.getZ()});
+			nbt.putIntArray("crafter_pos", new int[] {crafterPos.getX(), crafterPos.getY(), crafterPos.getZ()});
 		}
 		return nbt;
-	}
-
-	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction direction) {
-		if(getDirection() != direction && (capability == ForgeCapabilities.ENERGY || capability == CapabilityOP.OP)) {
-			return LazyOptional.of(()->(T)opStorage);
-		}
-		return super.getCapability(capability, direction);
 	}
 
 	@Override

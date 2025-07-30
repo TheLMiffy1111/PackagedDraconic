@@ -14,8 +14,8 @@ import thelm.packageddraconic.menu.FusionCrafterMenu;
 
 public class FusionCrafterScreen extends BaseScreen<FusionCrafterMenu> {
 
-	public static final ResourceLocation BACKGROUND_LIGHT = new ResourceLocation("packageddraconic:textures/gui/fusion_crafter_light.png");
-	public static final ResourceLocation BACKGROUND_DARK = new ResourceLocation("packageddraconic:textures/gui/fusion_crafter_dark.png");
+	public static final ResourceLocation BACKGROUND_LIGHT = ResourceLocation.parse("packageddraconic:textures/gui/fusion_crafter_light.png");
+	public static final ResourceLocation BACKGROUND_DARK = ResourceLocation.parse("packageddraconic:textures/gui/fusion_crafter_dark.png");
 
 	public FusionCrafterScreen(FusionCrafterMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -62,13 +62,8 @@ public class FusionCrafterScreen extends BaseScreen<FusionCrafterMenu> {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-			setTooltip(BCConfig.darkMode ? lightTooltip : darkTooltip);
-			super.render(graphics, mouseX, mouseY, partialTick);
-		}
-
-		@Override
 		public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+			setTooltip(BCConfig.darkMode ? lightTooltip : darkTooltip);
 			super.renderWidget(graphics, mouseX, mouseY, partialTicks);
 			if(isHoveredOrFocused()) {
 				graphics.fill(getX(), getY(), getX()+12, getY()+12, BCConfig.darkMode ? 0xFF475B6A : 0xFF647BAF);

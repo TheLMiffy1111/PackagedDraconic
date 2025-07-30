@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.brandon3055.brandonscore.api.TechLevel;
 import com.brandon3055.draconicevolution.DEConfig;
@@ -17,6 +18,7 @@ import com.google.common.util.concurrent.Runnables;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -28,20 +30,18 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import thelm.packagedauto.api.IPackageCraftingMachine;
 import thelm.packagedauto.api.IPackageRecipeInfo;
+import thelm.packagedauto.block.PackagedAutoBlocks;
 import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packagedauto.block.entity.PackagerBlockEntity;
 import thelm.packagedauto.block.entity.PackagerExtensionBlockEntity;
@@ -49,29 +49,21 @@ import thelm.packagedauto.block.entity.PackagingProviderBlockEntity;
 import thelm.packagedauto.block.entity.UnpackagerBlockEntity;
 import thelm.packagedauto.energy.EnergyStorage;
 import thelm.packagedauto.util.MiscHelper;
-import thelm.packageddraconic.block.FusionCrafterBlock;
 import thelm.packageddraconic.client.fx.FusionCrafterFXHandler;
-import thelm.packageddraconic.integration.appeng.blockentity.AEFusionCrafterBlockEntity;
 import thelm.packageddraconic.inventory.FusionCrafterItemHandler;
 import thelm.packageddraconic.menu.FusionCrafterMenu;
-import thelm.packageddraconic.network.packet.FinishCraftEffectsPacket;
-import thelm.packageddraconic.network.packet.SyncCrafterPacket;
+import thelm.packageddraconic.packet.FinishCraftEffectsPacket;
+import thelm.packageddraconic.packet.SyncCrafterPacket;
 import thelm.packageddraconic.recipe.IFusionPackageRecipeInfo;
 
 public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackageCraftingMachine, IFusionInventory, IFusionStateMachine {
-
-	public static final BlockEntityType<FusionCrafterBlockEntity> TYPE_INSTANCE = BlockEntityType.Builder.
-			of(MiscHelper.INSTANCE.<BlockEntityType.BlockEntitySupplier<FusionCrafterBlockEntity>>conditionalSupplier(
-					()->ModList.get().isLoaded("ae2"),
-					()->()->AEFusionCrafterBlockEntity::new, ()->()->FusionCrafterBlockEntity::new).get(),
-					FusionCrafterBlock.INSTANCE).build(null);
 
 	public static int energyCapacity = 5000;
 	public static int energyUsage = 5;
 	public static boolean drawMEEnergy = true;
 
-	public Runnable fxHandler = DistExecutor.runForDist(()->()->new FusionCrafterFXHandler(this), ()->()->Runnables.doNothing());
-	public IFusionRecipe effectRecipe;
+	public Runnable fxHandler = MiscHelper.INSTANCE.conditionalSupplier(FMLEnvironment.dist::isClient, ()->()->new FusionCrafterFXHandler(this), ()->()->Runnables.doNothing()).get();
+	public RecipeHolder<IFusionRecipe> effectRecipe;
 	public float animProgress = 0;
 	public short animLength = 0;
 	public int[] requiredInjectors = {0, 0, 0, 0};
@@ -84,7 +76,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	public List<BlockPos> injectors = new ArrayList<>();
 
 	public FusionCrafterBlockEntity(BlockPos pos, BlockState state) {
-		super(TYPE_INSTANCE, pos, state);
+		super(PackagedDraconicBlockEntities.FUSION_CRAFTER.get(), pos, state);
 		setItemHandler(new FusionCrafterItemHandler(this));
 		setEnergyStorage(new EnergyStorage(this, energyCapacity));
 	}
@@ -168,7 +160,7 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 				injectors.clear();
 				injectors.addAll(emptyInjectors.subList(0, injectorInputs.size()));
 				currentRecipe = recipe;
-				effectRecipe = recipe.getRecipe();
+				effectRecipe = recipe.getRecipeHolder();
 				isWorking = true;
 				fusionState = FusionState.START;
 				itemHandler.setStackInSlot(0, recipe.getCoreInput().copy());
@@ -303,9 +295,10 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	protected void ejectItems() {
 		int endIndex = isWorking ? 1 : 0;
 		for(Direction direction : Direction.values()) {
-			BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(direction));
-			if(blockEntity != null && !(blockEntity instanceof UnpackagerBlockEntity) && blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).isPresent()) {
-				IItemHandler itemHandler = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).resolve().get();
+			BlockPos offsetPos = worldPosition.relative(direction);
+			Block block = level.getBlockState(offsetPos).getBlock();
+			IItemHandler itemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, offsetPos, direction.getOpposite());
+			if(block != PackagedAutoBlocks.UNPACKAGER.get() && itemHandler != null) {
 				for(int i = 1; i >= endIndex; --i) {
 					ItemStack stack = this.itemHandler.getStackInSlot(i);
 					if(stack.isEmpty()) {
@@ -320,9 +313,10 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 
 	protected void chargeEnergy() {
 		ItemStack energyStack = itemHandler.getStackInSlot(2);
-		if(energyStack.getCapability(ForgeCapabilities.ENERGY, null).isPresent()) {
+		IEnergyStorage itemEnergyStorage = energyStack.getCapability(Capabilities.EnergyStorage.ITEM);
+		if(itemEnergyStorage != null) {
 			int energyRequest = Math.min(energyStorage.getMaxReceive(), energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored());
-			energyStorage.receiveEnergy(energyStack.getCapability(ForgeCapabilities.ENERGY).resolve().get().extractEnergy(energyRequest, false), false);
+			energyStorage.receiveEnergy(itemEnergyStorage.extractEnergy(energyRequest, false), false);
 			if(energyStack.getCount() <= 0) {
 				itemHandler.setStackInSlot(2, ItemStack.EMPTY);
 			}
@@ -347,6 +341,21 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	@Override
 	public void setOutputStack(ItemStack stack) {
 		itemHandler.setStackInSlot(1, stack);
+	}
+
+	@Override
+	public ItemStack getItem(int index) {
+		if(index <= 0) {
+			return itemHandler.getStackInSlot(0);
+		}
+		index--;
+		List<IFusionInjector> injectors = getInjectors();
+		return index >= injectors.size() ? ItemStack.EMPTY : injectors.get(index).getInjectorStack();
+	}
+
+	@Override
+	public int size() {
+		return getInjectors().size() + 1;
 	}
 
 	@Override
@@ -429,17 +438,17 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	@Override
-	public void load(CompoundTag nbt) {
-		super.load(nbt);
-		fusionState = FusionState.values()[nbt.getByte("FusionState")];
-		progress = nbt.getShort("Progress");
-		animProgress = nbt.getFloat("AnimProgress");
-		animLength = nbt.getShort("AnimLength");
-		fusionCounter = nbt.getInt("FusionCounter");
+	public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadAdditional(nbt, registries);
+		fusionState = FusionState.values()[nbt.getByte("fusion_state")];
+		progress = nbt.getShort("progress");
+		animProgress = nbt.getFloat("anim_progress");
+		animLength = nbt.getShort("anim_length");
+		fusionCounter = nbt.getInt("fusion_counter");
 		currentRecipe = null;
-		if(nbt.contains("Recipe")) {
-			CompoundTag tag = nbt.getCompound("Recipe");
-			IPackageRecipeInfo recipe = MiscHelper.INSTANCE.loadRecipe(tag);
+		if(nbt.contains("recipe")) {
+			CompoundTag tag = nbt.getCompound("recipe");
+			IPackageRecipeInfo recipe = MiscHelper.INSTANCE.loadRecipe(tag, registries);
 			if(recipe instanceof IFusionPackageRecipeInfo fusionRecipe) {
 				currentRecipe = fusionRecipe;
 			}
@@ -447,50 +456,51 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag nbt) {
-		super.saveAdditional(nbt);
-		nbt.putByte("FusionState", (byte)fusionState.ordinal());
-		nbt.putShort("Progress", progress);
-		nbt.putFloat("AnimProgress", animProgress);
-		nbt.putShort("AnimLength", animLength);
-		nbt.putInt("FusionCounter", fusionCounter);
+	public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveAdditional(nbt, registries);
+		nbt.putByte("fusion_state", (byte)fusionState.ordinal());
+		nbt.putShort("progress", progress);
+		nbt.putFloat("anim_progress", animProgress);
+		nbt.putShort("anim_length", animLength);
+		nbt.putInt("fusion_counter", fusionCounter);
 		if(currentRecipe != null) {
-			CompoundTag tag = MiscHelper.INSTANCE.saveRecipe(new CompoundTag(), currentRecipe);
-			nbt.put("Recipe", tag);
+			CompoundTag tag = MiscHelper.INSTANCE.saveRecipe(new CompoundTag(), currentRecipe, registries);
+			nbt.put("recipe", tag);
 		}
 	}
 
 	@Override
-	public void loadSync(CompoundTag nbt) {
-		super.loadSync(nbt);
-		isWorking = nbt.getBoolean("Working");
-		itemHandler.load(nbt);
+	public void loadSync(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.loadSync(nbt, registries);
+		isWorking = nbt.getBoolean("working");
+		itemHandler.load(nbt, registries);
 		injectors.clear();
-		ListTag injectorsTag = nbt.getList("Injectors", 11);
+		ListTag injectorsTag = nbt.getList("injectors", 11);
 		for(int i = 0; i < injectorsTag.size(); ++i) {
 			int[] posArray = injectorsTag.getIntArray(i);
 			BlockPos pos = new BlockPos(posArray[0], posArray[1], posArray[2]);
 			injectors.add(pos);
 		}
-		if(nbt.contains("EffectRecipe")) {
-			Recipe<?> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("EffectRecipe"))).orElse(null);
-			if(recipe instanceof IFusionRecipe fusionRecipe) {
-				effectRecipe = fusionRecipe;
+		effectRecipe = null;
+		if(nbt.contains("effect_recipe")) {
+			Optional<RecipeHolder<?>> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(ResourceLocation.parse(nbt.getString("effect_recipe")));
+			if(recipe.isPresent() && recipe.get().value() instanceof IFusionRecipe fusionRecipe) {
+				effectRecipe = new RecipeHolder<>(recipe.get().id(), fusionRecipe);
 			}
 		}
 	}
 
 	@Override
-	public CompoundTag saveSync(CompoundTag nbt) {
-		super.saveSync(nbt);
-		nbt.putBoolean("Working", isWorking);
-		itemHandler.save(nbt);
+	public CompoundTag saveSync(CompoundTag nbt, HolderLookup.Provider registries) {
+		super.saveSync(nbt, registries);
+		nbt.putBoolean("working", isWorking);
+		itemHandler.save(nbt, registries);
 		ListTag injectorsTag = new ListTag();
 		injectors.stream().map(pos->new int[] {pos.getX(), pos.getY(), pos.getZ()}).
 		forEach(arr->injectorsTag.add(new IntArrayTag(arr)));
-		nbt.put("Injectors", injectorsTag);
+		nbt.put("injectors", injectorsTag);
 		if(effectRecipe != null) {
-			nbt.putString("EffectRecipe", effectRecipe.getId().toString());
+			nbt.putString("effect_recipe", effectRecipe.id().toString());
 		}
 		return nbt;
 	}
@@ -507,12 +517,6 @@ public class FusionCrafterBlockEntity extends BaseBlockEntity implements IPackag
 			return 0;
 		}
 		return scale * progress / 20000;
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	@Override
-	public AABB getRenderBoundingBox() {
-		return new AABB(worldPosition).inflate(16);
 	}
 
 	@Override

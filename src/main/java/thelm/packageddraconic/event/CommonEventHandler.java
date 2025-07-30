@@ -1,27 +1,30 @@
 package thelm.packageddraconic.event;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
+import com.brandon3055.brandonscore.capability.CapabilityOP;
+
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packagedauto.util.ApiImpl;
-import thelm.packageddraconic.block.FusionCrafterBlock;
-import thelm.packageddraconic.block.MarkedInjectorBlock;
-import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
-import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
+import thelm.packagedauto.util.MiscHelper;
+import thelm.packageddraconic.block.PackagedDraconicBlocks;
+import thelm.packageddraconic.block.entity.PackagedDraconicBlockEntities;
 import thelm.packageddraconic.config.PackagedDraconicConfig;
-import thelm.packageddraconic.menu.FusionCrafterMenu;
-import thelm.packageddraconic.network.PacketHandler;
+import thelm.packageddraconic.creativetab.PackagedDraconicCreativeTabs;
+import thelm.packageddraconic.integration.appeng.AppEngEventHandler;
+import thelm.packageddraconic.item.PackagedDraconicItems;
+import thelm.packageddraconic.menu.PackagedDraconicMenus;
+import thelm.packageddraconic.packet.FinishCraftEffectsPacket;
+import thelm.packageddraconic.packet.SyncCrafterPacket;
+import thelm.packageddraconic.packet.SyncInjectorPacket;
 import thelm.packageddraconic.recipe.FusionPackageRecipeType;
 
 public class CommonEventHandler {
@@ -32,60 +35,53 @@ public class CommonEventHandler {
 		return INSTANCE;
 	}
 
-	public void onConstruct() {
-		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public void onConstruct(IEventBus modEventBus, ModContainer modContainer) {
 		modEventBus.register(this);
-		PackagedDraconicConfig.registerConfig();
+		MiscHelper.INSTANCE.conditionalRunnable(()->ModList.get().isLoaded("ae2"), ()->()->{
+			modEventBus.register(AppEngEventHandler.getInstance());
+		}, ()->()->{}).run();
+		PackagedDraconicConfig.registerConfig(modContainer);
 
-		DeferredRegister<Block> blockRegister = DeferredRegister.create(Registries.BLOCK, "packageddraconic");
-		blockRegister.register(modEventBus);
-		blockRegister.register("fusion_crafter", ()->FusionCrafterBlock.INSTANCE);
-		blockRegister.register("marked_draconium_injector", ()->MarkedInjectorBlock.BASIC);
-		blockRegister.register("marked_wyvern_injector", ()->MarkedInjectorBlock.WYVERN);
-		blockRegister.register("marked_draconic_injector", ()->MarkedInjectorBlock.DRACONIC);
-		blockRegister.register("marked_chaotic_injector", ()->MarkedInjectorBlock.CHAOTIC);
-
-		DeferredRegister<Item> itemRegister = DeferredRegister.create(Registries.ITEM, "packageddraconic");
-		itemRegister.register(modEventBus);
-		itemRegister.register("fusion_crafter", ()->FusionCrafterBlock.ITEM_INSTANCE);
-		itemRegister.register("marked_draconium_injector", ()->MarkedInjectorBlock.BASIC_ITEM);
-		itemRegister.register("marked_wyvern_injector", ()->MarkedInjectorBlock.WYVERN_ITEM);
-		itemRegister.register("marked_draconic_injector", ()->MarkedInjectorBlock.DRACONIC_ITEM);
-		itemRegister.register("marked_chaotic_injector", ()->MarkedInjectorBlock.CHAOTIC_ITEM);
-
-		DeferredRegister<BlockEntityType<?>> blockEntityRegister = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "packageddraconic");
-		blockEntityRegister.register(modEventBus);
-		blockEntityRegister.register("fusion_crafter", ()->FusionCrafterBlockEntity.TYPE_INSTANCE);
-		blockEntityRegister.register("marked_injector", ()->MarkedInjectorBlockEntity.TYPE_INSTANCE);
-
-		DeferredRegister<MenuType<?>> menuRegister = DeferredRegister.create(Registries.MENU, "packageddraconic");
-		menuRegister.register(modEventBus);
-		menuRegister.register("fusion_crafter", ()->FusionCrafterMenu.TYPE_INSTANCE);
-
-		DeferredRegister<CreativeModeTab> creativeTabRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, "packageddraconic");
-		creativeTabRegister.register(modEventBus);
-		creativeTabRegister.register("tab",
-				()->CreativeModeTab.builder().
-				title(Component.translatable("itemGroup.packageddraconic")).
-				icon(()->new ItemStack(FusionCrafterBlock.ITEM_INSTANCE)).
-				displayItems((parameters, output)->{
-					output.accept(FusionCrafterBlock.ITEM_INSTANCE);
-					output.accept(MarkedInjectorBlock.BASIC_ITEM);
-					output.accept(MarkedInjectorBlock.WYVERN_ITEM);
-					output.accept(MarkedInjectorBlock.DRACONIC_ITEM);
-					output.accept(MarkedInjectorBlock.CHAOTIC_ITEM);
-				}).
-				build());
+		PackagedDraconicBlocks.BLOCKS.register(modEventBus);
+		PackagedDraconicItems.ITEMS.register(modEventBus);
+		PackagedDraconicBlockEntities.BLOCK_ENTITIES.register(modEventBus);
+		PackagedDraconicMenus.MENUS.register(modEventBus);
+		PackagedDraconicCreativeTabs.CREATIVE_TABS.register(modEventBus);
 	}
 
 	@SubscribeEvent
 	public void onCommonSetup(FMLCommonSetupEvent event) {
 		ApiImpl.INSTANCE.registerRecipeType(FusionPackageRecipeType.INSTANCE);
-		PacketHandler.registerPackets();
 	}
 
 	@SubscribeEvent
-	public void onModConfig(ModConfigEvent event) {
+	public void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PackagedDraconicBlockEntities.FUSION_CRAFTER.get(), BaseBlockEntity::getItemHandler);
+
+		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, PackagedDraconicBlockEntities.FUSION_CRAFTER.get(), BaseBlockEntity::getEnergyStorage);
+		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, PackagedDraconicBlockEntities.MARKED_INJECTOR.get(), (be, dir)->be.opStorage);
+
+		event.registerBlockEntity(CapabilityOP.BLOCK, PackagedDraconicBlockEntities.MARKED_INJECTOR.get(), (be, dir)->be.opStorage);
+	}
+
+	@SubscribeEvent
+	public void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
+		PayloadRegistrar registrar = event.registrar("packageddraconic");
+		registrar.playToClient(SyncInjectorPacket.TYPE, SyncInjectorPacket.STREAM_CODEC, SyncInjectorPacket::handle);
+		registrar.playToClient(SyncCrafterPacket.TYPE, SyncCrafterPacket.STREAM_CODEC, SyncCrafterPacket::handle);
+		registrar.playToClient(FinishCraftEffectsPacket.TYPE, FinishCraftEffectsPacket.STREAM_CODEC, FinishCraftEffectsPacket::handle);
+	}
+
+	@SubscribeEvent
+	public void onModConfigLoading(ModConfigEvent.Loading event) {
+		switch(event.getConfig().getType()) {
+		case SERVER -> PackagedDraconicConfig.reloadServerConfig();
+		default -> {}
+		}
+	}
+
+	@SubscribeEvent
+	public void onModConfigReloading(ModConfigEvent.Reloading event) {
 		switch(event.getConfig().getType()) {
 		case SERVER -> PackagedDraconicConfig.reloadServerConfig();
 		default -> {}

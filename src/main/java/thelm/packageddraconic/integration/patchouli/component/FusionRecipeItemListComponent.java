@@ -9,9 +9,11 @@ import com.google.gson.annotations.SerializedName;
 import codechicken.lib.math.MathHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import thelm.packagedauto.util.MiscHelper;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
@@ -26,9 +28,9 @@ public class FusionRecipeItemListComponent implements ICustomComponent {
 	transient int y;
 
 	@Override
-	public void onVariablesAvailable(UnaryOperator<IVariable> lookup) {
-		ResourceLocation recipeId = new ResourceLocation(lookup.apply(recipeRaw).asString());
-		Recipe<?> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(recipeId).orElse(null);
+	public void onVariablesAvailable(UnaryOperator<IVariable> lookup, HolderLookup.Provider registries) {
+		ResourceLocation recipeId = ResourceLocation.parse(lookup.apply(recipeRaw).asString());
+		Recipe<?> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(recipeId).map(RecipeHolder::value).orElse(null);
 		if(recipe instanceof IFusionRecipe fusionRecipe) {
 			this.fusionRecipe = fusionRecipe;
 		}

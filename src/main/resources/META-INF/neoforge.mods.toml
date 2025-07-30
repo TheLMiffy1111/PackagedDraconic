@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[46,)"
+loaderVersion = "[2,)"
 license = "MIT"
 issueTrackerURL = "https://github.com/TheLMiffy1111/PackagedDraconic/issues"
 
@@ -13,16 +13,16 @@ issueTrackerURL = "https://github.com/TheLMiffy1111/PackagedDraconic/issues"
 	displayURL = "https://www.curseforge.com/minecraft/mc-mods/packageddraconic"
 
 [[dependencies.packageddraconic]]
-	modId = "forge"
-	versionRange = "[46,)"
-	mandatory = true
+	modId = "neoforge"
+	versionRange = "[21,)"
+	type = "required"
 
 [[dependencies.packageddraconic]]
 	modId = "packagedauto"
-	versionRange = "[3.4.11,)"
-	mandatory = true
+	versionRange = "[4.0.4,)"
+	type = "required"
 
 [[dependencies.packageddraconic]]
 	modId = "draconicevolution"
 	versionRange = "*"
-	mandatory = true
+	type = "required"

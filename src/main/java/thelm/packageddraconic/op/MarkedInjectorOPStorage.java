@@ -4,7 +4,7 @@ import com.brandon3055.brandonscore.api.power.OPStorage;
 
 import net.minecraft.nbt.CompoundTag;
 import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
-import thelm.packageddraconic.network.packet.SyncInjectorPacket;
+import thelm.packageddraconic.packet.SyncInjectorPacket;
 
 public class MarkedInjectorOPStorage extends OPStorage {
 
@@ -48,9 +48,9 @@ public class MarkedInjectorOPStorage extends OPStorage {
 	}
 
 	public MarkedInjectorOPStorage load(CompoundTag nbt) {
-		energy = nbt.getLong("Energy");
-		energyReq = nbt.getLong("EnergyReq");
-		chargeRate = nbt.getLong("ChargeRate");
+		energy = nbt.getLong("energy");
+		energyReq = nbt.getLong("energy_req");
+		chargeRate = nbt.getLong("charge_rate");
 		return this;
 	}
 
@@ -58,9 +58,9 @@ public class MarkedInjectorOPStorage extends OPStorage {
 		if(energy < 0) {
 			energy = 0;
 		}
-		nbt.putLong("Energy", energy);
-		nbt.putLong("EnergyReq", energyReq);
-		nbt.putLong("ChargeRate", chargeRate);
+		nbt.putLong("energy", energy);
+		nbt.putLong("energy_req", energyReq);
+		nbt.putLong("charge_rate", chargeRate);
 	}
 
 	public void setEnergyStored(long energy) {

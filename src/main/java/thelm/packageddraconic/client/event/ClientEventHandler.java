@@ -1,16 +1,15 @@
 package thelm.packageddraconic.client.event;
 
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
-import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import thelm.packageddraconic.block.entity.PackagedDraconicBlockEntities;
 import thelm.packageddraconic.client.renderer.FusionCrafterRenderer;
 import thelm.packageddraconic.client.renderer.MarkedInjectorRenderer;
 import thelm.packageddraconic.client.screen.FusionCrafterScreen;
-import thelm.packageddraconic.menu.FusionCrafterMenu;
+import thelm.packageddraconic.menu.PackagedDraconicMenus;
 
 public class ClientEventHandler {
 
@@ -20,15 +19,18 @@ public class ClientEventHandler {
 		return INSTANCE;
 	}
 
-	public void onConstruct() {
-		FMLJavaModLoadingContext.get().getModEventBus().register(this);
+	public void onConstruct(IEventBus modEventBus) {
+		modEventBus.register(this);
 	}
 
 	@SubscribeEvent
 	public void onClientSetup(FMLClientSetupEvent event) {
-		MenuScreens.register(FusionCrafterMenu.TYPE_INSTANCE, FusionCrafterScreen::new);
+		BlockEntityRenderers.register(PackagedDraconicBlockEntities.FUSION_CRAFTER.get(), FusionCrafterRenderer::new);
+		BlockEntityRenderers.register(PackagedDraconicBlockEntities.MARKED_INJECTOR.get(), MarkedInjectorRenderer::new);
+	}
 
-		BlockEntityRenderers.register(FusionCrafterBlockEntity.TYPE_INSTANCE, FusionCrafterRenderer::new);
-		BlockEntityRenderers.register(MarkedInjectorBlockEntity.TYPE_INSTANCE, MarkedInjectorRenderer::new);
+	@SubscribeEvent
+	public void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+		event.register(PackagedDraconicMenus.FUSION_CRAFTER.get(), FusionCrafterScreen::new);
 	}
 }

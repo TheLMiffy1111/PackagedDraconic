@@ -2,11 +2,8 @@ package thelm.packageddraconic.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
@@ -22,11 +19,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import thelm.packagedauto.block.BaseBlock;
 import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
+import thelm.packageddraconic.block.entity.PackagedDraconicBlockEntities;
 
 public class FusionCrafterBlock extends BaseBlock {
 
-	public static final FusionCrafterBlock INSTANCE = new FusionCrafterBlock();
-	public static final Item ITEM_INSTANCE = new BlockItem(INSTANCE, new Item.Properties());
 	public static final VoxelShape SHAPE = box(1, 1, 1, 15, 15, 15);
 
 	public FusionCrafterBlock() {
@@ -35,7 +31,7 @@ public class FusionCrafterBlock extends BaseBlock {
 
 	@Override
 	public FusionCrafterBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return FusionCrafterBlockEntity.TYPE_INSTANCE.create(pos, state);
+		return PackagedDraconicBlockEntities.FUSION_CRAFTER.get().create(pos, state);
 	}
 
 	@Override
@@ -44,7 +40,7 @@ public class FusionCrafterBlock extends BaseBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
 		if(player.isShiftKeyDown()) {
 			if(level.getBlockEntity(pos) instanceof FusionCrafterBlockEntity crafter && !crafter.isWorking) {
 				if(!level.isClientSide) {
@@ -56,7 +52,7 @@ public class FusionCrafterBlock extends BaseBlock {
 				return InteractionResult.SUCCESS;
 			}
 		}
-		return super.use(state, level, pos, player, hand, hitResult);
+		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}
 
 	@Override

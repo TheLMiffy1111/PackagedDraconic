@@ -1,0 +1,80 @@
+{
+	"neoforge:conditions": [
+		{
+			"type": "neoforge:mod_loaded",
+			"modid": "ae2"
+		}
+	],
+	"type": "draconicevolution:fusion_crafting",
+	"result": {
+		"id": "packageddraconic:fusion_crafter",
+		"count": 1
+	},
+	"catalyst": {
+		"item": "draconicevolution:crafting_core"
+	},
+	"totalEnergy": 50000000,
+	"techLevel": "wyvern",
+	"ingredients": [
+		{
+			"ingredient": {
+				"tag": "c:ingots/draconium_awakened"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"tag": "c:ingots/draconium_awakened"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"item": "draconicevolution:awakened_core"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"item": "minecraft:dragon_egg"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"item": "packagedauto:me_package_component"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"tag": "c:nether_stars"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"tag": "c:ender_pearls"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"tag": "c:ender_pearls"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"item": "minecraft:ender_eye"
+			},
+			"consume": true
+		},
+		{
+			"ingredient": {
+				"item": "minecraft:ender_eye"
+			},
+			"consume": true
+		}
+	]
+}

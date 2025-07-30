@@ -1,27 +1,27 @@
 package thelm.packageddraconic.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
 public class PackagedDraconicConfig {
 
 	private PackagedDraconicConfig() {}
 
-	private static ForgeConfigSpec serverSpec;
+	private static ModConfigSpec serverSpec;
 
-	public static ForgeConfigSpec.IntValue fusionCrafterEnergyCapacity;
-	public static ForgeConfigSpec.IntValue fusionCrafterEnergyUsage;
-	public static ForgeConfigSpec.BooleanValue fusionCrafterDrawMEEnergy;
+	public static ModConfigSpec.IntValue fusionCrafterEnergyCapacity;
+	public static ModConfigSpec.IntValue fusionCrafterEnergyUsage;
+	public static ModConfigSpec.BooleanValue fusionCrafterDrawMEEnergy;
 
-	public static void registerConfig() {
+	public static void registerConfig(ModContainer modContainer) {
 		buildConfig();
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);
+		modContainer.registerConfig(ModConfig.Type.SERVER, serverSpec);
 	}
 
 	private static void buildConfig() {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
 		builder.push("fusion_crafter");
 		builder.comment("How much FE the Fusion Package Crafter should hold.");

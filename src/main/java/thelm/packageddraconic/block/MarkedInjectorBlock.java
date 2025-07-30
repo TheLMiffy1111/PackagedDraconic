@@ -2,11 +2,8 @@ package thelm.packageddraconic.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -26,17 +23,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import thelm.packagedauto.block.BaseBlock;
 import thelm.packagedauto.block.entity.BaseBlockEntity;
 import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
+import thelm.packageddraconic.block.entity.PackagedDraconicBlockEntities;
 
 public class MarkedInjectorBlock extends BaseBlock {
 
-	public static final MarkedInjectorBlock BASIC = new MarkedInjectorBlock(0);
-	public static final MarkedInjectorBlock WYVERN = new MarkedInjectorBlock(1);
-	public static final MarkedInjectorBlock DRACONIC = new MarkedInjectorBlock(2);
-	public static final MarkedInjectorBlock CHAOTIC = new MarkedInjectorBlock(3);
-	public static final Item BASIC_ITEM = new BlockItem(BASIC, new Item.Properties());
-	public static final Item WYVERN_ITEM = new BlockItem(WYVERN, new Item.Properties());
-	public static final Item DRACONIC_ITEM = new BlockItem(DRACONIC, new Item.Properties());
-	public static final Item CHAOTIC_ITEM = new BlockItem(CHAOTIC, new Item.Properties());
 	public static final VoxelShape SHAPE_DOWN = box(1, 6, 1, 15, 16, 15);
 	public static final VoxelShape SHAPE_UP = box(1, 0, 1, 15, 10, 15);
 	public static final VoxelShape SHAPE_NORTH = box(1, 1, 6, 15, 15, 16);
@@ -59,7 +49,7 @@ public class MarkedInjectorBlock extends BaseBlock {
 
 	@Override
 	public MarkedInjectorBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return MarkedInjectorBlockEntity.TYPE_INSTANCE.create(pos, state);
+		return PackagedDraconicBlockEntities.MARKED_INJECTOR.get().create(pos, state);
 	}
 
 	@Override
@@ -87,7 +77,7 @@ public class MarkedInjectorBlock extends BaseBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
 		return InteractionResult.PASS;
 	}
 }

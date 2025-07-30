@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 import thelm.packageddraconic.block.entity.MarkedInjectorBlockEntity;
@@ -46,7 +47,7 @@ public class FusionCrafterFXHandler implements Runnable {
 
 	@Override
 	public void run() {
-		IFusionRecipe recipe;
+		RecipeHolder<IFusionRecipe> recipe;
 		if(!crafter.isWorking || (recipe = crafter.effectRecipe) == null) {
 			rotationTick = -3;
 			sound = null;
@@ -88,7 +89,7 @@ public class FusionCrafterFXHandler implements Runnable {
 			}
 		}
 		long totalCharge = crafter.getInjectors().stream().mapToLong(IFusionInjector::getInjectorEnergy).sum();
-		chargeState = totalCharge / (float)recipe.getEnergyCost();
+		chargeState = totalCharge / (float)recipe.value().getEnergyCost();
 		float arcChance = chargeState*0.1F + crafter.animProgress*0.2F + (rotationSpeed > 1 ? (rotationSpeed-1)*0.25F : 0F);
 		if(coreDischarge != -1) {
 			coreDischarge = -1;

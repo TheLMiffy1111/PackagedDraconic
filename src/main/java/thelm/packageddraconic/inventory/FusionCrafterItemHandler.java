@@ -2,8 +2,8 @@ package thelm.packageddraconic.inventory;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import thelm.packagedauto.inventory.BaseItemHandler;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 
@@ -23,7 +23,7 @@ public class FusionCrafterItemHandler extends BaseItemHandler<FusionCrafterBlock
 	@Override
 	public boolean isItemValid(int slot, ItemStack stack) {
 		if(slot == 2) {
-			return stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
+			return stack.getCapability(Capabilities.EnergyStorage.ITEM) != null;
 		}
 		return false;
 	}

@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import thelm.packagedauto.client.RenderTimer;
 import thelm.packageddraconic.block.entity.FusionCrafterBlockEntity;
 import thelm.packageddraconic.client.fx.FusionCrafterFXHandler;
@@ -63,7 +64,7 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 		if(!stack.isEmpty()) {
 			poseStack.pushPose();
 			poseStack.translate(0.5, 0.5, 0.5);
-			poseStack.scale(0.5F, 0.5F, 0.5F);mc.getFrameTime();
+			poseStack.scale(0.5F, 0.5F, 0.5F);
 			poseStack.mulPose(Axis.YP.rotationDegrees((RenderTimer.INSTANCE.getTicks()+partialTicks)*0.8F));
 			mc.getItemRenderer().renderStatic(stack, ItemDisplayContext.FIXED, combinedLight, packetOverlay, poseStack, buffer, blockEntity.getLevel(), (int)blockEntity.getBlockPos().asLong());
 			poseStack.popPose();
@@ -215,5 +216,10 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 
 	public TextureAtlasSprite getTexture(TextureAtlasSprite[] arr, int shift) {
 		return arr[Math.floorMod(shift+RenderTimer.INSTANCE.getTicks(), arr.length)];
+	}
+
+	@Override
+	public AABB getRenderBoundingBox(FusionCrafterBlockEntity blockEntity) {
+		return new AABB(blockEntity.getBlockPos()).inflate(16);
 	}
 }

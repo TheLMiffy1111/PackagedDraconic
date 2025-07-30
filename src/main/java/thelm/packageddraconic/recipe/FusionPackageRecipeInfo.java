@@ -8,15 +8,19 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.brandon3055.draconicevolution.api.DraconicAPI;
 import com.brandon3055.draconicevolution.api.crafting.IFusionRecipe;
-import com.brandon3055.draconicevolution.api.crafting.IngredientStack;
+import com.brandon3055.draconicevolution.api.crafting.StackIngredient;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import thelm.packagedauto.api.IPackagePattern;
 import thelm.packagedauto.api.IPackageRecipeType;
@@ -26,25 +30,37 @@ import thelm.packageddraconic.inventory.FakeFusionInventory;
 
 public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 
-	IFusionRecipe recipe;
-	ItemStack inputCore = ItemStack.EMPTY;
-	List<ItemStack> inputInjector = new ArrayList<>();
-	List<ItemStack> input = new ArrayList<>();
-	ItemStack output = ItemStack.EMPTY;
-	List<IPackagePattern> patterns = new ArrayList<>();
+	public static final MapCodec<FusionPackageRecipeInfo> MAP_CODEC = RecordCodecBuilder.mapCodec(instance->instance.group(
+			ResourceLocation.CODEC.fieldOf("id").forGetter(FusionPackageRecipeInfo::getRecipeId),
+			ItemStack.OPTIONAL_CODEC.orElse(ItemStack.EMPTY).fieldOf("core").forGetter(FusionPackageRecipeInfo::getCoreInput),
+			ItemStack.OPTIONAL_CODEC.orElse(ItemStack.EMPTY).sizeLimitedListOf(54).fieldOf("injector").forGetter(FusionPackageRecipeInfo::getInjectorInputs)).
+			apply(instance, FusionPackageRecipeInfo::new));
+	public static final Codec<FusionPackageRecipeInfo> CODEC = MAP_CODEC.codec();
+	public static final StreamCodec<RegistryFriendlyByteBuf, FusionPackageRecipeInfo> STREAM_CODEC = StreamCodec.composite(
+			ResourceLocation.STREAM_CODEC, FusionPackageRecipeInfo::getRecipeId,
+			ItemStack.OPTIONAL_STREAM_CODEC, FusionPackageRecipeInfo::getCoreInput,
+			ItemStack.OPTIONAL_LIST_STREAM_CODEC, FusionPackageRecipeInfo::getInjectorInputs,
+			FusionPackageRecipeInfo::new);
 
-	@Override
-	public void load(CompoundTag nbt) {
-		inputInjector.clear();
-		input.clear();
-		output = ItemStack.EMPTY;
-		inputCore = ItemStack.of(nbt.getCompound("InputCore"));
-		MiscHelper.INSTANCE.loadAllItems(nbt.getList("InputInjector", 10), inputInjector);
-		patterns.clear();
-		Recipe<?> recipe = MiscHelper.INSTANCE.getRecipeManager().byKey(new ResourceLocation(nbt.getString("Recipe"))).orElse(null);
-		if(recipe instanceof IFusionRecipe fusionRecipe) {
-			this.recipe = fusionRecipe;
-			if(this.recipe.getCatalyst() instanceof IngredientStack ingStack) {
+	private final ResourceLocation id;
+	private final IFusionRecipe recipe;
+	private final ItemStack inputCore;
+	private final List<ItemStack> inputInjector;
+	private final List<ItemStack> input;
+	private final ItemStack output;
+	private final List<IPackagePattern> patterns = new ArrayList<>();
+
+	public FusionPackageRecipeInfo(ResourceLocation id, ItemStack inputCore, List<ItemStack> inputInjector) {
+		this.id = id;
+		this.inputCore = inputCore;
+		this.inputInjector = inputInjector;
+		List<ItemStack> matrixList = new ArrayList<>(inputInjector.size()+1);
+		matrixList.add(inputCore);
+		matrixList.addAll(inputInjector);
+		Recipe<?> recipeSer = MiscHelper.INSTANCE.getRecipeManager().byKey(id).map(RecipeHolder::value).orElse(null);
+		if(recipeSer instanceof IFusionRecipe fusionRecipe) {
+			recipe = fusionRecipe;
+			if(recipe.getCatalyst().getCustomIngredient() instanceof StackIngredient ingStack) {
 				inputCore.setCount(ingStack.getCount());
 			}
 			else {
@@ -53,26 +69,67 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 			FakeFusionInventory matrix = new FakeFusionInventory();
 			matrix.setCatalystStack(inputCore);
 			matrix.setInjectorStacks(inputInjector);
-			output = this.recipe.assemble(matrix, MiscHelper.INSTANCE.getRegistryAccess()).copy();
+			output = recipe.assemble(matrix, MiscHelper.INSTANCE.getRegistryAccess()).copy();
 		}
-		List<ItemStack> toCondense = new ArrayList<>(inputInjector);
-		toCondense.add(inputCore);
-		input.addAll(MiscHelper.INSTANCE.condenseStacks(toCondense));
+		else {
+			recipe = null;
+			output = ItemStack.EMPTY;
+		}
+		input = MiscHelper.INSTANCE.condenseStacks(matrixList);
 		for(int i = 0; i*9 < input.size(); ++i) {
 			patterns.add(new PackagePattern(this, i));
 		}
 	}
 
-	@Override
-	public void save(CompoundTag nbt) {
-		if(recipe != null) {
-			nbt.putString("Recipe", recipe.getId().toString());
+	public FusionPackageRecipeInfo(List<ItemStack> inputs, Level level) {
+		ItemStack inputCore = ItemStack.EMPTY;
+		inputInjector = new ArrayList<>();
+		int[] slotArray = FusionPackageRecipeType.SLOTS.toIntArray();
+		ArrayUtils.shift(slotArray, 0, 28, 1);
+		for(int i = 0; i < 55; ++i) {
+			ItemStack toSet = inputs.get(slotArray[i]);
+			if(!toSet.isEmpty()) {
+				toSet.setCount(1);
+				if(i == 0) {
+					toSet.setCount(toSet.getMaxStackSize());
+					inputCore = toSet;
+				}
+				else {
+					inputInjector.add(toSet.copy());
+				}
+			}
 		}
-		CompoundTag inputCoreTag = inputCore.save(new CompoundTag());
-		ListTag inputInjectorTag = MiscHelper.INSTANCE.saveAllItems(new ListTag(), inputInjector);
-		nbt.put("InputCore", inputCoreTag);
-		nbt.put("InputInjector", inputInjectorTag);
+		this.inputCore = inputCore;
+		List<ItemStack> matrixList = new ArrayList<>(inputInjector.size()+1);
+		matrixList.add(inputCore);
+		matrixList.addAll(inputInjector);
+		FakeFusionInventory matrix = new FakeFusionInventory();
+		matrix.setCatalystStack(inputCore);
+		matrix.setInjectorStacks(inputInjector);
+		RecipeHolder<IFusionRecipe> recipeHolder = MiscHelper.INSTANCE.getRecipeManager().getRecipeFor(DraconicAPI.FUSION_RECIPE_TYPE.get(), matrix, level).orElse(null);
+		if(recipeHolder != null) {
+			id = recipeHolder.id();
+			recipe = recipeHolder.value();
+			if(recipe.getCatalyst().getCustomIngredient() instanceof StackIngredient ingStack) {
+				inputCore.setCount(ingStack.getCount());
+			}
+			else {
+				inputCore.setCount(1);
+			}
+			output = recipe.assemble(matrix, level.registryAccess()).copy();
+		}
+		else {
+			id = null;
+			recipe = null;
+			inputCore.setCount(1);
+			output = null;
+		}
+		input = MiscHelper.INSTANCE.condenseStacks(matrixList);
+		for(int i = 0; i*9 < input.size(); ++i) {
+			this.patterns.add(new PackagePattern(this, i));
+		}
 	}
+
 
 	@Override
 	public IPackageRecipeType getRecipeType() {
@@ -81,7 +138,7 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 
 	@Override
 	public boolean isValid() {
-		return recipe != null;
+		return id != null && recipe != null;
 	}
 
 	@Override
@@ -125,53 +182,8 @@ public class FusionPackageRecipeInfo implements IFusionPackageRecipeInfo {
 	}
 
 	@Override
-	public void generateFromStacks(List<ItemStack> input, List<ItemStack> output, Level level) {
-		recipe = null;
-		inputCore = ItemStack.EMPTY;
-		inputInjector.clear();
-		this.input.clear();
-		patterns.clear();
-		int[] slotArray = FusionPackageRecipeType.SLOTS.toIntArray();
-		ArrayUtils.shift(slotArray, 0, 28, 1);
-		for(int i = 0; i < 55; ++i) {
-			ItemStack toSet = input.get(slotArray[i]);
-			if(!toSet.isEmpty()) {
-				toSet.setCount(1);
-				if(i == 0) {
-					toSet.setCount(toSet.getMaxStackSize());
-					inputCore = toSet;
-				}
-				else {
-					inputInjector.add(toSet.copy());
-				}
-			}
-			else if(i == 0) {
-				return;
-			}
-		}
-		FakeFusionInventory matrix = new FakeFusionInventory();
-		matrix.setCatalystStack(inputCore);
-		matrix.setInjectorStacks(inputInjector);
-		IFusionRecipe recipe = MiscHelper.INSTANCE.getRecipeManager().getRecipeFor(DraconicAPI.FUSION_RECIPE_TYPE.get(), matrix, level).orElse(null);
-		if(recipe != null) {
-			this.recipe = recipe;
-			if(recipe.getCatalyst() instanceof IngredientStack ingStack) {
-				inputCore.setCount(ingStack.getCount());
-			}
-			else {
-				inputCore.setCount(1);
-			}
-			inputCore = inputCore.copy();
-			List<ItemStack> toCondense = new ArrayList<>(inputInjector);
-			toCondense.add(inputCore);
-			this.input.addAll(MiscHelper.INSTANCE.condenseStacks(toCondense));
-			this.output = recipe.assemble(matrix, MiscHelper.INSTANCE.getRegistryAccess()).copy();
-			for(int i = 0; i*9 < this.input.size(); ++i) {
-				patterns.add(new PackagePattern(this, i));
-			}
-			return;
-		}
-		inputCore.setCount(1);
+	public ResourceLocation getRecipeId() {
+		return id;
 	}
 
 	@Override

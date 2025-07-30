@@ -48,6 +48,21 @@ public class FakeFusionInventory implements IFusionInventory {
 	}
 
 	@Override
+	public ItemStack getItem(int index) {
+        if(index <= 0) {
+        	return catalystStack;
+        }
+        index--;
+        List<IFusionInjector> injectors = getInjectors();
+        return index >= injectors.size() ? ItemStack.EMPTY : injectors.get(index).getInjectorStack();
+	}
+
+	@Override
+	public int size() {
+        return getInjectors().size() + 1;
+	}
+
+	@Override
 	public TechLevel getMinimumTier() {
 		return TechLevel.CHAOTIC;
 	}
