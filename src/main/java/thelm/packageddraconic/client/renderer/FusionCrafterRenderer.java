@@ -62,7 +62,7 @@ public class FusionCrafterRenderer implements BlockEntityRenderer<FusionCrafterB
 		if(!stack.isEmpty()) {
 			poseStack.pushPose();
 			poseStack.translate(0.5, 0.5, 0.5);
-			poseStack.scale(0.5F, 0.5F, 0.5F);mc.getFrameTime();
+			poseStack.scale(0.5F, 0.5F, 0.5F);
 			poseStack.mulPose(new Quaternion(0, (RenderTimer.INSTANCE.getTicks()+partialTicks)*0.8F, 0, true));
 			mc.getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLight, packetOverlay, poseStack, buffer, (int)blockEntity.getBlockPos().asLong());
 			poseStack.popPose();
