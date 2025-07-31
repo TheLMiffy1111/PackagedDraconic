@@ -15,6 +15,7 @@ public class PackagedDraconicConfig {
 	public static ForgeConfigSpec.IntValue fusionCrafterEnergyUsage;
 	public static ForgeConfigSpec.BooleanValue fusionCrafterDrawMEEnergy;
 
+	@SuppressWarnings("removal")
 	public static void registerConfig() {
 		buildConfig();
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec);

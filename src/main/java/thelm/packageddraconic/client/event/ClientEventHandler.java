@@ -20,6 +20,7 @@ public class ClientEventHandler {
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("removal")
 	public void onConstruct() {
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 	}

@@ -33,6 +33,7 @@ public class CommonEventHandler {
 	}
 
 	public void onConstruct() {
+		@SuppressWarnings("removal")
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.register(this);
 		PackagedDraconicConfig.registerConfig();
