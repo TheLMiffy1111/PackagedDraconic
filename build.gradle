@@ -133,7 +133,7 @@ dependencies {
 	implementation "io.codechicken:CodeChickenLib:1.21.1-4.6.1.524"
 	implementation "com.brandon3055.brandonscore:BrandonsCore:1.21.1-3.2.1.307"
 	implementation "com.brandon3055.draconicevolution:Draconic-Evolution:1.21.1-3.1.3.623"
-	implementation("mezz.jei:jei-1.21.1-neoforge:19.22.0.315") {transitive = false}
+	implementation("mezz.jei:jei-1.21.1-neoforge:19.22.1.316") {transitive = false}
 	implementation "org.appliedenergistics:guideme:21.1.14"
 	implementation "org.appliedenergistics:appliedenergistics2:19.2.13"
 	implementation "curse.maven:ae2-jei-integration-1074338:5748513"
