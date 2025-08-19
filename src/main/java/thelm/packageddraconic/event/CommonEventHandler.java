@@ -1,4 +1,4 @@
-package thelm.packageddraconic.proxy;
+package thelm.packageddraconic.event;
 
 import com.brandon3055.draconicevolution.DEFeatures;
 import com.brandon3055.draconicevolution.lib.RecipeManager;
@@ -23,7 +23,7 @@ import thelm.packageddraconic.recipe.RecipeTypeFusion;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 import thelm.packageddraconic.tile.TileMarkedInjector;
 
-public class CommonProxy {
+public class CommonEventHandler {
 
 	public void registerBlock(Block block) {
 		ForgeRegistries.BLOCKS.register(block);
@@ -33,17 +33,16 @@ public class CommonProxy {
 		ForgeRegistries.ITEMS.register(item);
 	}
 
-	public void register(FMLPreInitializationEvent event) {
+	public void onPreInit(FMLPreInitializationEvent event) {
 		registerConfig(event);
 		registerBlocks();
 		registerItems();
-		registerModels();
 		registerTileEntities();
 		registerRecipeTypes();
 		registerNetwork();
 	}
 
-	public void register(FMLInitializationEvent event) {
+	public void onInit(FMLInitializationEvent event) {
 		registerRecipes();
 	}
 
@@ -66,8 +65,6 @@ public class CommonProxy {
 		registerItem(BlockMarkedInjector.DRACONIC_ITEM);
 		registerItem(BlockMarkedInjector.CHAOTIC_ITEM);
 	}
-
-	protected void registerModels() {}
 
 	protected void registerTileEntities() {
 		GameRegistry.registerTileEntity(TileFusionCrafter.class, new ResourceLocation("packageddraconic:conbination_crafter"));

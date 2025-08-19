@@ -1,4 +1,4 @@
-package thelm.packageddraconic.proxy;
+package thelm.packageddraconic.client.event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,13 +6,15 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import thelm.packagedauto.client.IModelRegister;
 import thelm.packageddraconic.client.renderer.RendererFusionCrafter;
 import thelm.packageddraconic.client.renderer.RendererMarkedInjector;
+import thelm.packageddraconic.event.CommonEventHandler;
 import thelm.packageddraconic.tile.TileFusionCrafter;
 import thelm.packageddraconic.tile.TileMarkedInjector;
 
-public class ClientProxy extends CommonProxy {
+public class ClientEventHandler extends CommonEventHandler {
 
 	private static List<IModelRegister> modelRegisterList = new ArrayList<>();
 
@@ -33,10 +35,9 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	protected void registerModels() {
-		for(IModelRegister model : modelRegisterList) {
-			model.registerModels();
-		}
+	public void onPreInit(FMLPreInitializationEvent event) {
+		super.onPreInit(event);
+		registerModels();
 	}
 
 	@Override
@@ -44,5 +45,11 @@ public class ClientProxy extends CommonProxy {
 		super.registerTileEntities();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileFusionCrafter.class, new RendererFusionCrafter());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileMarkedInjector.class, new RendererMarkedInjector());
+	}
+
+	protected void registerModels() {
+		for(IModelRegister model : modelRegisterList) {
+			model.registerModels();
+		}
 	}
 }

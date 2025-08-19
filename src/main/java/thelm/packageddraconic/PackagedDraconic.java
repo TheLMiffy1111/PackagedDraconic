@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import thelm.packageddraconic.block.BlockFusionCrafter;
-import thelm.packageddraconic.proxy.CommonProxy;
+import thelm.packageddraconic.event.CommonEventHandler;
 
 @Mod(
 		modid = PackagedDraconic.MOD_ID,
@@ -34,18 +34,18 @@ public class PackagedDraconic {
 		}
 	};
 	@SidedProxy(
-			clientSide = "thelm.packageddraconic.proxy.ClientProxy",
-			serverSide = "thelm.packageddraconic.proxy.CommonProxy",
-			modId = PackagedDraconic.MOD_ID)
-	public static CommonProxy proxy;
+			clientSide = "thelm.packageddraconic.client.event.ClientEventHandler",
+			serverSide = "thelm.packageddraconic.event.CommonEventHandler",
+			modId = MOD_ID)
+	public static CommonEventHandler proxy;
 
 	@EventHandler
-	public void firstMovement(FMLPreInitializationEvent event) {
-		proxy.register(event);
+	public void onPreInit(FMLPreInitializationEvent event) {
+		proxy.onPreInit(event);
 	}
 
 	@EventHandler
-	public void secondMovement(FMLInitializationEvent event) {
-		proxy.register(event);
+	public void onInit(FMLInitializationEvent event) {
+		proxy.onInit(event);
 	}
 }
