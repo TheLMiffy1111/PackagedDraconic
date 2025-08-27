@@ -129,7 +129,7 @@ dependencies {
 	forge "net.minecraftforge:forge:1.18.2-40.3.11"
 
 	// Dependencies
-	modImplementation "thelm.packagedauto:PackagedAuto-1.18.2:3.1.16.62"
+	modImplementation "thelm.packagedauto:PackagedAuto-1.18.2:3.1.17.65"
 	modImplementation "codechicken:CodeChickenLib:1.18.2-4.1.4.488:universal"
 	modImplementation "com.brandon3055.brandonscore:BrandonsCore:1.18.2-3.1.10.283:universal"
 	modImplementation "com.brandon3055.draconicevolution:Draconic-Evolution:1.18.2-3.0.31.531:universal"
