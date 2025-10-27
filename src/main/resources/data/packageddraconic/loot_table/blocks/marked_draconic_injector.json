@@ -8,11 +8,14 @@
 					"type": "minecraft:item",
 					"functions": [
 						{
-							"function": "minecraft:copy_name",
+							"function": "minecraft:copy_components",
+							"include": [
+								"minecraft:custom_name"
+							],
 							"source": "block_entity"
 						}
 					],
-					"name": "packageddraconic:marked_draconium_injector"
+					"name": "packageddraconic:marked_draconic_injector"
 				}
 			],
 			"conditions": [

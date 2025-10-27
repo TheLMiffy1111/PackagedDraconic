@@ -8,11 +8,14 @@
 					"type": "minecraft:item",
 					"functions": [
 						{
-							"function": "minecraft:copy_name",
+							"function": "minecraft:copy_components",
+							"include": [
+								"minecraft:custom_name"
+							],
 							"source": "block_entity"
 						}
 					],
-					"name": "packageddraconic:fusion_crafter"
+					"name": "packageddraconic:marked_wyvern_injector"
 				}
 			],
 			"conditions": [
