@@ -1,0 +1,18 @@
+{
+  "itemGroup.packageddraconic": "PackagedDraconic",
+
+  "block.packageddraconic.fusion_crafter": "Fabricadora de Pacotes por Fusão",
+  "block.packageddraconic.fusion_crafter.injectors.usable": "Injetores de Fabricação por Fusão Marcados utilizáveis:",
+  "block.packageddraconic.fusion_crafter.injectors.required": "Injetores de Fabricação por Fusão Marcados mínimos necessários:",
+  "block.packageddraconic.fusion_crafter.injectors.0": "Dracônio %s",
+  "block.packageddraconic.fusion_crafter.injectors.1": "Wyvern %s",
+  "block.packageddraconic.fusion_crafter.injectors.2": "Dracônico %s",
+  "block.packageddraconic.fusion_crafter.injectors.3": "Caótico %s",
+  "block.packageddraconic.marked_draconium_injector": "Injetor de Fabricação por Fusão de Dracônio Marcado",
+  "block.packageddraconic.marked_wyvern_injector": "Injetor de Fabricação por Fusão Wyvern Marcado",
+  "block.packageddraconic.marked_draconic_injector": "Injetor de Fabricação por Fusão Dracônico Marcado",
+  "block.packageddraconic.marked_chaotic_injector": "Injetor de Fabricação por Fusão Caótico Marcado",
+
+  "recipe.packageddraconic.fusion": "Fabricação por Fusão",
+  "recipe.packageddraconic.fusion.short": "Fusão"
+}
